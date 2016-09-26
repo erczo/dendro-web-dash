@@ -4,7 +4,7 @@
   "description": "Project Dendro web dashboards.",
   "license": "BSD-2-Clause-FreeBSD",
   "author": "J. Scott Smith <scott@newleafsolutionsinc.com>",
-  "main": "dist/build/main.js",
+  "main": "dist/server/main.js",
   "scripts": {
     "babel-server": "babel src/server -d dist/server",
     "build": "npm run build-client:prod && npm run build-server",
