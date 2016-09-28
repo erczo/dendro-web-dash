@@ -76,7 +76,7 @@ const config = {
         jQuery: 'jquery',
         Tether: 'tether',
         'window.jQuery': 'jquery',
-        'window.Tether': 'jQuery'
+        'window.Tether': 'tether'
     }),
     new ExtractTextPlugin('assets/styles/[name].[contenthash].css')
   ],
