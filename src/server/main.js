@@ -8,10 +8,13 @@
 
 const path = require('path')
 const express = require('express')
+
 const app = express()
 
 // TODO: Replace logger with winston
 const log = console
+
+// Configure
 const config = require('../../config')(app)
 
 // Express basics
