@@ -1,6 +1,10 @@
 const path = require('path')
 const webpack = require('webpack')
 const clientRoot = path.resolve(__dirname, '../src/client')
+const nodeModules = path.resolve(__dirname, '../node_modules')
+const fontAwesome = path.join(nodeModules, 'font-awesome')
+const webModules = path.resolve(__dirname, '../web_modules')
+const weatherIcons = path.join(webModules, 'weather-icons')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const config = {
@@ -43,26 +47,44 @@ const config = {
       {
         test: /\.js$/,
         loader: 'babel',
-        include: path.resolve(__dirname, '../src/client'),
-        query: {
-          presets: ['es2015'],
-          // The 'transform-runtime' plugin tells babel to require the runtime
-          // instead of inlining it
-          plugins: ['transform-runtime']
-        }
+        include: clientRoot
+        // NOTE: Vue loader doesn't respect the presets here, so we must resort to .babelrc
+        // query: {
+        //   presets: ['es2015'],
+        //   // The 'transform-runtime' plugin tells babel to require the runtime
+        //   // instead of inlining it
+        //   plugins: ['transform-runtime']
+        // }
       },
+      // FIX: Does not work, yet!
       // Generate a native css output file
+      // {
+      //   test: /\.css$/,
+      //   loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
+      // },
+      //
+      // TODO: Remove - this is a workaround
+      // Embed stylesheets into a webpack javascript bundle
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
+        loader: 'style-loader!css-loader'
       },
       {
-        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        test: /\.(gif|jpe?g|png|svg)(\?.*)?$/,
         loader: 'url',
-        include: clientRoot,
+        include: [clientRoot, fontAwesome, weatherIcons],
         query: {
           limit: 10000,
-          name: 'assets/images/[name].[hash:7].[ext]'
+          name: '/assets/images/[name].[hash:7].[ext]'
+        }
+      },
+      {
+        test: /\.(eot|ttf|woff(2)?)(\?.*)?$/,
+        loader: 'url',
+        include: [clientRoot, fontAwesome, weatherIcons],
+        query: {
+          limit: 10000,
+          name: '/assets/fonts/[name].[hash:7].[ext]'
         }
       }
     ]
@@ -78,7 +100,7 @@ const config = {
         'window.jQuery': 'jquery',
         'window.Tether': 'jQuery'
     }),
-    new ExtractTextPlugin('assets/styles/[name].[contenthash].css')
+    new ExtractTextPlugin('/assets/styles/[name].[contenthash].css')
   ],
   eslint: {
     formatter: require('eslint-friendly-formatter')
