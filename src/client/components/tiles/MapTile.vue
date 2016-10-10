@@ -27,7 +27,7 @@ export default {
         })
       })
       .then(maps => {
-        this.map = new maps.Map(this.$el.getElementsByClassName('map-tile')[0], {
+        this.map = new maps.Map(this.$el.getElementsByClassName('tile')[0], {
           center: this.position,
           draggable: false,
           scrollwheel: false,

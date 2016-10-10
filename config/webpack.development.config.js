@@ -5,7 +5,7 @@ const nodeModules = path.resolve(__dirname, '../node_modules')
 const fontAwesome = path.join(nodeModules, 'font-awesome')
 const webModules = path.resolve(__dirname, '../web_modules')
 const weatherIcons = path.join(webModules, 'weather-icons')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+// const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const config = {
   context: clientRoot,
@@ -15,7 +15,7 @@ const config = {
   ],
   output: {
     path: path.resolve(__dirname, '../dist/public/client'),
-    publicPath: '/client',
+    publicPath: '/client/',
     filename: '[name].js'
   },
   resolve: {
@@ -67,7 +67,7 @@ const config = {
         include: [clientRoot, fontAwesome, weatherIcons],
         query: {
           limit: 10000,
-          name: '/assets/images/[name].[hash:7].[ext]'
+          name: 'assets/images/[name].[hash:7].[ext]'
         }
       },
       {
@@ -76,7 +76,7 @@ const config = {
         include: [clientRoot, fontAwesome, weatherIcons],
         query: {
           limit: 10000,
-          name: '/assets/fonts/[name].[hash:7].[ext]'
+          name: 'assets/fonts/[name].[hash:7].[ext]'
         }
       }
     ]
@@ -91,8 +91,8 @@ const config = {
         Tether: 'tether',
         'window.jQuery': 'jquery',
         'window.Tether': 'tether'
-    }),
-    new ExtractTextPlugin('assets/styles/[name].[contenthash].css')
+    })
+    // new ExtractTextPlugin('assets/styles/[name].[contenthash].css')
   ],
   eslint: {
     formatter: require('eslint-friendly-formatter')

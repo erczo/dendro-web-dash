@@ -5,17 +5,16 @@ const nodeModules = path.resolve(__dirname, '../node_modules')
 const fontAwesome = path.join(nodeModules, 'font-awesome')
 const webModules = path.resolve(__dirname, '../web_modules')
 const weatherIcons = path.join(webModules, 'weather-icons')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+// const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const config = {
   context: clientRoot,
   entry: [
-    'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
     './main.js'
   ],
   output: {
     path: path.resolve(__dirname, '../dist/public/client'),
-    publicPath: '/client',
+    publicPath: '/client/',
     filename: '[name].js'
   },
   resolve: {
@@ -56,7 +55,7 @@ const config = {
         //   plugins: ['transform-runtime']
         // }
       },
-      // FIX: Does not work, yet!
+      // FIX: Does not work, yet! Needs HTML Webpack Plugin, see: https://github.com/ampedandwired/html-webpack-plugin
       // Generate a native css output file
       // {
       //   test: /\.css$/,
@@ -75,7 +74,7 @@ const config = {
         include: [clientRoot, fontAwesome, weatherIcons],
         query: {
           limit: 10000,
-          name: '/assets/images/[name].[hash:7].[ext]'
+          name: 'assets/images/[name].[hash:7].[ext]'
         }
       },
       {
@@ -84,7 +83,7 @@ const config = {
         include: [clientRoot, fontAwesome, weatherIcons],
         query: {
           limit: 10000,
-          name: '/assets/fonts/[name].[hash:7].[ext]'
+          name: 'assets/fonts/[name].[hash:7].[ext]'
         }
       }
     ]
@@ -99,8 +98,8 @@ const config = {
         Tether: 'tether',
         'window.jQuery': 'jquery',
         'window.Tether': 'jQuery'
-    }),
-    new ExtractTextPlugin('/assets/styles/[name].[contenthash].css')
+    })
+    // new ExtractTextPlugin('assets/styles/[name].[contenthash].css')
   ],
   eslint: {
     formatter: require('eslint-friendly-formatter')

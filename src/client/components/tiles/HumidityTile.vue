@@ -3,7 +3,7 @@
     <div class="flex-1 flex-col tile humidity-tile">
 
       <div class="flex-2-cell flex-col cell-border-bottom cell-align-middle text-xs-center">
-        <h1 class="display-3"><i class="wi wi-humidity"></i> 56%</h1>
+        <h1 class="display-3"><small><i class="wi wi-humidity"></i></small> 56%</h1>
         <span class="text-muted">Humidity</span>
       </div>
 

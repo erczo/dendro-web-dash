@@ -87,20 +87,14 @@
         </div>
 
         <div class="row">
-          <div class="col col-sm-12 col-lg-4 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center tile wind-rose-tile"><h1>Wind Rose</h1></div>
-          </div>
+          <wind-rose-tile></wind-rose-tile>
           <wind-speed-tile></wind-speed-tile>
           <humidity-tile></humidity-tile>
         </div>
 
         <div class="row">
-          <div class="col col-sm-12 col-lg-6 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center tile solar-rad-tile"><h1>Solar Radiation</h1></div>
-          </div>
-          <div class="col col-sm-12 col-lg-6 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center tile precip-tile"><h1>Precipitation</h1></div>
-          </div>
+          <solar-rad-tile></solar-rad-tile>
+          <precip-tile></precip-tile>
         </div>
 
         <div class="row">
@@ -128,7 +122,7 @@
     </section>
 
     <section id="timeMachine">
-      <div class="container-fluid">
+      <div class="container">
 
         <div class="row">
           <div class="col col-sm-12 col-lg-12 flex-col">
@@ -170,36 +164,10 @@ import AirTempTile from './components/tiles/AirTempTile'
 import HumidityTile from './components/tiles/HumidityTile'
 import MapTile from './components/tiles/MapTile'
 import NotificationTile from './components/tiles/NotificationTile'
+import PrecipTile from './components/tiles/PrecipTile'
+import SolarRadTile from './components/tiles/SolarRadTile'
+import WindRoseTile from './components/tiles/WindRoseTile'
 import WindSpeedTile from './components/tiles/WindSpeedTile'
-
-// TODO: Remove
-// import Highcharts from 'highcharts'
-
-// setTimeout(() => {
-//   Highcharts.chart('windRose', {
-//     chart: {
-//       type: 'bar'
-//     },
-//     title: {
-//       text: 'Fruit Consumption'
-//     },
-//     xAxis: {
-//       categories: ['Apples', 'Bananas', 'Oranges']
-//     },
-//     yAxis: {
-//       title: {
-//         text: 'Fruit eaten'
-//       }
-//     },
-//     series: [{
-//       name: 'Jane',
-//       data: [1, 0, 4]
-//     }, {
-//       name: 'John',
-//       data: [5, 7, 3]
-//     }]
-//   })
-// }, 3000)
 
 export default {
   components: {
@@ -207,6 +175,9 @@ export default {
     HumidityTile,
     MapTile,
     NotificationTile,
+    PrecipTile,
+    SolarRadTile,
+    WindRoseTile,
     WindSpeedTile
   }
 }
@@ -279,16 +250,23 @@ body {
   border-radius: 0.3rem;
   overflow: hidden;
 }
-.tile .wi {
-  font-size: 80%;
-}
 .tile table {
   margin-bottom: 0;
 }
 
+.cumulative-rain-tile {
+  background-color: #50bfa6;
+  color: #fff;
+}
+.forecast-tile {
+  background-color: #fff;
+}
 .pressure-tile {
   background-color: #509ebf;
   color: #fff;
+}
+.download-tile {
+  background-color: #fff;
 }
 
 .status-cell {
@@ -305,7 +283,9 @@ body {
 .humidity-tile .text-muted,
 .pressure-tile .text-muted,
 .status-cell .text-muted,
-.wind-speed-tile .text-muted {
+.wind-speed-tile .text-muted,
+.solar-rad-tile .text-muted,
+.precip-tile .text-muted {
   color: rgba(255, 255, 255, 0.8) !important;
 }
 
@@ -365,5 +345,8 @@ header .navbar {
 }
 #timeMachine .col {
   height: 22rem !important;
+}
+#timeMachine .flex-1 {
+  border: 1px solid #e1e1e1;
 }
 </style>
