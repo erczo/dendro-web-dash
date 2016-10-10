@@ -2,6 +2,7 @@
   <div class="col col-sm-12 col-lg-4 flex-col">
     <div class="flex-1 flex-col tile notification-tile">
 
+      <!-- Status -->
       <div class="flex-1-cell flex-col cell-border-bottom cell-align-middle status-cell status-cell-offline text-xs-center">
 <!-- 
         <h2><i class="fa fa-check-circle-o" aria-hidden="true"></i> Online</h2>
@@ -12,7 +13,7 @@
       </div>
 
       <!-- Events -->
-      <div class="flex-4-cell cell-events" style="overflow-y: scroll; height: 0;">
+      <div class="flex-4-cell" style="overflow-y: scroll; height: 0;">
         <table class="table table-sm table-hover events-table">
           <tbody>
             <tr>
@@ -55,7 +56,29 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.events-table {
+  font-size: 86%;
+}
+.events-table th,
+.events-table td {
+  vertical-align: middle;
+}
+.events-table.table-sm th {
+  padding: 0.3rem 0.6rem;
+  text-align: center;
+}
+
 .notification-tile {
   background-color: #fff;
+}
+
+.status-cell {
+  color: #fff;
+}
+.status-cell-offline {
+  background-color: #bf5750;
+}
+.status-cell-online {
+  background-color: #97bf50;
 }
 </style>

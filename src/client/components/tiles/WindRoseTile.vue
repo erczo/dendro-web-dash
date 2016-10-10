@@ -1,6 +1,6 @@
 <template>
   <div class="col col-sm-12 col-lg-4 flex-col">
-    <div class="flex-1 tile wind-rose-tile" id="windRose"></div>
+    <div class="flex-1 flex-col cell-align-middle tile wind-rose-tile chart"></div>
   </div>
 </template>
 
@@ -26,12 +26,12 @@ export default {
         colors: ['#5cb6dc', '#aedc5c', '#f3f767', '#dcac5c'],
 
         legend: {
-          align: 'center',
+          align: 'right',
           itemStyle: {
             color: '#fff'
           },
-          layout: 'horizontal',
-          verticalAlign: 'bottom'
+          layout: 'vertical',
+          verticalAlign: 'top'
         },
 
         pane: {
@@ -150,16 +150,8 @@ export default {
         },
 
         yAxis: {
-          min: 0,
           endOnTick: false,
           gridLineColor: '#fff',
-          showLastLabel: true,
-          title: {
-            style: {
-              color: '#fff'
-            },
-            text: null
-          },
           labels: {
             formatter: function () {
               return this.value + '%'
@@ -168,14 +160,22 @@ export default {
               color: '#fff'
             }
           },
-          reversedStacks: false
+          min: 0,
+          reversedStacks: false,
+          showLastLabel: true,
+          title: {
+            style: {
+              color: '#fff'
+            },
+            text: null
+          }
         }
       }
     }
   },
 
   mounted () {
-    this.chart = Highcharts.chart(this.$el.getElementsByClassName('tile')[0], this.opts)
+    this.chart = Highcharts.chart(this.$el.getElementsByClassName('chart')[0], this.opts)
   }
 }
 </script>

@@ -3,7 +3,7 @@
     <div class="flex-1 flex-col tile air-temp-tile">
 
       <div class="flex-2-cell flex-col cell-border-bottom cell-align-middle text-xs-center">
-        <h1 class="display-3"><small><i class="wi wi-thermometer-exterior"></i></small> 17°C</h1>
+        <h1 class="display-3">17 <i class="wi wi-celsius"></i></h1>
         <span class="text-muted">Air Temperature</span>
       </div>
 

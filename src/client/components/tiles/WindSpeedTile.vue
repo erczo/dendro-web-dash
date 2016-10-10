@@ -3,7 +3,7 @@
     <div class="flex-1 flex-col tile wind-speed-tile">
 
       <div class="flex-1-cell flex-col cell-border-bottom cell-align-middle text-xs-center">
-        <h1 class="display-4">9.2 NE <i class="wi wi-wind from-45-deg"></i></h1>
+        <h1 class="display-4">9.2 <i class="wi wi-wind from-45-deg"></i> <small>NE</small></h1>
         <span class="text-muted">Wind Speed (m/s)</span>
       </div>
 
@@ -41,6 +41,16 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.wind-speed-table th,
+.wind-speed-table td {
+  border-top: none;
+  padding: 0.3rem 0.6rem;
+  vertical-align: middle;
+}
+.wind-speed-table.table-sm th {
+  font-weight: normal;
+}
+
 .wind-speed-tile {
   background-color: #9081bf;
   color: #fff;

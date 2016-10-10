@@ -39,7 +39,7 @@
         <div class="row">
 
           <!-- Profile Image -->
-          <div class="col-sm-12 col-lg-4 flex-row">
+          <div class="col-sm-12 col-lg-4 flex-col">
             <div class="flex-1">
               <img class="img-rounded img-profile pull-lg-right" src="./assets/images/blue-oak-ws.jpg">
             </div>
@@ -47,13 +47,10 @@
 
           <!-- Profile Info -->
           <div class="col-sm-12 col-lg-8 flex-col">
-            <div class="flex-1 text-lg-right">
-              5:45 PM PST UTC -8 hours
-            </div>
-
             <div class="flex-1 flex-col">
               <div class="flex-1-cell flex-col cell-align-bottom">
-                <h1>Blue Oak Ranch <small class="text-muted">Weather Station</small></h1>
+                <p>5:45 PM PST UTC -8 hours</p>
+                <h1 class="display-4">Blue Oak Ranch <small class="text-muted">Weather Station</small></h1>
                 <p>Coordinates: 39.718390°, -123.652883° <i class="fa fa-map-marker" aria-hidden="true"></i><br />
                 Elevation: 575 m</p>
 
@@ -80,42 +77,34 @@
     <section id="tiles">
       <div class="container-fluid">
 
-        <div class="row">
+        <div class="row row-md">
           <map-tile :lat="39.718" :lng="-123.652" title="Blue Oak Ranch Weather Station"></map-tile>
           <air-temp-tile></air-temp-tile>
           <notification-tile></notification-tile>
         </div>
 
-        <div class="row">
+        <div class="row row-md">
           <wind-rose-tile></wind-rose-tile>
           <wind-speed-tile></wind-speed-tile>
           <humidity-tile></humidity-tile>
         </div>
 
-        <div class="row">
+        <div class="row row-md">
           <solar-rad-tile></solar-rad-tile>
           <precip-tile></precip-tile>
         </div>
 
-        <div class="row">
-          <div class="col col-sm-12 col-lg-6 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center tile pressure-tile"><h1>Barometric Pressure</h1></div>
-          </div>
-          <div class="col col-sm-12 col-lg-6 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center tile cumulative-rain-tile"><h1>Cumulative Rainfall</h1></div>
-          </div>
+        <div class="row row-md">
+          <pressure-tile></pressure-tile>
+          <cumulative-rain-tile></cumulative-rain-tile>
+        </div>
+
+        <div class="row row-sm">
+          <forecast-tile></forecast-tile>
         </div>
 
         <div class="row">
-          <div class="col col-sm-12 col-lg-12 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center tile forecast-tile"><h1>NOAA Forecast</h1></div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col col-sm-12 col-lg-12 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center tile download-tile"><h1>Download</h1></div>
-          </div>
+          <download-tile></download-tile>
         </div>
 
       </div>
@@ -161,10 +150,14 @@
 // TODO: Add page footer
 
 import AirTempTile from './components/tiles/AirTempTile'
+import CumulativeRainTile from './components/tiles/CumulativeRainTile'
+import DownloadTile from './components/tiles/DownloadTile'
+import ForecastTile from './components/tiles/ForecastTile'
 import HumidityTile from './components/tiles/HumidityTile'
 import MapTile from './components/tiles/MapTile'
 import NotificationTile from './components/tiles/NotificationTile'
 import PrecipTile from './components/tiles/PrecipTile'
+import PressureTile from './components/tiles/PressureTile'
 import SolarRadTile from './components/tiles/SolarRadTile'
 import WindRoseTile from './components/tiles/WindRoseTile'
 import WindSpeedTile from './components/tiles/WindSpeedTile'
@@ -172,10 +165,14 @@ import WindSpeedTile from './components/tiles/WindSpeedTile'
 export default {
   components: {
     AirTempTile,
+    CumulativeRainTile,
+    DownloadTile,
+    ForecastTile,
     HumidityTile,
     MapTile,
     NotificationTile,
     PrecipTile,
+    PressureTile,
     SolarRadTile,
     WindRoseTile,
     WindSpeedTile
@@ -234,8 +231,8 @@ body {
 }
 
 .img-profile {
-  width: 200px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
 }
 
 .text-inverse {
@@ -253,62 +250,8 @@ body {
 .tile table {
   margin-bottom: 0;
 }
-
-.cumulative-rain-tile {
-  background-color: #50bfa6;
-  color: #fff;
-}
-.forecast-tile {
-  background-color: #fff;
-}
-.pressure-tile {
-  background-color: #509ebf;
-  color: #fff;
-}
-.download-tile {
-  background-color: #fff;
-}
-
-.status-cell {
-  color: #fff;
-}
-.status-cell-offline {
-  background-color: #bf5750;
-}
-.status-cell-online {
-  background-color: #97bf50;
-}
-
-.air-temp-tile .text-muted,
-.humidity-tile .text-muted,
-.pressure-tile .text-muted,
-.status-cell .text-muted,
-.wind-speed-tile .text-muted,
-.solar-rad-tile .text-muted,
-.precip-tile .text-muted {
+.tile .text-muted {
   color: rgba(255, 255, 255, 0.8) !important;
-}
-
-.events-table {
-  font-size: 86%;
-}
-.events-table th,
-.events-table td {
-  vertical-align: middle;
-}
-.events-table.table-sm th {
-  padding: 0.3rem 0.6rem;
-  text-align: center;
-}
-
-.wind-speed-table th,
-.wind-speed-table td {
-  border-top: none;
-  padding: 0.3rem 0.6rem;
-  vertical-align: middle;
-}
-.wind-speed-table.table-sm th {
-  font-weight: normal;
 }
 
 header .navbar {
@@ -327,15 +270,11 @@ header .navbar {
   border-top: 1px solid #f1f1f1;
   padding-top: 1rem;
 }
-#tiles .row:nth-of-type(1) .col,
-#tiles .row:nth-of-type(2) .col,
-#tiles .row:nth-of-type(3) .col,
-#tiles .row:nth-of-type(4) .col {
-  height: 22rem !important;
+#tiles .row-md .col {
+  height: 24rem !important;
 }
-#tiles .row:nth-of-type(5) .col,
-#tiles .row:nth-of-type(6) .col {
-  height: 11rem !important;
+#tiles .row-sm .col {
+  height: 12rem !important;
 }
 
 #timeMachine {
