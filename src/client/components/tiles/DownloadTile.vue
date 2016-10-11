@@ -3,7 +3,7 @@
     <div class="flex-1 flex-col tile download-tile">
 
       <div class="flex-1-cell flex-col cell-align-middle text-xs-center" style="padding: 1rem;">
-        <h3>Want more data? Search and download here.</h3>
+        <h3>Want more data? Search and download here:</h3>
       </div>
 
       <div class="flex-1-cell flex-row" style="flex-wrap: wrap;">
@@ -27,7 +27,7 @@
               Search All Data
             </button>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="#">Search using Chrongraf</a>
+              <a class="dropdown-item" href="#">Search using Chronograf</a>
               <a class="dropdown-item" href="#">Search using Grafana</a>
               <a class="dropdown-item" href="#">Query ODM Database</a>
             </div>

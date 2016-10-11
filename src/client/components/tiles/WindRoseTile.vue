@@ -1,6 +1,8 @@
 <template>
   <div class="col col-sm-12 col-lg-4 flex-col">
-    <div class="flex-1 flex-col cell-align-middle tile wind-rose-tile chart"></div>
+    <div class="flex-1 flex-col tile wind-rose-tile">
+      <div class="flex-1-cell flex-col cell-align-middle text-xs-center chart"></div>
+    </div>
   </div>
 </template>
 
@@ -26,16 +28,16 @@ export default {
         colors: ['#5cb6dc', '#aedc5c', '#f3f767', '#dcac5c'],
 
         legend: {
-          align: 'right',
+          align: 'center',
           itemStyle: {
             color: '#fff'
           },
-          layout: 'vertical',
+          layout: 'horizontal',
           verticalAlign: 'top'
         },
 
         pane: {
-          size: '90%'
+          size: '80%'
         },
 
         plotOptions: {

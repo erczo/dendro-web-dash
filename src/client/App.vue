@@ -2,7 +2,7 @@
   <div id="app">
     <header>
       <nav class="navbar navbar-dark navbar-fixed-top p-y-1">
-        <div class="container-fluid">
+        <div class="container">
 
           <!-- Reserve Name -->
           <a class="navbar-brand" href="#"><span class="hidden-sm-down">Blue Oak Ranch Reserve </span><i class="fa fa-external-link" aria-hidden="true"></i></a>
@@ -35,7 +35,7 @@
     </header>
 
     <section id="banner">
-      <div class="container-fluid">
+      <div class="container">
         <div class="row">
 
           <!-- Profile Image -->
@@ -48,9 +48,9 @@
           <!-- Profile Info -->
           <div class="col-sm-12 col-lg-8 flex-col">
             <div class="flex-1 flex-col">
-              <div class="flex-1-cell flex-col cell-align-bottom">
+              <div class="flex-1-cell flex-col cell-align-bottom" style="border-left: 1px solid #e1e1e1; padding-left: 1rem;">
                 <p>5:45 PM PST UTC -8 hours</p>
-                <h1 class="display-4">Blue Oak Ranch <small class="text-muted">Weather Station</small></h1>
+                <h1>Blue Oak Ranch <small class="text-muted">Weather Station</small></h1>
                 <p>Coordinates: 39.718390°, -123.652883° <i class="fa fa-map-marker" aria-hidden="true"></i><br />
                 Elevation: 575 m</p>
 
@@ -75,7 +75,7 @@
     </section>
 
     <section id="tiles">
-      <div class="container-fluid">
+      <div class="container">
 
         <div class="row row-md">
           <map-tile :lat="39.718" :lng="-123.652" title="Blue Oak Ranch Weather Station"></map-tile>
@@ -111,34 +111,22 @@
     </section>
 
     <section id="timeMachine">
-      <div class="container">
-
-        <div class="row">
-          <div class="col col-sm-12 col-lg-12 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center"><h1>Air Temperature</h1></div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col col-sm-12 col-lg-12 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center"><h1>Soil Temperature</h1></div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col col-sm-12 col-lg-12 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center"><h1>Wind Speed</h1></div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col col-sm-12 col-lg-12 flex-col">
-            <div class="flex-1 flex-col cell-align-middle text-xs-center"><h1>Solar Radiation</h1></div>
-          </div>
-        </div>
-
-      </div>
+      <time-machine></time-machine>
     </section>
+
+    <footer>
+      <div class="container-fluid">
+        <div class="row">
+
+          <div class="col-xs-12">
+            <div class="text-xs-center">
+              <small>Problems viewing this page? Email&nbsp;<a href="mailto:support@helpme.com">support@helpme.com</a></small>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </footer>
 
   </div>
 </template>
@@ -159,6 +147,7 @@ import NotificationTile from './components/tiles/NotificationTile'
 import PrecipTile from './components/tiles/PrecipTile'
 import PressureTile from './components/tiles/PressureTile'
 import SolarRadTile from './components/tiles/SolarRadTile'
+import TimeMachine from './components/TimeMachine'
 import WindRoseTile from './components/tiles/WindRoseTile'
 import WindSpeedTile from './components/tiles/WindSpeedTile'
 
@@ -174,6 +163,7 @@ export default {
     PrecipTile,
     PressureTile,
     SolarRadTile,
+    TimeMachine,
     WindRoseTile,
     WindSpeedTile
   }
@@ -231,8 +221,8 @@ body {
 }
 
 .img-profile {
-  width: 300px;
-  height: 300px;
+  width: 240px;
+  height: 240px;
 }
 
 .text-inverse {
@@ -259,6 +249,11 @@ header .navbar {
   border-bottom: 1px solid rgb(80, 139, 191)
 }
 
+footer {
+  background-color: #eee;
+  padding: 1rem 0;
+}
+
 #banner {
   background-color: #fff;
   border-bottom: 1px solid #e1e1e1;
@@ -271,7 +266,7 @@ header .navbar {
   padding-top: 1rem;
 }
 #tiles .row-md .col {
-  height: 24rem !important;
+  height: 22rem !important;
 }
 #tiles .row-sm .col {
   height: 12rem !important;
@@ -280,10 +275,13 @@ header .navbar {
 #timeMachine {
   background-color: #fff;
   border-top: 1px solid #f1f1f1;
-  padding-top: 1rem;
+  padding: 2rem 0;
+}
+#timeMachine .row {
+  margin-bottom: 3rem;
 }
 #timeMachine .col {
-  height: 22rem !important;
+  /*height: 22rem !important;*/
 }
 #timeMachine .flex-1 {
   border: 1px solid #e1e1e1;
