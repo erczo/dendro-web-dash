@@ -4,7 +4,7 @@
 
       <div class="flex-1-cell flex-row cell-border-bottom">
         <div class="flex-2-cell flex-col cell-align-middle text-xs-center">
-          <h1 class="display-4">7.2 <span class="hidden-xs-down"><i class="wi wi-umbrella"></i></span></h1>
+          <h1 class="display-4">815.7 <span class="hidden-xs-down"><i class="wi wi-umbrella"></i></span></h1>
           <span class="text-muted">Precip<span class="hidden-xs-down">itation</span> to Date (mm)</span>
         </div>
         <div class="flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten" style="overflow: hidden;">
@@ -31,13 +31,18 @@ export default {
       opts: {
         chart: {
           backgroundColor: '#50bfa6',
-          height: 100
+          height: 120
         },
 
-        colors: ['#f3f767'],
+        colors: ['#fff', '#f3f767'],
 
         legend: {
-          enabled: false
+          align: 'right',
+          itemStyle: {
+            color: '#fff'
+          },
+          layout: 'vertical',
+          verticalAlign: 'middle'
         },
 
         title: {
@@ -45,7 +50,7 @@ export default {
         },
 
         xAxis: {
-          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          categories: ['Oct-14', 'Nov', 'Dec', 'Jan-15', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
           gridLineColor: 'rgba(255, 255, 255, 0.4)',
           labels: {
             style: {
@@ -71,8 +76,11 @@ export default {
         },
 
         series: [{
-          name: 'Sample',
-          data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+          name: 'wy2015',
+          data: [0, 10, 80, 360, 360, 430, 450, 460, 510, 512, 512, 514, 545]
+        }, {
+          name: 'wy2016',
+          data: [0, 50, 100, 350, 480, 500, 550, 750, 810, 820, 822, 823, 824]
         }]
       }
     }

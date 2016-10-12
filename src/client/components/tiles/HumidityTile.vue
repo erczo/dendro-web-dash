@@ -3,17 +3,17 @@
     <div class="flex-1 flex-col tile humidity-tile">
 
       <div class="flex-2-cell flex-col cell-border-bottom cell-align-middle text-xs-center">
-        <h1 class="display-3">56 <i class="wi wi-humidity"></i></h1>
+        <h1 class="display-3">67 <i class="wi wi-humidity"></i></h1>
         <span class="text-muted">Humidity</span>
       </div>
 
       <div class="flex-2-cell flex-row">
         <div class="flex-2-cell flex-col cell-align-middle text-xs-center bg-darken">
-          <h2>11%</h2>
+          <h2>14.4%</h2>
           <span class="text-muted">Seasonal Low</span>
         </div>
         <div class="flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten">
-          <h2>100%</h2>
+          <h2>99.6%</h2>
           <span class="text-muted">Seasonal High</span>
         </div>
       </div>

@@ -3,12 +3,12 @@
     <div class="flex-1 flex-col tile precip-tile">
 
       <div class="flex-1-cell flex-col cell-align-middle text-xs-center">
-        <h1 class="display-3">2.2 <i class="wi wi-raindrops"></i></h1>
+        <h1 class="display-3">0 <i class="wi wi-raindrops"></i></h1>
         <span class="text-muted">Current Precipitation (mm/hr)</span>
       </div>
 
       <div class="flex-1-cell flex-col cell-align-middle text-xs-center bg-darken">
-        <h1 class="display-4">2.2</h1>
+        <h1 class="display-4">0</h1>
         <span class="text-muted">Yesterday’s (mm/24hr)</span>
       </div>
 

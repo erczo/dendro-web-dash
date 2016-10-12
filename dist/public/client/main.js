@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a54f7ca5edf792d2e18f"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "7f23d787643b939ebeda"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -5632,7 +5632,7 @@
 
 
 	// module
-	exports.push([module.id, "\nbody {\n  background-color: #fff;\n}\n.bg-darken {\n  background-color: rgba(0, 0, 0, 0.1);\n}\n.bg-lighten {\n  background-color: rgba(255, 255, 255, 0.1);\n}\n.cell-border-bottom {\n  border-bottom: 1px solid #eceeef;\n}\n.cell-border-top {\n  border-top: 1px solid #eceeef;\n}\n.cell-align-middle {\n  justify-content: center;\n}\n.cell-align-bottom {\n  justify-content: flex-end;\n}\n.flex-col {\n  display: flex;\n  flex-direction: column;\n}\n.flex-row {\n  display: flex;\n  flex-direction: row;\n}\n.flex-1 {\n  flex: 1 0 auto;\n  margin-bottom: 1rem;\n}\n.flex-1-cell {\n  flex: 1 0 auto;\n}\n.flex-2-cell {\n  flex: 2 0 auto;\n}\n.flex-3-cell {\n  flex: 3 0 auto;\n}\n.flex-4-cell {\n  flex: 4 0 auto;\n}\n.img-profile {\n  width: 240px;\n  height: 240px;\n}\n.text-inverse {\n  color: #fff;\n}\n.text-thin {\n  font-weight: 300;\n}\n.tile {\n  border: 1px solid #e1e1e1;\n  border-radius: 0.3rem;\n  overflow: hidden;\n}\n.tile table {\n  margin-bottom: 0;\n}\n.tile .text-muted {\n  color: rgba(255, 255, 255, 0.8) !important;\n}\nheader .navbar {\n  background-color: rgba(80, 139, 191, 0.96);\n  border-bottom: 1px solid rgb(80, 139, 191)\n}\nfooter {\n  background-color: #eee;\n  padding: 1rem 0;\n}\n#banner {\n  background-color: #fff;\n  border-bottom: 1px solid #e1e1e1;\n  padding: 6rem 0 1rem 0;\n}\n#tiles {\n  background-color: #eee;  \n  border-top: 1px solid #f1f1f1;\n  padding-top: 1rem;\n}\n#tiles .row-md .col {\n  height: 22rem !important;\n}\n#tiles .row-sm .col {\n  height: 12rem !important;\n}\n#timeMachine {\n  background-color: #fff;\n  border-top: 1px solid #f1f1f1;\n  padding: 2rem 0;\n}\n#timeMachine .row {\n  margin-bottom: 3rem;\n}\n#timeMachine .col {\n  /*height: 22rem !important;*/\n}\n#timeMachine .flex-1 {\n  border: 1px solid #e1e1e1;\n}\n", ""]);
+	exports.push([module.id, "\nbody {\n  background-color: #fff;\n}\n.bg-darken {\n  background-color: rgba(0, 0, 0, 0.1);\n}\n.bg-lighten {\n  background-color: rgba(255, 255, 255, 0.1);\n}\n.cell-border-bottom {\n  border-bottom: 1px solid #eceeef;\n}\n.cell-border-top {\n  border-top: 1px solid #eceeef;\n}\n.cell-align-middle {\n  justify-content: center;\n}\n.cell-align-bottom {\n  justify-content: flex-end;\n}\n.flex-col {\n  display: flex;\n  flex-direction: column;\n}\n.flex-row {\n  display: flex;\n  flex-direction: row;\n}\n.flex-1 {\n  flex: 1 0 auto;\n  margin-bottom: 1rem;\n}\n.flex-1-cell {\n  flex: 1 0 auto;\n}\n.flex-2-cell {\n  flex: 2 0 auto;\n}\n.flex-3-cell {\n  flex: 3 0 auto;\n}\n.flex-4-cell {\n  flex: 4 0 auto;\n}\n.img-profile {\n  width: 240px;\n  height: 240px;\n}\n.text-inverse {\n  color: #fff;\n}\n.text-thin {\n  font-weight: 300;\n}\n.tile {\n  border: 1px solid #e1e1e1;\n  border-radius: 0.3rem;\n  overflow: hidden;\n}\n.tile table {\n  margin-bottom: 0;\n}\n.tile h1,\n.tile h2,\n.tile h3,\n.tile .h1,\n.tile .h2,\n.tile .h3 {\n  /* OPTIONAL */\n  /*text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);*/\n}\n.tile .text-muted {\n  color: rgba(255, 255, 255, 0.8) !important;\n}\nheader .navbar {\n  background-color: rgba(80, 139, 191, 0.96);\n  border-bottom: 1px solid rgb(80, 139, 191)\n}\nfooter {\n  background-color: #eee;\n  padding: 1rem 0;\n}\n#banner {\n  background-color: #fff;\n  border-bottom: 1px solid #e1e1e1;\n  padding: 6rem 0 1rem 0;\n}\n#tiles {\n  background-color: #eee;  \n  border-top: 1px solid #f1f1f1;\n  padding-top: 1rem;\n}\n#tiles .row-md .col {\n  height: 22rem !important;\n}\n#tiles .row-sm .col {\n  height: 12rem !important;\n}\n#timeMachine {\n  background-color: #fff;\n  border-top: 1px solid #f1f1f1;\n  padding: 2rem 0;\n}\n#timeMachine .row {\n  margin-bottom: 3rem;\n}\n#timeMachine .col {\n  /*height: 22rem !important;*/\n}\n#timeMachine .flex-1 {\n  border: 1px solid #e1e1e1;\n}\n", ""]);
 
 	// exports
 
@@ -5646,7 +5646,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.solar-rad-tile[data-v-10] {\n  background-color: #bf9650;\n  color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n.precip-tile[data-v-10] {\n  background-color: #50bfa6;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -5660,7 +5660,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.air-temp-tile[data-v-11] {\n  background-color: #509ebf;\n  color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n.wind-speed-table th[data-v-11],\n.wind-speed-table td[data-v-11] {\n  border-top: none;\n  padding: 0.3rem 0.6rem;\n  vertical-align: middle;\n}\n.wind-speed-table.table-sm th[data-v-11] {\n  font-weight: normal;\n}\n.wind-speed-tile[data-v-11] {\n  background-color: #9081bf;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -5674,7 +5674,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.wind-rose-tile[data-v-12] {\n  background-color: #9081bf;\n  color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n.pressure-tile[data-v-12] {\n  background-color: #509ebf;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -5688,7 +5688,7 @@
 
 
 	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+	exports.push([module.id, "\n.air-temp-tile[data-v-13] {\n  background-color: #509ebf;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -5702,7 +5702,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.wind-speed-table th[data-v-14],\n.wind-speed-table td[data-v-14] {\n  border-top: none;\n  padding: 0.3rem 0.6rem;\n  vertical-align: middle;\n}\n.wind-speed-table.table-sm th[data-v-14] {\n  font-weight: normal;\n}\n.wind-speed-tile[data-v-14] {\n  background-color: #9081bf;\n  color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n.wind-rose-tile[data-v-14] {\n  background-color: #9081bf;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -5716,7 +5716,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.air-temp-tile[data-v-2] {\n  background-color: #509ebf;\n  color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n.forcast-header-cell[data-v-2] {\n  background-color: #999;\n  color: #fff;\n}\n.forecast-table[data-v-2] {\n  font-size: 86%;\n}\n.forecast-table .wi[data-v-2] {\n  color: #999;\n  font-size: 200%;\n  font-weight: bold;\n}\n.forecast-table td[data-v-2] {\n  border-top: none;\n  border-right: 1px solid #e1e1e1;\n  vertical-align: middle;\n}\n.forecast-table.table-sm td[data-v-2] {\n  padding: 0.3rem 0.6rem;\n  text-align: center;\n}\n.forecast-tile[data-v-2] {\n  background-color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -5730,7 +5730,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.humidity-tile[data-v-3] {\n  background-color: #509ebf;\n  color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n.air-temp-tile[data-v-3] {\n  background-color: #509ebf;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -5744,7 +5744,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.events-table[data-v-4] {\n  font-size: 86%;\n}\n.events-table th[data-v-4],\n.events-table td[data-v-4] {\n  vertical-align: middle;\n}\n.events-table.table-sm th[data-v-4] {\n  padding: 0.3rem 0.6rem;\n  text-align: center;\n}\n.notification-tile[data-v-4] {\n  background-color: #fff;\n}\n.status-cell[data-v-4] {\n  color: #fff;\n}\n.status-cell-offline[data-v-4] {\n  background-color: #bf5750;\n}\n.status-cell-online[data-v-4] {\n  background-color: #97bf50;\n}\n", ""]);
+	exports.push([module.id, "\n.cumulative-rain-tile[data-v-4] {\n  background-color: #50bfa6;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -5772,7 +5772,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.cumulative-rain-tile[data-v-6] {\n  background-color: #50bfa6;\n  color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n.humidity-tile[data-v-6] {\n  background-color: #509ebf;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -5786,7 +5786,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.precip-tile[data-v-7] {\n  background-color: #50bfa6;\n  color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 	// exports
 
@@ -5800,7 +5800,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.pressure-tile[data-v-8] {\n  background-color: #509ebf;\n  color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n.events-table[data-v-8] {\n  font-size: 86%;\n}\n.events-table th[data-v-8],\n.events-table td[data-v-8] {\n  vertical-align: middle;\n}\n.events-table.table-sm th[data-v-8] {\n  padding: 0.3rem 0.6rem;\n  text-align: center;\n}\n.notification-tile[data-v-8] {\n  background-color: #fff;\n}\n.status-cell[data-v-8] {\n  color: #fff;\n}\n.status-cell-offline[data-v-8] {\n  background-color: #bf5750;\n}\n.status-cell-online[data-v-8] {\n  background-color: #97bf50;\n}\n", ""]);
 
 	// exports
 
@@ -5814,7 +5814,7 @@
 
 
 	// module
-	exports.push([module.id, "\n.forcast-header-cell[data-v-9] {\n  background-color: #999;\n  color: #fff;\n}\n.forecast-table[data-v-9] {\n  font-size: 86%;\n}\n.forecast-table .wi[data-v-9] {\n  color: #999;\n  font-size: 200%;\n  font-weight: bold;\n}\n.forecast-table td[data-v-9] {\n  border-top: none;\n  border-right: 1px solid #e1e1e1;\n  vertical-align: middle;\n}\n.forecast-table.table-sm td[data-v-9] {\n  padding: 0.3rem 0.6rem;\n  text-align: center;\n}\n.forecast-tile[data-v-9] {\n  background-color: #fff;\n}\n", ""]);
+	exports.push([module.id, "\n.solar-rad-tile[data-v-9] {\n  background-color: #bf9650;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -9285,24 +9285,22 @@
 
 	exports.default = {
 	  data: function data() {
+	    var categories = ['9/28', '9/29', '9/30', '10/1', '10/2', '10/3', '10/4', '10/5', '10/6', '10/7', '10/8', '10/9', '10/10', '10/11'];
+
 	    return {
 	      airTempOpts: {
 	        chart: {
-	          height: 300
+	          height: 350
 	        },
 
-	        colors: ['#509ebf'],
-
-	        legend: {
-	          enabled: false
-	        },
+	        colors: ['#999', '#5cb6dc', '#5cdcbf'],
 
 	        title: {
-	          text: 'Air Temperature'
+	          text: 'Air Temperature (°C)'
 	        },
 
 	        xAxis: {
-	          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+	          categories: categories
 	        },
 
 	        yAxis: {
@@ -9312,28 +9310,30 @@
 	        },
 
 	        series: [{
-	          name: 'Sample',
-	          data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+	          name: 'Avg',
+	          data: [22.0, 18.2, 12.2, 12.3, 10.5, 10.5, 11.4, 11.2, 14.2, 17.3, 19.9, 19.6, 15.9, 12.8]
+	        }, {
+	          name: '2 m',
+	          data: [21.6, 17.9, 12.0, 12.1, 10.3, 10.4, 11.2, 11.0, 13.9, 17.1, 19.6, 19.3, 15.6, 12.5]
+	        }, {
+	          name: '10 m',
+	          data: [21.9, 18.2, 11.9, 12.0, 10.3, 10.6, 11.2, 11.2, 14.4, 17.7, 20.2, 19.8, 15.9, 11.7]
 	        }]
 	      },
 
 	      soilTempOpts: {
 	        chart: {
-	          height: 300
+	          height: 350
 	        },
 
-	        colors: ['#50bfa6'],
-
-	        legend: {
-	          enabled: false
-	        },
+	        colors: ['#5cb6dc', '#5cdcbf', '#aedc5c', '#999'],
 
 	        title: {
-	          text: 'Soil Temperature'
+	          text: 'Soil Temperature (°C)'
 	        },
 
 	        xAxis: {
-	          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+	          categories: categories
 	        },
 
 	        yAxis: {
@@ -9343,28 +9343,33 @@
 	        },
 
 	        series: [{
-	          name: 'Sample',
-	          data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+	          name: '2 in',
+	          data: [25.3, 24.1, 22.1, 20.8, 19.0, 18.0, 18.5, 18.0, 18.3, 19.1, 20.0, 20.7, 20.7, 20.1]
+	        }, {
+	          name: '4 in',
+	          data: [24.8, 24.1, 22.5, 21.2, 19.7, 18.7, 18.8, 18.5, 18.6, 19.2, 19.9, 20.6, 20.7, 20.1]
+	        }, {
+	          name: '8 in',
+	          data: [24.1, 23.8, 22.7, 21.6, 20.5, 19.5, 19.2, 19.0, 18.9, 19.2, 19.8, 20.3, 20.5, 20.3]
+	        }, {
+	          name: '20 in',
+	          data: [22.9, 23.0, 22.9, 22.4, 21.9, 21.4, 20.8, 20.5, 20.3, 20.2, 20.2, 20.4, 20.6, 20.7]
 	        }]
 	      },
 
 	      windSpeedOpts: {
 	        chart: {
-	          height: 300
+	          height: 350
 	        },
 
-	        colors: ['#9081bf'],
-
-	        legend: {
-	          enabled: false
-	        },
+	        colors: ['#a695dc', '#dc635c'],
 
 	        title: {
-	          text: 'Wind Speed'
+	          text: 'Wind Speed (m/s)'
 	        },
 
 	        xAxis: {
-	          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+	          categories: categories
 	        },
 
 	        yAxis: {
@@ -9374,28 +9379,27 @@
 	        },
 
 	        series: [{
-	          name: 'Sample',
-	          data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+	          name: 'Avg',
+	          data: [1.0, 1.0, 1.8, 2.2, 2.2, 0.9, 1.7, 1.7, 1.3, 1.2, 0.9, 1.0, 1.0, 1.3]
+	        }, {
+	          name: 'Gust',
+	          data: [3.3, 3.3, 4.5, 4.6, 5.4, 2.8, 4.8, 4.9, 4.6, 3.1, 3.2, 3.5, 3.6, 3.0]
 	        }]
 	      },
 
 	      solarRadOpts: {
 	        chart: {
-	          height: 300
+	          height: 350
 	        },
 
-	        colors: ['#bf9650'],
-
-	        legend: {
-	          enabled: false
-	        },
+	        colors: ['#dcac5c', '#f3f767'],
 
 	        title: {
 	          text: 'Solar Radiation'
 	        },
 
 	        xAxis: {
-	          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+	          categories: categories
 	        },
 
 	        yAxis: {
@@ -9405,8 +9409,11 @@
 	        },
 
 	        series: [{
-	          name: 'Sample',
-	          data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+	          name: 'Total (W/m2)',
+	          data: [198.4, 197.5, 193.2, 200.4, 135.5, 75.1, 176.9, 205.1, 202.6, 185.0, 200.5, 197.3, 193.0, 233.4]
+	        }, {
+	          name: 'PAR (μmol/m2)',
+	          data: [224.3, 222.8, 221.8, 220.3, 137.6, 83.0, 187.1, 212.1, 211.8, 194.4, 207.4, 204.5, 200.1, 244.4]
 	        }]
 	      }
 	    };
@@ -9447,13 +9454,18 @@
 	      opts: {
 	        chart: {
 	          backgroundColor: '#50bfa6',
-	          height: 100
+	          height: 120
 	        },
 
-	        colors: ['#f3f767'],
+	        colors: ['#fff', '#f3f767'],
 
 	        legend: {
-	          enabled: false
+	          align: 'right',
+	          itemStyle: {
+	            color: '#fff'
+	          },
+	          layout: 'vertical',
+	          verticalAlign: 'middle'
 	        },
 
 	        title: {
@@ -9461,7 +9473,7 @@
 	        },
 
 	        xAxis: {
-	          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	          categories: ['Oct-14', 'Nov', 'Dec', 'Jan-15', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
 	          gridLineColor: 'rgba(255, 255, 255, 0.4)',
 	          labels: {
 	            style: {
@@ -9487,8 +9499,11 @@
 	        },
 
 	        series: [{
-	          name: 'Sample',
-	          data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+	          name: 'wy2015',
+	          data: [0, 10, 80, 360, 360, 430, 450, 460, 510, 512, 512, 514, 545]
+	        }, {
+	          name: 'wy2016',
+	          data: [0, 50, 100, 350, 480, 500, 550, 750, 810, 820, 822, 823, 824]
 	        }]
 	      }
 	    };
@@ -9604,7 +9619,7 @@
 	      opts: {
 	        chart: {
 	          backgroundColor: '#509ebf',
-	          height: 100
+	          height: 120
 	        },
 
 	        colors: ['#f3f767'],
@@ -9618,7 +9633,7 @@
 	        },
 
 	        xAxis: {
-	          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	          categories: ['9/28', '9/29', '9/30', '10/1', '10/2', '10/3', '10/4', '10/5', '10/6', '10/7', '10/8', '10/9', '10/10', '10/11'],
 	          gridLineColor: 'rgba(255, 255, 255, 0.4)',
 	          labels: {
 	            style: {
@@ -9645,7 +9660,7 @@
 
 	        series: [{
 	          name: 'Sample',
-	          data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+	          data: [946.1, 950.3, 951.6, 951.4, 950.0, 950.0, 948.4, 949.9, 949.8, 948.4, 946.9, 947.9, 947.7, 949.6]
 	        }]
 	      }
 	    };
@@ -28001,13 +28016,13 @@
 	var __vue_exports__, __vue_options__
 
 	/* styles */
-	__webpack_require__(254)
+	__webpack_require__(256)
 
 	/* script */
 	__vue_exports__ = __webpack_require__(122)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(240)
+	var __vue_template__ = __webpack_require__(242)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -28020,7 +28035,7 @@
 	}
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
-	__vue_options__._scopeId = "data-v-11"
+	__vue_options__._scopeId = "data-v-13"
 
 	module.exports = __vue_exports__
 
@@ -28032,13 +28047,13 @@
 	var __vue_exports__, __vue_options__
 
 	/* styles */
-	__webpack_require__(258)
+	__webpack_require__(259)
 
 	/* script */
 	__vue_exports__ = __webpack_require__(123)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(244)
+	var __vue_template__ = __webpack_require__(245)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -28051,7 +28066,7 @@
 	}
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
-	__vue_options__._scopeId = "data-v-2"
+	__vue_options__._scopeId = "data-v-3"
 
 	module.exports = __vue_exports__
 
@@ -28063,13 +28078,13 @@
 	var __vue_exports__, __vue_options__
 
 	/* styles */
-	__webpack_require__(262)
+	__webpack_require__(260)
 
 	/* script */
 	__vue_exports__ = __webpack_require__(124)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(248)
+	var __vue_template__ = __webpack_require__(246)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -28082,7 +28097,7 @@
 	}
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
-	__vue_options__._scopeId = "data-v-6"
+	__vue_options__._scopeId = "data-v-4"
 
 	module.exports = __vue_exports__
 
@@ -28125,13 +28140,13 @@
 	var __vue_exports__, __vue_options__
 
 	/* styles */
-	__webpack_require__(265)
+	__webpack_require__(258)
 
 	/* script */
 	__vue_exports__ = __webpack_require__(126)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(251)
+	var __vue_template__ = __webpack_require__(244)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -28144,7 +28159,7 @@
 	}
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
-	__vue_options__._scopeId = "data-v-9"
+	__vue_options__._scopeId = "data-v-2"
 
 	module.exports = __vue_exports__
 
@@ -28156,13 +28171,13 @@
 	var __vue_exports__, __vue_options__
 
 	/* styles */
-	__webpack_require__(259)
+	__webpack_require__(262)
 
 	/* script */
 	__vue_exports__ = __webpack_require__(127)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(245)
+	var __vue_template__ = __webpack_require__(248)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -28175,7 +28190,7 @@
 	}
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
-	__vue_options__._scopeId = "data-v-3"
+	__vue_options__._scopeId = "data-v-6"
 
 	module.exports = __vue_exports__
 
@@ -28187,72 +28202,10 @@
 	var __vue_exports__, __vue_options__
 
 	/* styles */
-	__webpack_require__(256)
-
-	/* script */
-	__vue_exports__ = __webpack_require__(128)
-
-	/* template */
-	var __vue_template__ = __webpack_require__(242)
-	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
-	if (
-	  typeof __vue_exports__.default === "object" ||
-	  typeof __vue_exports__.default === "function"
-	) {
-	__vue_options__ = __vue_exports__ = __vue_exports__.default
-	}
-	if (typeof __vue_options__ === "function") {
-	  __vue_options__ = __vue_options__.options
-	}
-	__vue_options__.render = __vue_template__.render
-	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
-	__vue_options__._scopeId = "data-v-13"
-
-	module.exports = __vue_exports__
-
-
-/***/ },
-/* 232 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_exports__, __vue_options__
-
-	/* styles */
-	__webpack_require__(260)
-
-	/* script */
-	__vue_exports__ = __webpack_require__(129)
-
-	/* template */
-	var __vue_template__ = __webpack_require__(246)
-	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
-	if (
-	  typeof __vue_exports__.default === "object" ||
-	  typeof __vue_exports__.default === "function"
-	) {
-	__vue_options__ = __vue_exports__ = __vue_exports__.default
-	}
-	if (typeof __vue_options__ === "function") {
-	  __vue_options__ = __vue_options__.options
-	}
-	__vue_options__.render = __vue_template__.render
-	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
-	__vue_options__._scopeId = "data-v-4"
-
-	module.exports = __vue_exports__
-
-
-/***/ },
-/* 233 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_exports__, __vue_options__
-
-	/* styles */
 	__webpack_require__(263)
 
 	/* script */
-	__vue_exports__ = __webpack_require__(130)
+	__vue_exports__ = __webpack_require__(128)
 
 	/* template */
 	var __vue_template__ = __webpack_require__(249)
@@ -28274,7 +28227,7 @@
 
 
 /***/ },
-/* 234 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
@@ -28283,7 +28236,7 @@
 	__webpack_require__(264)
 
 	/* script */
-	__vue_exports__ = __webpack_require__(131)
+	__vue_exports__ = __webpack_require__(129)
 
 	/* template */
 	var __vue_template__ = __webpack_require__(250)
@@ -28305,7 +28258,7 @@
 
 
 /***/ },
-/* 235 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
@@ -28314,7 +28267,7 @@
 	__webpack_require__(253)
 
 	/* script */
-	__vue_exports__ = __webpack_require__(132)
+	__vue_exports__ = __webpack_require__(130)
 
 	/* template */
 	var __vue_template__ = __webpack_require__(239)
@@ -28336,7 +28289,7 @@
 
 
 /***/ },
-/* 236 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
@@ -28345,7 +28298,7 @@
 	__webpack_require__(255)
 
 	/* script */
-	__vue_exports__ = __webpack_require__(133)
+	__vue_exports__ = __webpack_require__(131)
 
 	/* template */
 	var __vue_template__ = __webpack_require__(241)
@@ -28367,7 +28320,38 @@
 
 
 /***/ },
-/* 237 */
+/* 235 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+
+	/* styles */
+	__webpack_require__(265)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(132)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(251)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-9"
+
+	module.exports = __vue_exports__
+
+
+/***/ },
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
@@ -28376,7 +28360,7 @@
 	__webpack_require__(257)
 
 	/* script */
-	__vue_exports__ = __webpack_require__(134)
+	__vue_exports__ = __webpack_require__(133)
 
 	/* template */
 	var __vue_template__ = __webpack_require__(243)
@@ -28393,6 +28377,37 @@
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
 	__vue_options__._scopeId = "data-v-14"
+
+	module.exports = __vue_exports__
+
+
+/***/ },
+/* 237 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+
+	/* styles */
+	__webpack_require__(254)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(134)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(240)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-11"
 
 	module.exports = __vue_exports__
 
@@ -28416,8 +28431,8 @@
 	    staticClass: "row row-md"
 	  }, [_h('map-tile', {
 	    attrs: {
-	      "lat": 39.718,
-	      "lng": -123.652,
+	      "lat": 37.381666,
+	      "lng": -121.73638,
 	      "title": "Blue Oak Ranch Weather Station"
 	    }
 	  }), " ", _h('air-temp-tile'), " ", _h('notification-tile')]), " ", _h('div', {
@@ -28443,7 +28458,8 @@
 	  }, [_h('a', {
 	    staticClass: "navbar-brand",
 	    attrs: {
-	      "href": "#"
+	      "href": "http://www.blueoakranchreserve.org/",
+	      "target": "_blank"
 	    }
 	  }, [_h('span', {
 	    staticClass: "hidden-sm-down"
@@ -28536,9 +28552,9 @@
 	    attrs: {
 	      "style": "border-left: 1px solid #e1e1e1; padding-left: 1rem;"
 	    }
-	  }, [_h('p', ["5:45 PM PST UTC -8 hours"]), " ", _h('h1', ["Blue Oak Ranch ", _h('small', {
+	  }, [_h('p', ["5:45 PM PST ", _h('em', ["(UTC -8 hours)"])]), " ", _h('h1', ["Blue Oak Ranch ", _h('small', {
 	    staticClass: "text-muted"
-	  }, ["Weather Station"])]), " ", _h('p', ["Coordinates: 39.718390°, -123.652883° ", _h('i', {
+	  }, ["Weather Station"])]), " ", " ", _h('p', ["Coordinates: 37.381666°, -121.73638° ", _h('i', {
 	    staticClass: "fa fa-map-marker",
 	    attrs: {
 	      "aria-hidden": "true"
@@ -28550,7 +28566,8 @@
 	  }, [_h('a', {
 	    staticClass: "nav-link",
 	    attrs: {
-	      "href": "#"
+	      "href": "http://www.wrcc.dri.edu/cgi-bin/rawMAIN.pl?caucbo",
+	      "target": "_blank"
 	    }
 	  }, [_h('i', {
 	    staticClass: "fa fa-photo",
@@ -28562,26 +28579,27 @@
 	  }, [_h('a', {
 	    staticClass: "nav-link",
 	    attrs: {
-	      "href": "#"
+	      "href": "http://sensor.berkeley.edu/index_BORR.html",
+	      "target": "_blank"
 	    }
 	  }, [_h('i', {
 	    staticClass: "fa fa-external-link",
 	    attrs: {
 	      "aria-hidden": "true"
 	    }
-	  }), " Website"])]), " ", _h('li', {
+	  }), " Sensor database"])]), " ", _h('li', {
 	    staticClass: "nav-item"
 	  }, [_h('a', {
 	    staticClass: "nav-link",
 	    attrs: {
-	      "href": "#"
+	      "href": "mailto:collin@berkeley.edu"
 	    }
 	  }, [_h('i', {
 	    staticClass: "fa fa-envelope-o",
 	    attrs: {
 	      "aria-hidden": "true"
 	    }
-	  }), " Contact"])])])])])])])])])
+	  }), " Contact weather station team"])])])])])])])])])
 	}},function (){with(this) {
 	  return _h('footer', [_h('div', {
 	    staticClass: "container-fluid"
@@ -28593,9 +28611,9 @@
 	    staticClass: "text-xs-center"
 	  }, [_h('small', ["Problems viewing this page? Email ", _h('a', {
 	    attrs: {
-	      "href": "mailto:support@helpme.com"
+	      "href": "mailto:collin@berkeley.edu"
 	    }
-	  }, ["support@helpme.com"])])])])])])])
+	  }, ["collin@berkeley.edu"])])])])])])])
 	}}]}
 
 /***/ },
@@ -28608,30 +28626,109 @@
 	  return _h('div', {
 	    staticClass: "col col-sm-12 col-lg-6 flex-col"
 	  }, [_h('div', {
-	    staticClass: "flex-1 flex-col tile solar-rad-tile"
+	    staticClass: "flex-1 flex-col tile precip-tile"
+	  }, [_h('div', {
+	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center"
+	  }, [_h('h1', {
+	    staticClass: "display-3"
+	  }, ["0 ", _h('i', {
+	    staticClass: "wi wi-raindrops"
+	  })]), " ", _h('span', {
+	    staticClass: "text-muted"
+	  }, ["Current Precipitation (mm/hr)"])]), " ", _h('div', {
+	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center bg-darken"
+	  }, [_h('h1', {
+	    staticClass: "display-4"
+	  }, ["0"]), " ", _h('span', {
+	    staticClass: "text-muted"
+	  }, ["Yesterday’s (mm/24hr)"])])])])
+	}}]}
+
+/***/ },
+/* 240 */
+/***/ function(module, exports) {
+
+	module.exports={render:function (){with(this) {
+	  return _m(0)
+	}},staticRenderFns: [function (){with(this) {
+	  return _h('div', {
+	    staticClass: "col col-sm-12 col-lg-4 flex-col"
+	  }, [_h('div', {
+	    staticClass: "flex-1 flex-col tile wind-speed-tile"
+	  }, [_h('div', {
+	    staticClass: "flex-1-cell flex-col cell-border-bottom cell-align-middle text-xs-center"
+	  }, [_h('h1', {
+	    staticClass: "display-4"
+	  }, ["1.2 ", _h('i', {
+	    staticClass: "wi wi-wind from-293-deg"
+	  }), " ", _h('small', ["WNW"])]), " ", _h('span', {
+	    staticClass: "text-muted"
+	  }, ["Wind Speed (m/s)"])]), " ", _h('div', {
+	    staticClass: "flex-1-cell"
+	  }, [_h('table', {
+	    staticClass: "table table-sm wind-speed-table"
+	  }, [_h('tbody', [_h('tr', {
+	    staticClass: "bg-lighten"
+	  }, [_h('th', {
+	    staticClass: "text-muted",
+	    attrs: {
+	      "scope": "row"
+	    }
+	  }, ["Daytime Average"]), " ", _h('td', {
+	    staticClass: "h2 text-xs-right"
+	  }, ["1.3"])]), " ", " ", _h('tr', [_h('th', {
+	    staticClass: "text-muted",
+	    attrs: {
+	      "scope": "row"
+	    }
+	  }, ["Seasonal Gusts"]), " ", _h('td', {
+	    staticClass: "h2 text-xs-right"
+	  }, ["6.9"])])])])]), " ", _h('div', {
+	    staticClass: "flex-1-cell flex-col cell-align-middle text-muted text-xs-center"
+	  }, ["\n        October\n      "])])])
+	}}]}
+
+/***/ },
+/* 241 */
+/***/ function(module, exports) {
+
+	module.exports={render:function (){with(this) {
+	  return _m(0)
+	}},staticRenderFns: [function (){with(this) {
+	  return _h('div', {
+	    staticClass: "col col-sm-12 col-lg-6 flex-col"
+	  }, [_h('div', {
+	    staticClass: "flex-1 flex-col tile pressure-tile"
 	  }, [_h('div', {
 	    staticClass: "flex-1-cell flex-row cell-border-bottom"
 	  }, [_h('div', {
 	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center"
 	  }, [_h('h1', {
-	    staticClass: "display-3"
-	  }, ["926"]), " ", _h('span', {
+	    staticClass: "display-4"
+	  }, ["949 ", _h('span', {
+	    staticClass: "hidden-xs-down"
+	  }, [_h('i', {
+	    staticClass: "wi wi-barometer"
+	  })])]), " ", _h('span', {
 	    staticClass: "text-muted"
-	  }, ["PAR (μmol/m", _h('sup', ["2"]), ")"])]), " ", _h('div', {
-	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten"
-	  }, [_h('h1', {
-	    staticClass: "display-3"
-	  }, ["798"]), " ", _h('span', {
+	  }, [_h('span', {
+	    staticClass: "hidden-xs-down"
+	  }, ["Barometric"]), " Pressure (mbar)"])]), " ", _h('div', {
+	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten",
+	    attrs: {
+	      "style": "overflow: hidden;"
+	    }
+	  }, [_h('h2', ["-67"]), " ", _h('span', {
 	    staticClass: "text-muted"
-	  }, ["Total Solar (W/m", _h('sup', ["2"]), ")"])])]), " ", _h('div', {
-	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center"
-	  }, [_h('h2', [_h('i', {
-	    staticClass: "wi wi-day-cloudy"
-	  }), " Partially Cloudy"])])])])
+	  }, ["Elevation offset", _h('br'), _h('span', {
+	    staticClass: "hidden-xs-down"
+	  }, ["from sea level "]), "(mbar)"])])]), " ", _h('div', {
+	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center chart"
+	  })])])
 	}}]}
 
 /***/ },
-/* 240 */
+/* 242 */
 /***/ function(module, exports) {
 
 	module.exports={render:function (){with(this) {
@@ -28659,7 +28756,7 @@
 	}}]}
 
 /***/ },
-/* 241 */
+/* 243 */
 /***/ function(module, exports) {
 
 	module.exports={render:function (){with(this) {
@@ -28675,74 +28772,52 @@
 	}}]}
 
 /***/ },
-/* 242 */
-/***/ function(module, exports) {
-
-	module.exports={render:function (){with(this) {
-	  return _m(0)
-	}},staticRenderFns: [function (){with(this) {
-	  return _h('div', {
-	    staticClass: "col col-sm-12 col-lg-4 flex-col"
-	  }, [_h('div', {
-	    staticClass: "flex-1 tile map-tile"
-	  })])
-	}}]}
-
-/***/ },
-/* 243 */
-/***/ function(module, exports) {
-
-	module.exports={render:function (){with(this) {
-	  return _m(0)
-	}},staticRenderFns: [function (){with(this) {
-	  return _h('div', {
-	    staticClass: "col col-sm-12 col-lg-4 flex-col"
-	  }, [_h('div', {
-	    staticClass: "flex-1 flex-col tile wind-speed-tile"
-	  }, [_h('div', {
-	    staticClass: "flex-1-cell flex-col cell-border-bottom cell-align-middle text-xs-center"
-	  }, [_h('h1', {
-	    staticClass: "display-4"
-	  }, ["9.2 ", _h('i', {
-	    staticClass: "wi wi-wind from-45-deg"
-	  }), " ", _h('small', ["NE"])]), " ", _h('span', {
-	    staticClass: "text-muted"
-	  }, ["Wind Speed (m/s)"])]), " ", _h('div', {
-	    staticClass: "flex-1-cell"
-	  }, [_h('table', {
-	    staticClass: "table table-sm wind-speed-table"
-	  }, [_h('tbody', [_h('tr', {
-	    staticClass: "bg-lighten"
-	  }, [_h('th', {
-	    staticClass: "text-muted",
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, ["Daytime Average"]), " ", _h('td', {
-	    staticClass: "h2 text-xs-right"
-	  }, ["3.6"])]), " ", _h('tr', {
-	    staticClass: "bg-darken"
-	  }, [_h('th', {
-	    staticClass: "text-muted",
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, ["Nighttime Average"]), " ", _h('td', {
-	    staticClass: "h2 text-xs-right"
-	  }, ["0.3"])]), " ", _h('tr', [_h('th', {
-	    staticClass: "text-muted",
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, ["Seasonal Gusts"]), " ", _h('td', {
-	    staticClass: "h2 text-xs-right"
-	  }, ["15.2"])])])])]), " ", _h('div', {
-	    staticClass: "flex-1-cell flex-col cell-align-middle text-muted text-xs-center"
-	  }, ["\n      October\n    "])])])
-	}}]}
-
-/***/ },
 /* 244 */
+/***/ function(module, exports) {
+
+	module.exports={render:function (){with(this) {
+	  return _m(0)
+	}},staticRenderFns: [function (){with(this) {
+	  return _h('div', {
+	    staticClass: "col col-sm-12 flex-col"
+	  }, [_h('div', {
+	    staticClass: "flex-1 flex-col tile forecast-tile"
+	  }, [_h('div', {
+	    staticClass: "flex-1-cell flex-col cell-border-bottom cell-align-middle forcast-header-cell text-xs-center"
+	  }, [_h('h3', ["NOAA Forecast"])]), " ", _h('div', {
+	    staticClass: "flex-4-cell flex-col cell-align-middle",
+	    attrs: {
+	      "style": "overflow-x: scroll; height: 0;"
+	    }
+	  }, [_h('table', {
+	    staticClass: "table table-sm forecast-table"
+	  }, [_h('tbody', [_h('tr', [_h('td', [_h('i', {
+	    staticClass: "wi wi-day-cloudy"
+	  })]), " ", _h('td', [_h('i', {
+	    staticClass: "wi wi-day-cloudy"
+	  })]), " ", _h('td', [_h('i', {
+	    staticClass: "wi wi-day-cloudy"
+	  })]), " ", _h('td', [_h('i', {
+	    staticClass: "wi wi-day-cloudy"
+	  })]), " ", _h('td', [_h('i', {
+	    staticClass: "wi wi-day-cloudy"
+	  })]), " ", _h('td', [_h('i', {
+	    staticClass: "wi wi-day-sunny"
+	  })]), " ", _h('td', {
+	    attrs: {
+	      "style": "border-right: none"
+	    }
+	  }, [_h('i', {
+	    staticClass: "wi wi-day-cloudy"
+	  })])]), " ", _h('tr', [_h('td', ["19°C", _h('br'), "Today"]), " ", _h('td', ["16°C", _h('br'), "Tue"]), " ", _h('td', ["18°C", _h('br'), "Wed"]), " ", _h('td', ["21°C", _h('br'), "Thu"]), " ", _h('td', ["24°C", _h('br'), "Fri"]), " ", _h('td', ["22°C", _h('br'), "Sat"]), " ", _h('td', {
+	    attrs: {
+	      "style": "border-right: none"
+	    }
+	  }, ["22°C", _h('br'), "Sun"])])])])])])])
+	}}]}
+
+/***/ },
+/* 245 */
 /***/ function(module, exports) {
 
 	module.exports={render:function (){with(this) {
@@ -28756,7 +28831,7 @@
 	    staticClass: "flex-2-cell flex-col cell-border-bottom cell-align-middle text-xs-center"
 	  }, [_h('h1', {
 	    staticClass: "display-3"
-	  }, ["17 ", _h('i', {
+	  }, ["14 ", _h('i', {
 	    staticClass: "wi wi-celsius"
 	  })]), " ", _h('span', {
 	    staticClass: "text-muted"
@@ -28764,45 +28839,11 @@
 	    staticClass: "flex-2-cell flex-row"
 	  }, [_h('div', {
 	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-darken"
-	  }, [_h('h2', ["-5°"]), " ", _h('span', {
+	  }, [_h('h2', ["3.5°"]), " ", _h('span', {
 	    staticClass: "text-muted"
 	  }, ["Seasonal Low"])]), " ", _h('div', {
 	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten"
-	  }, [_h('h2', ["28°"]), " ", _h('span', {
-	    staticClass: "text-muted"
-	  }, ["Seasonal High"])])]), " ", _h('div', {
-	    staticClass: "flex-1-cell flex-col cell-align-middle text-muted text-xs-center"
-	  }, ["\n      October\n    "])])])
-	}}]}
-
-/***/ },
-/* 245 */
-/***/ function(module, exports) {
-
-	module.exports={render:function (){with(this) {
-	  return _m(0)
-	}},staticRenderFns: [function (){with(this) {
-	  return _h('div', {
-	    staticClass: "col col-sm-12 col-lg-4 flex-col"
-	  }, [_h('div', {
-	    staticClass: "flex-1 flex-col tile humidity-tile"
-	  }, [_h('div', {
-	    staticClass: "flex-2-cell flex-col cell-border-bottom cell-align-middle text-xs-center"
-	  }, [_h('h1', {
-	    staticClass: "display-3"
-	  }, ["56 ", _h('i', {
-	    staticClass: "wi wi-humidity"
-	  })]), " ", _h('span', {
-	    staticClass: "text-muted"
-	  }, ["Humidity"])]), " ", _h('div', {
-	    staticClass: "flex-2-cell flex-row"
-	  }, [_h('div', {
-	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-darken"
-	  }, [_h('h2', ["11%"]), " ", _h('span', {
-	    staticClass: "text-muted"
-	  }, ["Seasonal Low"])]), " ", _h('div', {
-	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten"
-	  }, [_h('h2', ["100%"]), " ", _h('span', {
+	  }, [_h('h2', ["36.6°"]), " ", _h('span', {
 	    staticClass: "text-muted"
 	  }, ["Seasonal High"])])]), " ", _h('div', {
 	    staticClass: "flex-1-cell flex-col cell-align-middle text-muted text-xs-center"
@@ -28817,71 +28858,33 @@
 	  return _m(0)
 	}},staticRenderFns: [function (){with(this) {
 	  return _h('div', {
-	    staticClass: "col col-sm-12 col-lg-4 flex-col"
+	    staticClass: "col col-sm-12 col-lg-6 flex-col"
 	  }, [_h('div', {
-	    staticClass: "flex-1 flex-col tile notification-tile"
+	    staticClass: "flex-1 flex-col tile cumulative-rain-tile"
 	  }, [_h('div', {
-	    staticClass: "flex-1-cell flex-col cell-border-bottom cell-align-middle status-cell status-cell-offline text-xs-center"
-	  }, [_h('h3', [_h('i', {
-	    staticClass: "fa fa-exclamation-triangle",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  }), " Offline"]), " ", _h('span', {
+	    staticClass: "flex-1-cell flex-row cell-border-bottom"
+	  }, [_h('div', {
+	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center"
+	  }, [_h('h1', {
+	    staticClass: "display-4"
+	  }, ["815.7 ", _h('span', {
+	    staticClass: "hidden-xs-down"
+	  }, [_h('i', {
+	    staticClass: "wi wi-umbrella"
+	  })])]), " ", _h('span', {
 	    staticClass: "text-muted"
-	  }, ["Last online: 11/11 11:22 AM"])]), " ", " ", _h('div', {
-	    staticClass: "flex-4-cell",
+	  }, ["Precip", _h('span', {
+	    staticClass: "hidden-xs-down"
+	  }, ["itation"]), " to Date (mm)"])]), " ", _h('div', {
+	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten",
 	    attrs: {
-	      "style": "overflow-y: scroll; height: 0;"
+	      "style": "overflow: hidden;"
 	    }
-	  }, [_h('table', {
-	    staticClass: "table table-sm table-hover events-table"
-	  }, [_h('tbody', [_h('tr', [_h('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_h('i', {
-	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  })]), " ", _h('td', ["5 min ago"]), " ", _h('td', ["This is a notification that something went horribly wrong"])]), " ", _h('tr', [_h('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_h('i', {
-	    staticClass: "fa fa-lg fa-check-circle-o text-success",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  })]), " ", _h('td', ["Today 9:00 AM"]), " ", _h('td', ["Things are cool again here!"])]), " ", _h('tr', [_h('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_h('i', {
-	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  })]), " ", _h('td', ["9/20 10:42 PM"]), " ", _h('td', ["This is another notification that something went horribly wrong, oh dear!"])]), " ", _h('tr', [_h('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_h('i', {
-	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  })]), " ", _h('td', ["9/20 10:42 PM"]), " ", _h('td', ["This is another notification that something went horribly wrong, oh dear!"])]), " ", _h('tr', [_h('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_h('i', {
-	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  })]), " ", _h('td', ["9/20 10:42 PM"]), " ", _h('td', ["This is another notification that something went horribly wrong, oh dear!"])])])])])])])
+	  }, [_h('h2', ["3.7"]), " ", _h('span', {
+	    staticClass: "text-muted"
+	  }, ["Last YTD", _h('br'), "Cumulative (mm)"])])]), " ", _h('div', {
+	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center chart"
+	  })])])
 	}}]}
 
 /***/ },
@@ -28988,33 +28991,30 @@
 	  return _m(0)
 	}},staticRenderFns: [function (){with(this) {
 	  return _h('div', {
-	    staticClass: "col col-sm-12 col-lg-6 flex-col"
+	    staticClass: "col col-sm-12 col-lg-4 flex-col"
 	  }, [_h('div', {
-	    staticClass: "flex-1 flex-col tile cumulative-rain-tile"
+	    staticClass: "flex-1 flex-col tile humidity-tile"
 	  }, [_h('div', {
-	    staticClass: "flex-1-cell flex-row cell-border-bottom"
-	  }, [_h('div', {
-	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center"
+	    staticClass: "flex-2-cell flex-col cell-border-bottom cell-align-middle text-xs-center"
 	  }, [_h('h1', {
-	    staticClass: "display-4"
-	  }, ["7.2 ", _h('span', {
-	    staticClass: "hidden-xs-down"
-	  }, [_h('i', {
-	    staticClass: "wi wi-umbrella"
-	  })])]), " ", _h('span', {
+	    staticClass: "display-3"
+	  }, ["67 ", _h('i', {
+	    staticClass: "wi wi-humidity"
+	  })]), " ", _h('span', {
 	    staticClass: "text-muted"
-	  }, ["Precip", _h('span', {
-	    staticClass: "hidden-xs-down"
-	  }, ["itation"]), " to Date (mm)"])]), " ", _h('div', {
-	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten",
-	    attrs: {
-	      "style": "overflow: hidden;"
-	    }
-	  }, [_h('h2', ["3.7"]), " ", _h('span', {
+	  }, ["Humidity"])]), " ", _h('div', {
+	    staticClass: "flex-2-cell flex-row"
+	  }, [_h('div', {
+	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-darken"
+	  }, [_h('h2', ["14.4%"]), " ", _h('span', {
 	    staticClass: "text-muted"
-	  }, ["Last YTD", _h('br'), "Cumulative (mm)"])])]), " ", _h('div', {
-	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center chart"
-	  })])])
+	  }, ["Seasonal Low"])]), " ", _h('div', {
+	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten"
+	  }, [_h('h2', ["99.6%"]), " ", _h('span', {
+	    staticClass: "text-muted"
+	  }, ["Seasonal High"])])]), " ", _h('div', {
+	    staticClass: "flex-1-cell flex-col cell-align-middle text-muted text-xs-center"
+	  }, ["\n      October\n    "])])])
 	}}]}
 
 /***/ },
@@ -29025,24 +29025,10 @@
 	  return _m(0)
 	}},staticRenderFns: [function (){with(this) {
 	  return _h('div', {
-	    staticClass: "col col-sm-12 col-lg-6 flex-col"
+	    staticClass: "col col-sm-12 col-lg-4 flex-col"
 	  }, [_h('div', {
-	    staticClass: "flex-1 flex-col tile precip-tile"
-	  }, [_h('div', {
-	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center"
-	  }, [_h('h1', {
-	    staticClass: "display-3"
-	  }, ["2.2 ", _h('i', {
-	    staticClass: "wi wi-raindrops"
-	  })]), " ", _h('span', {
-	    staticClass: "text-muted"
-	  }, ["Current Precipitation (mm/hr)"])]), " ", _h('div', {
-	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center bg-darken"
-	  }, [_h('h1', {
-	    staticClass: "display-4"
-	  }, ["2.2"]), " ", _h('span', {
-	    staticClass: "text-muted"
-	  }, ["Yesterday’s (mm/24hr)"])])])])
+	    staticClass: "flex-1 tile map-tile"
+	  })])
 	}}]}
 
 /***/ },
@@ -29053,35 +29039,62 @@
 	  return _m(0)
 	}},staticRenderFns: [function (){with(this) {
 	  return _h('div', {
-	    staticClass: "col col-sm-12 col-lg-6 flex-col"
+	    staticClass: "col col-sm-12 col-lg-4 flex-col"
 	  }, [_h('div', {
-	    staticClass: "flex-1 flex-col tile pressure-tile"
+	    staticClass: "flex-1 flex-col tile notification-tile"
 	  }, [_h('div', {
-	    staticClass: "flex-1-cell flex-row cell-border-bottom"
-	  }, [_h('div', {
-	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center"
-	  }, [_h('h1', {
-	    staticClass: "display-4"
-	  }, ["870 ", _h('span', {
-	    staticClass: "hidden-xs-down"
-	  }, [_h('i', {
-	    staticClass: "wi wi-barometer"
-	  })])]), " ", _h('span', {
-	    staticClass: "text-muted"
-	  }, [_h('span', {
-	    staticClass: "hidden-xs-down"
-	  }, ["Barometric"]), " Pressure (mbar)"])]), " ", _h('div', {
-	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten",
+	    staticClass: "flex-1-cell flex-col cell-border-bottom cell-align-middle status-cell status-cell-offline text-xs-center"
+	  }, [_h('h3', [_h('i', {
+	    staticClass: "fa fa-exclamation-triangle",
 	    attrs: {
-	      "style": "overflow: hidden;"
+	      "aria-hidden": "true"
 	    }
-	  }, [_h('h2', ["-67"]), " ", _h('span', {
+	  }), " Offline"]), " ", _h('span', {
 	    staticClass: "text-muted"
-	  }, ["Elevation offset", _h('br'), _h('span', {
-	    staticClass: "hidden-xs-down"
-	  }, ["from sea level "]), "(mbar)"])])]), " ", _h('div', {
-	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center chart"
-	  })])])
+	  }, ["Last online: 10/11 11:22 AM"])]), " ", " ", _h('div', {
+	    staticClass: "flex-4-cell",
+	    attrs: {
+	      "style": "overflow-y: scroll; height: 0;"
+	    }
+	  }, [_h('table', {
+	    staticClass: "table table-sm table-hover events-table"
+	  }, [_h('tbody', [_h('tr', [_h('th', {
+	    attrs: {
+	      "scope": "row"
+	    }
+	  }, [_h('i', {
+	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
+	    attrs: {
+	      "aria-hidden": "true"
+	    }
+	  })]), " ", _h('td', ["5 min ago"]), " ", _h('td', ["Deliberately offline for demo."])]), " ", _h('tr', [_h('th', {
+	    attrs: {
+	      "scope": "row"
+	    }
+	  }, [_h('i', {
+	    staticClass: "fa fa-lg fa-check-circle-o text-success",
+	    attrs: {
+	      "aria-hidden": "true"
+	    }
+	  })]), " ", _h('td', ["Today 9:00 AM"]), " ", _h('td', ["NL115 ethernet module replaced. System back online."])]), " ", _h('tr', [_h('th', {
+	    attrs: {
+	      "scope": "row"
+	    }
+	  }, [_h('i', {
+	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
+	    attrs: {
+	      "aria-hidden": "true"
+	    }
+	  })]), " ", _h('td', ["9/20 10:42 PM"]), " ", _h('td', ["Network disconnect. No data lost."])]), " ", _h('tr', [_h('th', {
+	    attrs: {
+	      "scope": "row"
+	    }
+	  }, [_h('i', {
+	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
+	    attrs: {
+	      "aria-hidden": "true"
+	    }
+	  })]), " ", _h('td', ["9/10 8:50 AM"]), " ", _h('td', ["Annual calibration. System down for 2 hours."])])])])])])])
 	}}]}
 
 /***/ },
@@ -29092,41 +29105,28 @@
 	  return _m(0)
 	}},staticRenderFns: [function (){with(this) {
 	  return _h('div', {
-	    staticClass: "col col-sm-12 flex-col"
+	    staticClass: "col col-sm-12 col-lg-6 flex-col"
 	  }, [_h('div', {
-	    staticClass: "flex-1 flex-col tile forecast-tile"
+	    staticClass: "flex-1 flex-col tile solar-rad-tile"
 	  }, [_h('div', {
-	    staticClass: "flex-1-cell flex-col cell-border-bottom cell-align-middle forcast-header-cell text-xs-center"
-	  }, [_h('h3', ["NOAA Forecast"])]), " ", _h('div', {
-	    staticClass: "flex-4-cell flex-col cell-align-middle",
-	    attrs: {
-	      "style": "overflow-x: scroll; height: 0;"
-	    }
-	  }, [_h('table', {
-	    staticClass: "table table-sm forecast-table"
-	  }, [_h('tbody', [_h('tr', [_h('td', [_h('i', {
+	    staticClass: "flex-1-cell flex-row cell-border-bottom"
+	  }, [_h('div', {
+	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center"
+	  }, [_h('h1', {
+	    staticClass: "display-3"
+	  }, ["756"]), " ", _h('span', {
+	    staticClass: "text-muted"
+	  }, ["PAR (μmol/m", _h('sup', ["2"]), ")"])]), " ", _h('div', {
+	    staticClass: "flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten"
+	  }, [_h('h1', {
+	    staticClass: "display-3"
+	  }, ["695"]), " ", _h('span', {
+	    staticClass: "text-muted"
+	  }, ["Total Solar (W/m", _h('sup', ["2"]), ")"])])]), " ", _h('div', {
+	    staticClass: "flex-1-cell flex-col cell-align-middle text-xs-center"
+	  }, [_h('h2', [_h('i', {
 	    staticClass: "wi wi-day-cloudy"
-	  })]), " ", _h('td', [_h('i', {
-	    staticClass: "wi wi-day-cloudy"
-	  })]), " ", _h('td', [_h('i', {
-	    staticClass: "wi wi-day-cloudy"
-	  })]), " ", _h('td', [_h('i', {
-	    staticClass: "wi wi-day-cloudy"
-	  })]), " ", _h('td', [_h('i', {
-	    staticClass: "wi wi-day-cloudy"
-	  })]), " ", _h('td', [_h('i', {
-	    staticClass: "wi wi-day-sunny"
-	  })]), " ", _h('td', {
-	    attrs: {
-	      "style": "border-right: none"
-	    }
-	  }, [_h('i', {
-	    staticClass: "wi wi-day-cloudy"
-	  })])]), " ", _h('tr', [_h('td', ["19°C", _h('br'), "Today"]), " ", _h('td', ["16°C", _h('br'), "Tue"]), " ", _h('td', ["18°C", _h('br'), "Wed"]), " ", _h('td', ["21°C", _h('br'), "Thu"]), " ", _h('td', ["24°C", _h('br'), "Fri"]), " ", _h('td', ["22°C", _h('br'), "Sat"]), " ", _h('td', {
-	    attrs: {
-	      "style": "border-right: none"
-	    }
-	  }, ["22°C", _h('br'), "Sun"])])])])])])])
+	  }), " Partially Cloudy"])])])])
 	}}]}
 
 /***/ },

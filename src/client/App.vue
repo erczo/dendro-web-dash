@@ -5,7 +5,7 @@
         <div class="container">
 
           <!-- Reserve Name -->
-          <a class="navbar-brand" href="#"><span class="hidden-sm-down">Blue Oak Ranch Reserve </span><i class="fa fa-external-link" aria-hidden="true"></i></a>
+          <a class="navbar-brand" href="http://www.blueoakranchreserve.org/" target="_blank"><span class="hidden-sm-down">Blue Oak Ranch Reserve </span><i class="fa fa-external-link" aria-hidden="true"></i></a>
 
           <!-- Nav Toolbar -->
           <div class="btn-toolbar pull-right" role="toolbar" aria-label="Navigation toolbar">
@@ -44,26 +44,29 @@
               <img class="img-rounded img-profile pull-lg-right" src="./assets/images/blue-oak-ws.jpg">
             </div>
           </div>
-
+          
           <!-- Profile Info -->
           <div class="col-sm-12 col-lg-8 flex-col">
             <div class="flex-1 flex-col">
               <div class="flex-1-cell flex-col cell-align-bottom" style="border-left: 1px solid #e1e1e1; padding-left: 1rem;">
-                <p>5:45 PM PST UTC -8 hours</p>
+                <p>5:45 PM PST <em>(UTC -8 hours)</em></p>
                 <h1>Blue Oak Ranch <small class="text-muted">Weather Station</small></h1>
-                <p>Coordinates: 39.718390°, -123.652883° <i class="fa fa-map-marker" aria-hidden="true"></i><br />
+                <!-- TODO: Fix coordinates and map -->
+                <p>Coordinates: 37.381666°, -121.73638° <i class="fa fa-map-marker" aria-hidden="true"></i><br />
                 Elevation: 575 m</p>
 
                 <!-- Links -->
                 <ul class="nav nav-inline">
                   <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fa fa-photo" aria-hidden="true"></i> Photos</a>
+                    <a class="nav-link" href="http://www.wrcc.dri.edu/cgi-bin/rawMAIN.pl?caucbo" target="_blank"><i class="fa fa-photo" aria-hidden="true"></i> Photos</a>
                   </li>
+
                   <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fa fa-external-link" aria-hidden="true"></i> Website</a>
+                    <a class="nav-link" href="http://sensor.berkeley.edu/index_BORR.html" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i> Sensor database</a>
                   </li>
+
                   <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fa fa-envelope-o" aria-hidden="true"></i> Contact</a>
+                    <a class="nav-link" href="mailto:collin@berkeley.edu"><i class="fa fa-envelope-o" aria-hidden="true"></i> Contact weather station team</a>
                   </li>
                 </ul>
               </div>
@@ -78,7 +81,7 @@
       <div class="container">
 
         <div class="row row-md">
-          <map-tile :lat="39.718" :lng="-123.652" title="Blue Oak Ranch Weather Station"></map-tile>
+          <map-tile :lat="37.381666" :lng="-121.73638" title="Blue Oak Ranch Weather Station"></map-tile>
           <air-temp-tile></air-temp-tile>
           <notification-tile></notification-tile>
         </div>
@@ -120,7 +123,7 @@
 
           <div class="col-xs-12">
             <div class="text-xs-center">
-              <small>Problems viewing this page? Email&nbsp;<a href="mailto:support@helpme.com">support@helpme.com</a></small>
+              <small>Problems viewing this page? Email&nbsp;<a href="mailto:collin@berkeley.edu">collin@berkeley.edu</a></small>
             </div>
           </div>
 
@@ -239,6 +242,15 @@ body {
 }
 .tile table {
   margin-bottom: 0;
+}
+.tile h1,
+.tile h2,
+.tile h3,
+.tile .h1,
+.tile .h2,
+.tile .h3 {
+  /* OPTIONAL */
+  /*text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);*/
 }
 .tile .text-muted {
   color: rgba(255, 255, 255, 0.8) !important;

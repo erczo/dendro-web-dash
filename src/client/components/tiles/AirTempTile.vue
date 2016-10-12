@@ -3,17 +3,17 @@
     <div class="flex-1 flex-col tile air-temp-tile">
 
       <div class="flex-2-cell flex-col cell-border-bottom cell-align-middle text-xs-center">
-        <h1 class="display-3">17 <i class="wi wi-celsius"></i></h1>
+        <h1 class="display-3">14 <i class="wi wi-celsius"></i></h1>
         <span class="text-muted">Air Temperature</span>
       </div>
 
       <div class="flex-2-cell flex-row">
         <div class="flex-2-cell flex-col cell-align-middle text-xs-center bg-darken">
-          <h2>-5°</h2>
+          <h2>3.5°</h2>
           <span class="text-muted">Seasonal Low</span>
         </div>
         <div class="flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten">
-          <h2>28°</h2>
+          <h2>36.6°</h2>
           <span class="text-muted">Seasonal High</span>
         </div>
       </div>

@@ -4,7 +4,7 @@
 
       <div class="flex-1-cell flex-row cell-border-bottom">
         <div class="flex-2-cell flex-col cell-align-middle text-xs-center">
-          <h1 class="display-4">870 <span class="hidden-xs-down"><i class="wi wi-barometer"></i></span></h1>
+          <h1 class="display-4">949 <span class="hidden-xs-down"><i class="wi wi-barometer"></i></span></h1>
           <span class="text-muted"><span class="hidden-xs-down">Barometric</span> Pressure (mbar)</span>
         </div>
         <div class="flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten" style="overflow: hidden;">
@@ -31,7 +31,7 @@ export default {
       opts: {
         chart: {
           backgroundColor: '#509ebf',
-          height: 100
+          height: 120
         },
 
         colors: ['#f3f767'],
@@ -45,7 +45,10 @@ export default {
         },
 
         xAxis: {
-          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          categories: [
+            '9/28', '9/29', '9/30', '10/1', '10/2', '10/3', '10/4',
+            '10/5', '10/6', '10/7', '10/8', '10/9', '10/10', '10/11'
+          ],
           gridLineColor: 'rgba(255, 255, 255, 0.4)',
           labels: {
             style: {
@@ -72,7 +75,10 @@ export default {
 
         series: [{
           name: 'Sample',
-          data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+          data: [
+            946.1, 950.3, 951.6, 951.4, 950.0, 950.0, 948.4,
+            949.9, 949.8, 948.4, 946.9, 947.9, 947.7, 949.6
+          ]
         }]
       }
     }

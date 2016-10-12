@@ -9,7 +9,7 @@
         <span class="text-muted">Last offline: 11/11 11:22</span>
 -->
         <h3><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Offline</h3>
-        <span class="text-muted">Last online: 11/11 11:22 AM</span>
+        <span class="text-muted">Last online: 10/11 11:22 AM</span>
       </div>
 
       <!-- Events -->
@@ -19,27 +19,22 @@
             <tr>
               <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
               <td>5 min ago</td>
-              <td>This is a notification that something went horribly wrong</td>
+              <td>Deliberately offline for demo.</td>
             </tr>
             <tr>
               <th scope="row"><i class="fa fa-lg fa-check-circle-o text-success" aria-hidden="true"></i></th>
               <td>Today 9:00 AM</td>
-              <td>Things are cool again here!</td>
+              <td>NL115 ethernet module replaced. System back online.</td>
             </tr>
             <tr>
               <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
               <td>9/20 10:42 PM</td>
-              <td>This is another notification that something went horribly wrong, oh dear!</td>
+              <td>Network disconnect. No data lost.</td>
             </tr>
             <tr>
               <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
-              <td>9/20 10:42 PM</td>
-              <td>This is another notification that something went horribly wrong, oh dear!</td>
-            </tr>
-            <tr>
-              <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
-              <td>9/20 10:42 PM</td>
-              <td>This is another notification that something went horribly wrong, oh dear!</td>
+              <td>9/10 8:50 AM</td>
+              <td>Annual calibration. System down for 2 hours.</td>
             </tr>
           </tbody>
         </table>
