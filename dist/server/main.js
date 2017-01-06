@@ -17,7 +17,7 @@ const app = express();
 const log = console;
 
 // Configure
-const config = require('../../config')(app);
+const config = require('config');
 
 // Express basics
 app.set('views', path.resolve(__dirname, 'views'));
@@ -50,11 +50,13 @@ if (config.webpack) {
 }
 
 // Route requests
-app.get('/', (req, res) => res.render('index'));
+app.get('/', (req, res) => res.render('index', {
+  config: JSON.stringify(config.client)
+}));
 
-const server = app.listen(config.port, () => {
-  let host = server.address().address;
-  let port = server.address().port;
+const server = app.listen(config.port, config.host, () => {
+  const host = server.address().address;
+  const port = server.address().port;
 
   log.info('Express server listening at http://%s:%s', host, port);
 });

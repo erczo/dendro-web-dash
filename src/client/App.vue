@@ -154,6 +154,17 @@ import TimeMachine from './components/TimeMachine'
 import WindRoseTile from './components/tiles/WindRoseTile'
 import WindSpeedTile from './components/tiles/WindSpeedTile'
 
+import feathers from 'feathers/client'
+import socketio from 'feathers-socketio/client'
+import hooks from 'feathers-hooks'
+import io from 'socket.io-client'
+
+const config = window.CLIENT_CONFIG
+const socket = io(config.io.uri, config.io.options)
+const app = feathers()
+  .configure(hooks())
+  .configure(socketio(socket))
+
 export default {
   components: {
     AirTempTile,
@@ -169,6 +180,18 @@ export default {
     TimeMachine,
     WindRoseTile,
     WindSpeedTile
+  },
+
+  mounted () {
+    const stationService = app.service('/stations')
+    const stations = stationService.find({})
+
+    console.log('STATIONS', stations)
+
+    const datastreamService = app.service('/datastreams')
+    const datastreams = datastreamService.find({})
+
+    console.log('DATASTREAMS', datastreams)
   }
 }
 </script>
