@@ -1,19 +1,19 @@
 <template>
-  <div class="col col-sm-12 col-lg-6 flex-col">
-    <div class="flex-1 flex-col tile cumulative-rain-tile">
+  <div class="col-12 col-lg-6 component">
+    <div class="d-flex flex-column h-100 rounded tile">
 
-      <div class="flex-1-cell flex-row cell-border-bottom">
-        <div class="flex-2-cell flex-col cell-align-middle text-xs-center">
+      <div class="d-flex flex-1 flex-row justify-content-center text-center border-bottom">
+        <div class="d-flex flex-1 flex-column justify-content-center text-center">
           <h1 class="display-4">815.7 <span class="hidden-xs-down"><i class="wi wi-umbrella"></i></span></h1>
           <span class="text-muted">Precip<span class="hidden-xs-down">itation</span> to Date (mm)</span>
         </div>
-        <div class="flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten" style="overflow: hidden;">
+        <div class="d-flex flex-1 flex-column justify-content-center text-center bg-lighten">
           <h2>3.7</h2>
           <span class="text-muted">Last YTD<br />Cumulative (mm)</span>
         </div>
       </div>
 
-      <div class="flex-1-cell flex-col cell-align-middle text-xs-center chart"></div>
+      <div class="d-flex flex-1 flex-column justify-content-center text-center chart"></div>
 
     </div>
   </div>
@@ -94,7 +94,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.cumulative-rain-tile {
+.tile {
   background-color: #50bfa6;
   color: #fff;
 }

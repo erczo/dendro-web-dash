@@ -1,13 +1,13 @@
 <template>
-  <div class="col col-sm-12 flex-col">
-    <div class="flex-1 flex-col tile forecast-tile">
+  <div class="col-12 component">
+    <div class="d-flex flex-column h-100 rounded tile">
 
-      <div class="flex-1-cell flex-col cell-border-bottom cell-align-middle forcast-header-cell text-xs-center">
+      <div class="d-flex flex-column justify-content-center py-2 text-center border-bottom" style="background-color: #999;">
         <h3>NOAA Forecast</h3>
       </div>
 
-      <div class="flex-4-cell flex-col cell-align-middle" style="overflow-x: scroll; height: 0;">
-        <table class="table table-sm forecast-table">
+      <div class="d-flex flex-1 flex-column justify-content-center" style="overflow-x: scroll; height: 0;">
+        <table class="table table-sm">
           <tbody>
             <tr>
               <td><i class="wi wi-day-cloudy"></i></td>
@@ -42,30 +42,29 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.forcast-header-cell {
-  background-color: #999;
+h3 {
   color: #fff;
 }
 
-.forecast-table {
+.table {
   font-size: 86%;
 }
-.forecast-table .wi {
+.table .wi {
   color: #999;
   font-size: 200%;
   font-weight: bold;
 }
-.forecast-table td {
+.table td {
   border-top: none;
   border-right: 1px solid #e1e1e1;
   vertical-align: middle;
 }
-.forecast-table.table-sm td {
+.table.table-sm td {
   padding: 0.3rem 0.6rem;
   text-align: center;
 }
 
-.forecast-tile {
+.tile {
   background-color: #fff;
 }
 </style>

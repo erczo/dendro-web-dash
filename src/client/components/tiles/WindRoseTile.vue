@@ -1,7 +1,7 @@
 <template>
-  <div class="col col-sm-12 col-lg-4 flex-col">
-    <div class="flex-1 flex-col tile wind-rose-tile">
-      <div class="flex-1-cell flex-col cell-align-middle text-xs-center chart"></div>
+  <div class="col-12 col-lg-4 component">
+    <div class="d-flex flex-column h-100 rounded tile">
+      <div class="d-flex flex-1 flex-column justify-content-center text-center chart"></div>
     </div>
   </div>
 </template>
@@ -184,7 +184,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.wind-rose-tile {
+.tile {
   background-color: #9081bf;
   color: #fff;
 }

@@ -2,19 +2,19 @@
   <div class="container">
 
     <div class="row">
-      <div class="col-xs-12 air-temp-chart"></div>
+      <div class="col-12 air-temp-chart"></div>
     </div>
 
     <div class="row">
-      <div class="col-xs-12 soil-temp-chart"></div>
+      <div class="col-12 soil-temp-chart"></div>
     </div>
 
     <div class="row">
-      <div class="col-xs-12 wind-speed-chart"></div>
+      <div class="col-12 wind-speed-chart"></div>
     </div>
 
     <div class="row">
-      <div class="col-xs-12 solar-rad-chart"></div>
+      <div class="col-12 solar-rad-chart"></div>
     </div>
 
   </div>
@@ -208,8 +208,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.air-temp-tile {
-  background-color: #509ebf;
-  color: #fff;
-}
 </style>

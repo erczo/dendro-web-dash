@@ -1,6 +1,6 @@
 <template>
-  <div class="col col-sm-12 col-lg-4 flex-col">
-    <div class="flex-1 tile map-tile"></div>
+  <div class="col-12 col-lg-4 component">
+    <div class="d-flex flex-column h-100 rounded tile"></div>
   </div>
 </template>
 
@@ -47,5 +47,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  
 </style>

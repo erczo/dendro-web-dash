@@ -1,9 +1,9 @@
 <template>
-  <div class="col col-sm-12 col-lg-4 flex-col">
-    <div class="flex-1 flex-col tile notification-tile">
+  <div class="col-12 col-lg-4 component">
+    <div class="d-flex flex-1 flex-column h-100 rounded tile">
 
       <!-- Status -->
-      <div class="flex-1-cell flex-col cell-border-bottom cell-align-middle status-cell status-cell-offline text-xs-center">
+      <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom status-cell status-cell-offline">
 <!-- 
         <h2><i class="fa fa-check-circle-o" aria-hidden="true"></i> Online</h2>
         <span class="text-muted">Last offline: 11/11 11:22</span>
@@ -13,8 +13,8 @@
       </div>
 
       <!-- Events -->
-      <div class="flex-4-cell" style="overflow-y: scroll; height: 0;">
-        <table class="table table-sm table-hover events-table">
+      <div class="d-flex flex-4 flex-column" style="overflow-y: scroll; height: 0;">
+        <table class="table table-sm table-hover">
           <tbody>
             <tr>
               <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
@@ -36,6 +36,16 @@
               <td>9/10 8:50 AM</td>
               <td>Annual calibration. System down for 2 hours.</td>
             </tr>
+            <tr>
+              <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
+              <td>9/10 8:50 AM</td>
+              <td>Annual calibration. System down for 2 hours.</td>
+            </tr>
+            <tr>
+              <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
+              <td>9/10 8:50 AM</td>
+              <td>Annual calibration. System down for 2 hours.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -51,19 +61,19 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.events-table {
+.table {
   font-size: 86%;
 }
-.events-table th,
-.events-table td {
+.table th,
+.table td {
   vertical-align: middle;
 }
-.events-table.table-sm th {
+.table.table-sm th {
   padding: 0.3rem 0.6rem;
   text-align: center;
 }
 
-.notification-tile {
+.tile {
   background-color: #fff;
 }
 

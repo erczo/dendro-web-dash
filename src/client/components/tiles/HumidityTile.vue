@@ -1,24 +1,24 @@
 <template>
-  <div class="col col-sm-12 col-lg-4 flex-col">
-    <div class="flex-1 flex-col tile humidity-tile">
+  <div class="col-12 col-lg-4 component">
+    <div class="d-flex flex-column h-100 rounded tile">
 
-      <div class="flex-2-cell flex-col cell-border-bottom cell-align-middle text-xs-center">
+      <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom">
         <h1 class="display-3">67 <i class="wi wi-humidity"></i></h1>
         <span class="text-muted">Humidity</span>
       </div>
 
-      <div class="flex-2-cell flex-row">
-        <div class="flex-2-cell flex-col cell-align-middle text-xs-center bg-darken">
+      <div class="d-flex flex-1 flex-row">
+        <div class="d-flex flex-1 flex-column justify-content-center text-center bg-darken">
           <h2>14.4%</h2>
           <span class="text-muted">Seasonal Low</span>
         </div>
-        <div class="flex-2-cell flex-col cell-align-middle text-xs-center bg-lighten">
+        <div class="d-flex flex-1 flex-column justify-content-center text-center bg-lighten">
           <h2>99.6%</h2>
           <span class="text-muted">Seasonal High</span>
         </div>
       </div>
 
-      <div class="flex-1-cell flex-col cell-align-middle text-muted text-xs-center">
+      <div class="d-flex flex-column justify-content-center py-2 text-center text-muted">
         October
       </div>
 
@@ -33,7 +33,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.humidity-tile {
+.tile {
   background-color: #509ebf;
   color: #fff;
 }
