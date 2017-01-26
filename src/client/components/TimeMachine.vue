@@ -2,19 +2,19 @@
   <div class="container">
 
     <div class="row">
-      <div class="col-12 air-temp-chart"></div>
+      <div class="col-12 py-2 air-temp-chart"></div>
     </div>
 
     <div class="row">
-      <div class="col-12 soil-temp-chart"></div>
+      <div class="col-12 py-2 soil-temp-chart"></div>
     </div>
 
     <div class="row">
-      <div class="col-12 wind-speed-chart"></div>
+      <div class="col-12 py-2 wind-speed-chart"></div>
     </div>
 
     <div class="row">
-      <div class="col-12 solar-rad-chart"></div>
+      <div class="col-12 py-2 solar-rad-chart"></div>
     </div>
 
   </div>

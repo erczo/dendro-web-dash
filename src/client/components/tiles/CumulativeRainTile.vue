@@ -4,8 +4,8 @@
 
       <div class="d-flex flex-1 flex-row justify-content-center text-center border-bottom">
         <div class="d-flex flex-1 flex-column justify-content-center text-center">
-          <h1 class="display-4">815.7 <span class="hidden-xs-down"><i class="wi wi-umbrella"></i></span></h1>
-          <span class="text-muted">Precip<span class="hidden-xs-down">itation</span> to Date (mm)</span>
+          <h1 class="display-4">815.7 <span class="hidden-sm-down"><i class="wi wi-umbrella"></i></span></h1>
+          <span class="text-muted">Precip<span class="hidden-sm-down">itation</span> to Date (mm)</span>
         </div>
         <div class="d-flex flex-1 flex-column justify-content-center text-center bg-lighten">
           <h2>3.7</h2>

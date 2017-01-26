@@ -2,7 +2,7 @@
   <div class="col-12 component">
     <div class="d-flex flex-column tile">
 
-      <div class="d-flex flex-column justify-content-center py-2 text-center">
+      <div class="d-flex flex-row justify-content-center pt-3 text-center">
         <h3>Want more data? Search and download here:</h3>
       </div>
 
@@ -10,7 +10,7 @@
 
         <div class="d-flex flex-1 flex-column justify-content-center" style="align-items: center; padding: 1rem;">
           <div class="btn-group" role="group" aria-label="Download dropdown">
-            <button type="button" class="btn btn-lg btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Download Last 2 Weeks
             </button>
             <div class="dropdown-menu">
@@ -23,7 +23,7 @@
 
         <div class="d-flex flex-1 flex-column justify-content-center" style="align-items: center; padding: 1rem;">
           <div class="btn-group" role="group" aria-label="Download dropdown">
-            <button type="button" class="btn btn-lg btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Search All Data
             </button>
             <div class="dropdown-menu">

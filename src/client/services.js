@@ -9,10 +9,11 @@ const app = feathers()
   .configure(hooks())
   .configure(socketio(socket))
 
-// TODO: Remove this!
-console.log('SERVICES', Date.now())
-
 export default {
+  datapointLookup: app.service('/datapoints/lookup'),
   datastream: app.service('/datastreams'),
-  station: app.service('/stations')
+  organization: app.service('/organizations'),
+  person: app.service('/persons'),
+  station: app.service('/stations'),
+  vocabulary: app.service('/vocabularies')
 }

@@ -19,8 +19,27 @@ import App from './App'
 import Home from './components/Home'
 import Station from './components/Station'
 
-Vue.use(VueRouter)
+/*
+  Register global filters
+ */
 
+Vue.filter('placeholder', (value, text = '-') => {
+  // TODO: This should handle a variety of cases
+  return value === null ? text : value
+})
+
+// TODO: Remove this - deprecated
+// Vue.filter('round', (value, digits, keep) => {
+//   if (typeof value !== 'number') return value
+//   var fixed = value.toFixed(digits)
+//   return keep ? fixed : +fixed
+// })
+
+/*
+  Configure routes
+ */
+
+Vue.use(VueRouter)
 const router = new VueRouter({
   // TODO: Enable history mode
   // SEE: https://router.vuejs.org/en/essentials/history-mode.html
@@ -28,15 +47,22 @@ const router = new VueRouter({
   // mode: 'history',
   routes: [
     {path: '/', component: Home},
-    {path: '/stations/:slug', component: Station}
-    // TODO: Enable NotFound page
-    // {path: '*', component: NotFound}
+    {path: '/stations/:slug', component: Station},
+    {path: '/:slug', redirect: '/stations/:slug'},
+    {path: '*', redirect: '/'}
   ]
 })
 
 /* eslint-disable no-new */
 new Vue({
   router,
+
   // SEE: http://vuejs.org/guide/render-function#createElement-Arguments
-  render: createElement => createElement(App)
+  render: createElement => createElement(App),
+
+  filters: {
+    placeholder (value) {
+      return value === void (0) ? '-' : value
+    }
+  }
 }).$mount('#app')

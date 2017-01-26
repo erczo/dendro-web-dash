@@ -1,5 +1,8 @@
 {
   "client": {
+    "googleMapsAPI": {
+      "key": "AIzaSyC8zfohXmxg5VzAg9G2rCypfKmU-KpOv6k"
+    },
     "io": {
       "options": {
         "path": "/api/v1/socket.io"

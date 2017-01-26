@@ -27,6 +27,7 @@ const config = {
     extensions: ['', '.js', '.vue']
   },
   module: {
+    noParse: /node_modules\/localforage\/dist\/localforage.js/,
     preLoaders: [
       {
         test: /\.vue$/,

@@ -4,12 +4,12 @@
 
       <div class="d-flex flex-1 flex-row justify-content-center text-center border-bottom">
         <div class="d-flex flex-1 flex-column justify-content-center text-center">
-          <h1 class="display-4">949 <span class="hidden-xs-down"><i class="wi wi-barometer"></i></span></h1>
-          <span class="text-muted"><span class="hidden-xs-down">Barometric</span> Pressure (mbar)</span>
+          <h1 class="display-4">949 <span class="hidden-sm-down"><i class="wi wi-barometer"></i></span></h1>
+          <span class="text-muted"><span class="hidden-sm-down">Barometric</span> Pressure (mbar)</span>
         </div>
         <div class="d-flex flex-1 flex-column justify-content-center text-center bg-lighten">
           <h2>-67</h2>
-          <span class="text-muted">Elevation offset<br /><span class="hidden-xs-down">from sea level </span>(mbar)</span>
+          <span class="text-muted">Elevation offset<br /><span class="hidden-sm-down">from sea level </span>(mbar)</span>
         </div>
       </div>
 
