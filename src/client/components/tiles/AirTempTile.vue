@@ -29,52 +29,49 @@
 </template>
 
 <script>
-// TODO: Finish
 // TODO: Make colors props?
-import math from '../../math'
+import math from '../../lib/math'
 
 export default {
   props: {
-    station: Object,
-    datapoints: Object,
+    current: Object,
+    seasonal: Object,
     units: String
   },
 
   computed: {
     average: function () {
-      return this.getValue('Average_Air_Temperature_DegreeFahrenheit', 'Average_Air_Temperature_DegreeCelsius')
+      return this.getValue(this.current, 'Average_Air_Temperature_DegreeFahrenheit', 'Average_Air_Temperature_DegreeCelsius')
     },
     maximum: function () {
-      // FIX: Seasonal data is NOT the min and max values
-      return this.getValue('Maximum_Air_Temperature_DegreeFahrenheit', 'Maximum_Air_Temperature_DegreeCelsius')
+      return this.getValue(this.seasonal, 'Maximum_Seasonal_Air_Temperature_DegreeFahrenheit', 'Maximum_Seasonal_Air_Temperature_DegreeCelsius')
     },
     minimum: function () {
-      // FIX: Seasonal data is NOT the min and max values
-      return this.getValue('Minimum_Air_Temperature_DegreeFahrenheit', 'Minimum_Air_Temperature_DegreeCelsius')
+      return this.getValue(this.seasonal, 'Minimum_Seasonal_Air_Temperature_DegreeFahrenheit', 'Minimum_Seasonal_Air_Temperature_DegreeCelsius')
     }
   },
 
   methods: {
-    getValue (impKey, metKey) {
-      if (!this.datapoints) return null
+    getValue (prop, impKey, metKey) {
+      if (!prop) return
 
       switch (this.units) {
         case 'imp':
-          if (this.datapoints[impKey]) {
-            return math.round(math.unit(this.datapoints[impKey][0].v, 'degF').toNumber(), 1)
-          } else if (this.datapoints[metKey]) {
-            return math.round(math.unit(this.datapoints[metKey][0].v, 'degC').toNumber('degF'), 1)
+          if (prop[impKey]) {
+            return math.round(math.unit(prop[impKey][0].v, 'degF').toNumber(), 1)
+          } else if (prop[metKey]) {
+            return math.round(math.unit(prop[metKey][0].v, 'degC').toNumber('degF'), 1)
           }
           break
         case 'met':
-          if (this.datapoints[metKey]) {
-            return math.round(math.unit(this.datapoints[metKey][0].v, 'degC').toNumber(), 1)
-          } else if (this.datapoints[impKey]) {
-            return math.round(math.unit(this.datapoints[impKey][0].v, 'degF').toNumber('degC'), 1)
+          if (prop[metKey]) {
+            return math.round(math.unit(prop[metKey][0].v, 'degC').toNumber(), 1)
+          } else if (prop[impKey]) {
+            return math.round(math.unit(prop[impKey][0].v, 'degF').toNumber('degC'), 1)
           }
           break
       }
-      return null
+      return
     }
   }
 }

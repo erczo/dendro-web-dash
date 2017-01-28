@@ -1,3 +1,11 @@
+/**
+ * Feathers services; configured and ready to roll.
+ *
+ * @author J. Scott Smith
+ * @license BSD-2-Clause-FreeBSD
+ * @module lib/utils
+ */
+
 import feathers from 'feathers/client'
 import socketio from 'feathers-socketio/client'
 import hooks from 'feathers-hooks'

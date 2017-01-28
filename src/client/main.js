@@ -20,12 +20,12 @@ import Home from './components/Home'
 import Station from './components/Station'
 
 /*
-  Register global filters
+  Register global filters.
  */
 
 Vue.filter('placeholder', (value, text = '-') => {
   // TODO: This should handle a variety of cases
-  return value === null ? text : value
+  return (typeof value === 'undefined') || (value === null) ? text : value
 })
 
 // TODO: Remove this - deprecated
@@ -36,7 +36,7 @@ Vue.filter('placeholder', (value, text = '-') => {
 // })
 
 /*
-  Configure routes
+  Configure routes.
  */
 
 Vue.use(VueRouter)

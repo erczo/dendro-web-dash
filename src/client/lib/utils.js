@@ -9,7 +9,7 @@
 const TAG_PREFIX_REGEX = /^(ds|dt)_\w+$/
 
 /**
- * Convert vocabulary tags to a shortened, standardized key
+ * Convert vocabulary tags to a shortened, standardized key.
  */
 function tagsToKey (tags) {
   return tags.filter(tag => {
@@ -19,4 +19,14 @@ function tagsToKey (tags) {
   }).join('_')
 }
 
-export { tagsToKey }
+/**
+ * Convert wind direction degrees to a directional index [0...15].
+ */
+function windDegToIndex (deg) {
+  return Math.abs(Math.round((deg % 360 + (deg < 0 ? 360 : 0) - 11.25) / 22.5))
+}
+
+export {
+  tagsToKey,
+  windDegToIndex
+}

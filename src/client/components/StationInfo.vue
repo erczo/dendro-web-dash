@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import math from '../math'
+import math from '../lib/math'
 import moment from 'moment'
 
 export default {
