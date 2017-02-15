@@ -5,7 +5,7 @@
     <h2 class="text-center text-lg-left">{{ station.name }} <small class="text-muted hidden-md-down">Weather Station</small></h2>
 
     <p class="text-center text-lg-left" v-if="station.geo && station.geo.coordinates && station.geo.coordinates.length > 1">
-      <span class="text-muted hidden-md-down">Coordinates: </span>{{ station.geo.coordinates[1] }}°, {{ station.geo.coordinates[0] }}° <a class="text-primary" role="button" @click.prevent="selectMarker"><i class="fa fa-map-marker fa-lg" aria-hidden="true"></i></a>
+      <span class="hidden-md-down">Coordinates: </span>{{ station.geo.coordinates[1] }}°, {{ station.geo.coordinates[0] }}° <a class="text-primary" role="button" @click.prevent="selectMarker"><i class="fa fa-map-marker fa-lg" aria-hidden="true"></i></a>
       <span v-if="station.geo.coordinates.length > 2"><br />Elevation: {{ elevation }}</span>
     </p>
 
@@ -28,10 +28,10 @@ import moment from 'moment'
 
 export default {
   props: {
-    clientDate: Date,
     contactOrgs: Array,
     contactPersons: Array,
     station: Object,
+    time: Date,
     unitAbbrs: Object,
     units: String
   },
@@ -39,8 +39,7 @@ export default {
   computed: {
     contactUrl: function () {
       /*
-        Construct a mailto URI for all contacts.
-        Do our best to adhere to https://tools.ietf.org/html/rfc6068
+        Construct a mailto URI for all contacts. Do our best to adhere to https://tools.ietf.org/html/rfc6068
        */
 
       // TODO: Move the subject to config?
@@ -62,14 +61,15 @@ export default {
       const m = this.station.geo.coordinates[2]
       switch (this.units) {
         case 'imp':
-          return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getUnitAbbr('Foot')}`
+          return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getAbbr('Foot')}`
         case 'met':
-          return `${m} ${this.getUnitAbbr('Meter')}`
+          return `${m} ${this.getAbbr('Meter')}`
       }
-      return null
+      return
     },
     localTime: function () {
-      return moment(this.clientDate).utcOffset(this.station.utc_offset / 60).format('LT')
+      if (!this.time) return
+      return moment(this.time).utcOffset(this.station.utc_offset / 60).format('LT')
     },
     utcOffsetHours: function () {
       return math.round(math.unit(this.station.utc_offset, 's').toNumber('h'), 2)
@@ -77,7 +77,7 @@ export default {
   },
 
   methods: {
-    getUnitAbbr (key) {
+    getAbbr (key) {
       if (!this.unitAbbrs) return ''
       return this.unitAbbrs[key]
     },

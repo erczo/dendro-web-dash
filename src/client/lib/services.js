@@ -23,5 +23,6 @@ export default {
   organization: app.service('/organizations'),
   person: app.service('/persons'),
   station: app.service('/stations'),
+  systemTime: app.service('/system/time'),
   vocabulary: app.service('/vocabularies')
 }

@@ -1,4 +1,15 @@
 {
+  "client": {
+    "googleMapsAPI": {
+      "key": "AIzaSyC8zfohXmxg5VzAg9G2rCypfKmU-KpOv6k"
+    },
+    "io": {
+      "options": {
+        "path": "/socket.io"
+      },
+      "uri": "http://128.32.109.75/api/v1"
+    }
+  },
   "port": 8080,
   "webpack": false
 }

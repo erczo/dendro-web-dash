@@ -6,6 +6,8 @@
  * @module lib/dataloader
  */
 
+const NEVER_FETCHED = new Date(8640000000000000)
+
 class DataLoader {
   constructor (sources) {
     this.isLoading = false
@@ -14,8 +16,41 @@ class DataLoader {
   }
 
   /**
-   * Load sources by assigning state on a given Vue model. Only sources with
-   * a passing guard (returning true) will be processed.
+   * Clear targets and their respective state variables on a given Vue model. Do this for sources having a key
+   * matched by the specified predicate.
+   */
+  clear (vm, pred = true) {
+    const predFn = typeof pred === 'function' ? pred : function (sourceKey) {
+      return (pred === true) || (sourceKey === pred)
+    }
+    const sources = this.sources
+    const sourceKeys = Object.keys(sources).filter(predFn)
+
+    sourceKeys.forEach(sourceKey => {
+      // TODO: Remove - for debug only
+      console.log('Clearing', sourceKey)
+
+      const fetchedAtKey = `${sourceKey}FetchedAt`
+      const errorKey = `${sourceKey}Error`
+      const loadingKey = `${sourceKey}Loading`
+      const readyKey = `${sourceKey}Ready`
+      const source = sources[sourceKey]
+      vm[fetchedAtKey] = NEVER_FETCHED
+      vm[errorKey] = null
+      vm[loadingKey] = false
+      vm[readyKey] = false
+
+      if (Array.isArray(source.targets)) {
+        source.targets.forEach(target => { vm[target] = null })
+      }
+    })
+
+    return this
+  }
+
+  /**
+   * Load sources by assigning state on a given Vue model. Only sources with a passing guard (returning true)
+   * will be processed.
    *
    * Runs recursively until all guards are false (or maxIterations is hit).
    */
@@ -42,30 +77,34 @@ class DataLoader {
       console.log('Fetching', sourceKey, iter)
 
       const fetchedAtKey = `${sourceKey}FetchedAt`
+      const errorKey = `${sourceKey}Error`
       const loadingKey = `${sourceKey}Loading`
       const readyKey = `${sourceKey}Ready`
-      const errorKey = `${sourceKey}Error`
       const source = sources[sourceKey]
-
-      vm[fetchedAtKey] = new Date()
+      const fetchedAt = vm[fetchedAtKey] = new Date()
+      vm[errorKey] = null
       vm[loadingKey] = true
       vm[readyKey] = false
-      vm[errorKey] = null
 
       const fetch = Promise.resolve(source.fetch(vm)).then(res => {
+        if (vm[fetchedAtKey] !== fetchedAt) return // Cancelled
+
         vm[loadingKey] = false
 
+        // Process results
         if (typeof source.afterFetch === 'function') res = source.afterFetch(res)
-        if (!res) {
-          throw Error(`Not found: ${sourceKey}`)
-        } else if (typeof source.assign === 'function') {
-          source.assign(vm, res)
-          vm[readyKey] = true
-        } else if (typeof source.target === 'string') {
-          vm[source.target] = res
-          vm[readyKey] = true
+        if (!res) throw Error(`Not found: ${sourceKey}`)
+
+        // Assign targets
+        res = typeof source.assign === 'function' ? source.assign(vm, res) : [res]
+        if (Array.isArray(source.targets) && Array.isArray(res)) {
+          source.targets.forEach((target, i) => { vm[target] = res[i] })
         }
+
+        vm[readyKey] = true
       }).catch(err => {
+        if (vm[fetchedAtKey] !== fetchedAt) return // Cancelled
+
         vm[loadingKey] = false
         vm[errorKey] = err.message
       })
@@ -83,4 +122,7 @@ class DataLoader {
   }
 }
 
-export { DataLoader }
+export {
+  DataLoader,
+  NEVER_FETCHED
+}

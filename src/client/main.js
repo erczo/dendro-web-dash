@@ -47,7 +47,7 @@ const router = new VueRouter({
   // mode: 'history',
   routes: [
     {path: '/', component: Home},
-    {path: '/stations/:slug', component: Station},
+    {path: '/stations/:slug', name: 'station', component: Station},
     {path: '/:slug', redirect: '/stations/:slug'},
     {path: '*', redirect: '/'}
   ]

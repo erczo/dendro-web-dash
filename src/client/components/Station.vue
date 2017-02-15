@@ -29,7 +29,7 @@
           </div>
 
           <div class="col-12 col-lg-8 pb-3">
-            <station-info :client-date="clientDate" :contact-orgs="contactOrgs" :contact-persons="contactPersons" :station="station" :unit-abbrs="unitAbbrs" :units="units" @select-marker="showMap"></station-info>
+            <station-info :contact-orgs="contactOrgs" :contact-persons="contactPersons" :station="station" :time="systemTime" :unit-abbrs="unitAbbrs" :units="units" @select-marker="showMap"></station-info>
           </div>
         </div>
       </div>
@@ -38,49 +38,61 @@
     <section id="tiles" class="bg-faded border-bottom border-top py-3" v-if="station">
       <div class="container">
         <div class="row row-md">
-          <div class="col-12 col-lg-4 component" v-if="station.geo && station.geo.coordinates && station.geo.coordinates.length > 1">
-            <map-tile :coordinates="station.geo.coordinates" :title="station.name" @select-marker="showMap"></map-tile>
+          <div class="col-12 col-lg-4 component" v-if="coordinates">
+            <map-tile :coordinates="coordinates" :title="station.name" @select-marker="showMap"></map-tile>
           </div>
 
           <div class="col-12 col-lg-4 component">
-            <air-temp-tile :current="currentReadings" :seasonal="seasonalReadings" :units="units"></air-temp-tile>
+            <air-temp-tile :current="current" :seasonal="seasonal" :time="systemTime" :utc-offset="station.utc_offset" :units="units"></air-temp-tile>
           </div>
 
-          <notification-tile></notification-tile>
+          <notification-tile class="not-implemented"></notification-tile>
         </div>
 
         <div class="row row-md">
-          <wind-rose-tile></wind-rose-tile>
+          <wind-rose-tile class="not-implemented"></wind-rose-tile>
 
           <div class="col-12 col-lg-4 component">
-            <wind-speed-tile :current="currentReadings" :seasonal="seasonalReadings" :unit-abbrs="unitAbbrs" :units="units"></wind-speed-tile>
+            <wind-speed-tile :current="current" :seasonal="seasonal" :time="systemTime" :utc-offset="station.utc_offset" :unit-abbrs="unitAbbrs" :units="units"></wind-speed-tile>
           </div>
 
-          <humidity-tile></humidity-tile>
+          <div class="col-12 col-lg-4 component">
+            <humidity-tile :current="current" :seasonal="seasonal" :time="systemTime" :utc-offset="station.utc_offset"></humidity-tile>
+          </div>
         </div>
 
         <div class="row row-md">
-          <solar-rad-tile></solar-rad-tile>
-          <precipitation-tile></precipitation-tile>
+          <div class="col-12 col-lg-6 component">
+            <solar-rad-tile :current="current" :time="systemTime" :unit-abbrs="unitAbbrs"></solar-rad-tile>
+          </div>
+
+          <div class="col-12 col-lg-6 component">
+            <precipitation-tile :current="current" :yesterday="yesterday" :time="systemTime" :unit-abbrs="unitAbbrs" :units="units"></precipitation-tile>
+          </div>
         </div>
 
         <div class="row row-md">
-          <pressure-tile></pressure-tile>
-          <cumulative-rain-tile></cumulative-rain-tile>
+          <div class="col-12 col-lg-6 component">
+            <pressure-tile :coordinates="coordinates" :current="current" :two-weeks="twoWeeks" :time="systemTime" :utc-offset="station.utc_offset" :unit-abbrs="unitAbbrs" :units="units"></pressure-tile>
+          </div>
+
+          <div class="col-12 col-lg-6 component">
+            <cumulative-rain-tile class="not-implemented"></cumulative-rain-tile>
+          </div>
         </div>
 
         <div class="row row-sm">
-          <forecast-tile></forecast-tile>
+          <forecast-tile class="not-implemented"></forecast-tile>
         </div>
 
         <div class="row">
-          <download-tile></download-tile>
+          <download-tile class="not-implemented"></download-tile>
         </div>
       </div>
     </section>
 
     <section id="timeMachine" class="py-4" v-if="station">
-      <time-machine></time-machine>
+      <time-machine class="not-implemented"></time-machine>
     </section>
   </div>
 </template>
@@ -133,7 +145,7 @@ export default {
   },
 
   props: {
-    clientDate: Date,
+    clientTime: Date,
     isRetina: Boolean,
     units: String
   },
@@ -147,8 +159,11 @@ export default {
       contactOrgs: null,
       contactPersons: null,
       datastreams: null,
-      currentReadings: null,
-      seasonalReadings: null,
+      current: null,
+      seasonal: null,
+      twoWeeks: null,
+      yesterday: null,
+      systemTime: null,
       lightboxOptions: null,
       unitAbbrs: null
     }
@@ -156,20 +171,28 @@ export default {
 
   created () {
     this.slug = this.$route.params.slug
-    dataLoader.load(this).then(() => {
-      console.log('VM', this)
-    })
+    dataLoader.load(this)
+  },
+
+  computed: {
+    coordinates () {
+      const station = this.station
+      if (!station || !station.geo || !station.geo.coordinates || station.geo.coordinates.length < 3) return
+      return station.geo.coordinates
+    }
   },
 
   methods: {
     fetchDatapoints () {
-      this.currentReadings = null
-      dataLoader.load(this)
+      dataLoader.clear(this, source => {
+        return /^(current|seasonal|yesterday|systemTime)\w*$/.test(source)
+      }).load(this)
     },
     fetchStation () {
-      this.station = this.stationError = this.contactOrgIds = this.contactOrgs = this.contactPersonIds = this.contactPersons = this.datastreams = this.currentReadings = null
       this.slug = this.$route.params.slug
-      dataLoader.load(this)
+      dataLoader.clear(this, source => {
+        return source !== 'unitVocabulary'
+      }).load(this)
     },
     showLightbox (index) {
       this.lightboxOptions = {
@@ -184,10 +207,10 @@ export default {
 
   watch: {
     $route: 'fetchStation',
-    clientDate (newDate) {
+    clientTime (newTime) {
       // Update datapoints every 2.7 minutes
       // TODO: Make this configurable!
-      if (newDate - this.currentReadingsFetchedAt > 162000) this.fetchDatapoints()
+      if (newTime - this.currentFetchedAt > 162000) this.fetchDatapoints()
     },
     units () {
       this.fetchDatapoints()

@@ -22,6 +22,7 @@ function tagsToKey (tags) {
 /**
  * Convert wind direction degrees to a directional index [0...15].
  */
+// TODO: Move to air.js?
 function windDegToIndex (deg) {
   return Math.abs(Math.round((deg % 360 + (deg < 0 ? 360 : 0) - 11.25) / 22.5))
 }

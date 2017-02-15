@@ -8,19 +8,24 @@
           <!-- Reserve Name -->
           <!-- <a class="navbar-brand" href="http://www.blueoakranchreserve.org/" target="_blank"><span class="hidden-sm-down">Blue Oak Ranch Reserve </span><i class="fa fa-external-link" aria-hidden="true"></i></a> -->
 
-          <a class="navbar-brand" href="/"><i class="fa fa-pagelines" aria-hidden="true"></i> <span class="hidden-sm-down">Dendro</span></a>
+          <a class="navbar-brand" href="/">
+            <!-- TODO: We need a logo! -->
+            <i class="fa fa-sun-o" aria-hidden="true"></i> <span class="hidden-sm-down">Dendro</span>
+          </a>
 
           <!-- Nav Toolbar -->
           <div class="btn-toolbar float-right" role="toolbar" aria-label="Navigation toolbar">
 
             <!-- Alert Badge -->
+            <!-- TODO: Finish this - alerts and notifications -->
+<!--
             <div class="btn-group mr-1" role="group" aria-hidden="true">
               <button type="button" class="btn btn-outline-secondary border-0 text-white">
                 <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
                 <span class="badge badge-pill badge-danger" style="vertical-align: top">5</span>
               </button>
             </div>
-
+ -->
             <!-- Units Dropdown -->
             <div class="btn-group" role="group" aria-label="Units dropdown">
               <button id="unitsNavButton" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -41,7 +46,7 @@
     </header>
 
     <!-- Component matched by the route will render here -->
-    <router-view :client-date="clientDate" :is-retina="isRetina" :units="units"></router-view>
+    <router-view :client-time="clientTime" :is-retina="isRetina" :units="units"></router-view>
 
     <footer class="bg-faded border-top py-4">
       <div class="container-fluid">
@@ -73,7 +78,7 @@ localforage.config({
 export default {
   data () {
     return {
-      clientDate: new Date(),
+      clientTime: new Date(),
       isRetina: false, // Keepin' it simple; it's either retina or not
       units: null
     }
@@ -83,8 +88,8 @@ export default {
     /*
       Handle photos on HiDPI (High Dots Per Inch) displays; i.e. retina.
 
-      We do this by creating MediaQueryLists to observe changes to pixel density,
-      and the listener sets this.isRetina for use in downstream components.
+      We do this by creating MediaQueryLists to observe changes to pixel density, and the listener sets
+      this.isRetina for use in downstream components.
      */
 
     // Query for WebKit-based browsers, the standard way, and dppx fallback
@@ -121,8 +126,8 @@ export default {
     })
 
     /*
-      Maintain a single reactive source of time updated approximately
-      every minute. Strive for parity with the user's system clock.
+      Maintain a single reactive source of time updated approximately every minute. Strive for parity with the
+      user's system clock.
      */
     setInterval(() => {
       const now = new Date()
@@ -130,7 +135,7 @@ export default {
       if (this.minutes === minutes) return
 
       this.minutes = minutes
-      this.clientDate = now
+      this.clientTime = now
     }, 17000)
   },
 
@@ -177,6 +182,10 @@ header .navbar {
 .img-darken {
   filter: brightness(.7);
   -webkit-filter: brightness(.7);
+}
+
+.not-implemented {
+  opacity: 0.3;
 }
 
 .photo-thumb { width: 60px; height: 60px; }

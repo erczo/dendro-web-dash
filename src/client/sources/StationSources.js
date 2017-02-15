@@ -1,29 +1,28 @@
+import moment from 'moment'
 import services from '../lib/services'
 import {tagsToKey} from '../lib/utils'
-
-/*
-  Strategies for handling lookups based on the user's units selection.
- */
-const UNIT_STRATEGIES = {
-  // e.g. if Imperial is selected, then use Imperial datastreams with Metric as fallback
-  imp: ['imp', 'met'],
-  met: ['met', 'imp']
-}
+import {UNIT_STRATEGIES} from '../lib/unit'
 
 /**
  * Helper used on datapoints to assign the target after fetching.
  */
 function assignDatapoints (vm, res) {
-  const datapoints = {}
+  const obj = {}
 
-  res.forEach(obj => {
-    const key = vm.datastreamsIdKeyMap[obj._id]
-    if (key && obj.datapoints && obj.datapoints.data) {
-      datapoints[key] = obj.datapoints.data
+  /*
+    The datapointLookup service returns an array of documents, each with a datatream _id and datapoints.data.
+   */
+  res.forEach(doc => {
+    // Lookup the _id in the key-map to get a friendly object key in order to assign
+    const key = vm.datastreamsIdKeyMap[doc._id]
+
+    // If data was returned, then assign a propery in our obj that's used to assign the target
+    if (key && doc.datapoints && doc.datapoints.data && doc.datapoints.data.length > 0) {
+      obj[key] = doc.datapoints.data
     }
   })
 
-  vm[this.target] = datapoints
+  return [obj]
 }
 
 /**
@@ -35,6 +34,7 @@ function fetchDatapoints (vm) {
 
   for (let key of this.datastreamKeys) {
     for (let u of strategy) {
+      if (!key[u]) continue
       const found = vm.datastreams.find(datastream => {
         return (datastream.__key === key[u]) && this.datastreamFilter(datastream)
       })
@@ -46,61 +46,24 @@ function fetchDatapoints (vm) {
   }
 
   return services.datapointLookup.find({
-    query: Object.assign({
+    query: Object.assign(this.datapointsQuery(vm), {
       _id: ids.join(',')
-    }, this.initialQuery)
+    })
   })
 }
 
 /**
- * Data source definitions for the station dashbaord; used to configure
- * a DataLoader instance.
+ * Datapoints filter for absence of attributes.
+ */
+function noAttributesFilter (datastream) {
+  // TODO: Should we test for a isDefault attribute instead?
+  return !datastream.attributes
+}
+
+/**
+ * Data source definitions for the station dashboard; used to configure a DataLoader.
  */
 export default {
-  currentReadings: {
-    datastreamFilter (datastream) {
-      // TODO: Should we test for a isDefault attribute instead?
-      return !datastream.attributes
-    },
-    datastreamKeys: [
-      {imp: 'Average_Air_BarometricPressure_Millibar', met: 'Average_Air_BarometricPressure_PoundForcePerSquareInch'},
-      {imp: 'Average_Air_Direction_DegreeAngle', met: 'Average_Air_Direction_DegreeAngle'},
-      {imp: 'Average_Air_Speed_MeterPerSecond', met: 'Average_Air_Speed_MilePerHour'},
-      {imp: 'Average_Air_Temperature_DegreeFahrenheit', met: 'Average_Air_Temperature_DegreeCelsius'}
-    ],
-    initialQuery: {
-      $limit: 1
-    },
-    guard (vm) {
-      return vm.datastreams && vm.units && !vm.currentReadings
-    },
-    fetch: fetchDatapoints,
-    assign: assignDatapoints,
-    target: 'currentReadings'
-  },
-
-  // seasonalAirTemp: {
-  //   datastreamFilter (datastream) {
-  //     // TODO: Should test for isDefault attribute
-  //     return !datastream.attributes
-  //   },
-  //   dsdatastreamKeys: [
-  //     {imp: 'Maximum_Seasonal_Air_Temperature_DegreeFahrenheit', met: 'Maximum_Seasonal_Air_Temperature_DegreeCelsius'},
-  //     {imp: 'Minimum_Seasonal_Air_Temperature_DegreeFahrenheit', met: 'Minimum_Seasonal_Air_Temperature_DegreeCelsius'}
-  //   ],
-  //   guard (vm) {
-  //     return vm.station && vm.datastreams
-  //   },
-  //   fetch (vm) {
-  //     const query = datapointsQuery(vm, this.dsFilter, this.dsKeys, {
-  //       $limit: 1
-  //     })
-  //     return services.datapointLookup.find({query: query})
-  //   },
-  //   assign: assignDatapoints,
-  //   target: 'current'
-  // },
-
   contactOrgs: {
     guard (vm) {
       return vm.contactOrgIds && !vm.contactOrgs
@@ -119,7 +82,7 @@ export default {
         return res.data
       }
     },
-    target: 'contactOrgs'
+    targets: ['contactOrgs']
   },
 
   contactPersons: {
@@ -140,7 +103,35 @@ export default {
         return res.data
       }
     },
-    target: 'contactPersons'
+    targets: ['contactPersons']
+  },
+
+  current: {
+    datastreamFilter: noAttributesFilter,
+    datastreamKeys: [
+      {imp: 'Average_Air_BarometricPressure_PoundForcePerSquareInch', met: 'Average_Air_BarometricPressure_Millibar'},
+      {imp: 'Average_Air_Direction_DegreeAngle', met: 'Average_Air_Direction_DegreeAngle'},
+      {imp: 'Average_Air_Moisture_Percent', met: 'Average_Air_Moisture_Percent'},
+      {imp: 'Average_Air_Speed_MilePerHour', met: 'Average_Air_Speed_MeterPerSecond'},
+      {imp: 'Average_Air_Temperature_DegreeFahrenheit', met: 'Average_Air_Temperature_DegreeCelsius'},
+      // TODO: Should be Average_Solar_PhotosyntheticallyActiveRadiation_MicromolePerSquareMeter
+      {imp: 'Average_Solar_PhotosyntheticallyActiveRadiation_Micromole', met: 'Average_Solar_PhotosyntheticallyActiveRadiation_Micromole'},
+      {imp: 'Average_Solar_Radiation_WattPerSquareMeter', met: 'Average_Solar_Radiation_WattPerSquareMeter'},
+      // TODO: Should be Cumulative_Precipitation_Height_InchPerHour
+      // TODO: Should be Cumulative_Precipitation_Height_MillimeterPerHour
+      {imp: 'Cumulative_Precipitation_Height_Inch', met: 'Cumulative_Precipitation_Height_Millimeter'}
+    ],
+    datapointsQuery () {
+      return {
+        $limit: 1
+      }
+    },
+    guard (vm) {
+      return vm.datastreams && vm.units && !vm.current
+    },
+    fetch: fetchDatapoints,
+    assign: assignDatapoints,
+    targets: ['current']
   },
 
   datastreams: {
@@ -152,6 +143,7 @@ export default {
         query: {
           enabled: true,
           station_id: vm.station._id,
+          $limit: 100,
           $select: ['_id', 'attributes', 'tags']
         }
       })
@@ -171,9 +163,70 @@ export default {
         idKeyMap[datastream._id] = datastream.__key
       })
 
-      vm.datastreamsIdKeyMap = idKeyMap
-      vm.datastreams = datastreams
-    }
+      return [idKeyMap, datastreams]
+    },
+    targets: ['datastreamsIdKeyMap', 'datastreams']
+  },
+
+  // TODO: Finish!!!
+  // twoWeeks: {
+  //   datastreamFilter: noAttributesFilter,
+  //   datastreamKeys: [
+  //     {imp: 'Average_Air_BarometricPressure_PoundForcePerSquareInch', met: 'Average_Air_BarometricPressure_Millibar'}
+  //   ],
+  //   datapointsQuery (vm) {
+  //     /*
+  //       NOTE: Time manipulation must be performed within the station's timezone (UTC offset).
+  //      */
+  //     const time = moment(vm.systemTime).utcOffset(vm.station.utc_offset / 60).startOf('d').subtract(1, 'd').toISOString()
+  //     return {
+  //       time: {
+  //         $gte: time,
+  //         $lte: time
+  //       },
+  //       $limit: 1
+  //     }
+  //   },
+  //   guard (vm) {
+  //     return vm.datastreams && vm.units && vm.systemTime && !vm.yesterday
+  //   },
+  //   fetch: fetchDatapoints,
+  //   assign: assignDatapoints,
+  //   targets: ['lastTwoWeeks']
+  // }
+
+  seasonal: {
+    datastreamFilter: noAttributesFilter,
+    datastreamKeys: [
+      {imp: 'Average_Seasonal_Air_Speed_MilePerHour', met: 'Average_Seasonal_Air_Speed_MeterPerSecond'},
+      {imp: 'Maximum_Seasonal_Air_Moisture_Percent', met: 'Maximum_Seasonal_Air_Moisture_Percent'},
+      {imp: 'Maximum_Seasonal_Air_Speed_MilePerHour', met: 'Maximum_Seasonal_Air_Speed_MeterPerSecond'},
+      {imp: 'Minimum_Seasonal_Air_Speed_MilePerHour', met: 'Minimum_Seasonal_Air_Speed_MeterPerSecond'},
+      {imp: 'Maximum_Seasonal_Air_Temperature_DegreeFahrenheit', met: 'Maximum_Seasonal_Air_Temperature_DegreeCelsius'},
+      {imp: 'Minimum_Seasonal_Air_Moisture_Percent', met: 'Minimum_Seasonal_Air_Moisture_Percent'},
+      {imp: 'Minimum_Seasonal_Air_Temperature_DegreeFahrenheit', met: 'Minimum_Seasonal_Air_Temperature_DegreeCelsius'}
+    ],
+    datapointsQuery (vm) {
+      /*
+        Monthly seasonal values are stamped with the first day of the current month in the prior year.
+
+        NOTE: Time manipulation must be performed within the station's timezone (UTC offset).
+       */
+      const time = moment(vm.systemTime).utcOffset(vm.station.utc_offset / 60).startOf('M').subtract(1, 'y').toISOString()
+      return {
+        time: {
+          $gte: time,
+          $lte: time
+        },
+        $limit: 1
+      }
+    },
+    guard (vm) {
+      return vm.datastreams && vm.units && vm.systemTime && !vm.seasonal
+    },
+    fetch: fetchDatapoints,
+    assign: assignDatapoints,
+    targets: ['seasonal']
   },
 
   station: {
@@ -205,12 +258,28 @@ export default {
         if (m.person_id) personIds.push(m.person_id)
       })
 
-      vm.contactOrgIds = orgIds
-      vm.contactPersonIds = personIds
-      vm.station = station
-    }
+      return [orgIds, personIds, station]
+    },
+    targets: ['contactOrgIds', 'contactPersonIds', 'station']
   },
 
+  // TODO: Move to AppSources.js?
+  systemTime: {
+    guard (vm) {
+      return !vm.systemTime
+    },
+    fetch (vm) {
+      return services.systemTime.get('utc')
+    },
+    afterFetch (res) {
+      if (res && res.now) {
+        return new Date(res.now)
+      }
+    },
+    targets: ['systemTime']
+  },
+
+  // TODO: Move to AppSources.js?
   unitVocabulary: {
     guard (vm) {
       return !vm.unitAbbrs
@@ -227,6 +296,36 @@ export default {
         return abbrs
       }
     },
-    target: 'unitAbbrs'
+    targets: ['unitAbbrs']
+  },
+
+  yesterday: {
+    datastreamFilter: noAttributesFilter,
+    datastreamKeys: [
+      // TODO: Should be Cumulative_Day_Precipitation_Height_InchPerDay
+      // TODO: Should be Cumulative_Day_Precipitation_Height_MillimeterPerDay
+      {imp: 'Cumulative_Day_Precipitation_Height_Inch', met: 'Cumulative_Day_Precipitation_Height_Millimeter'}
+    ],
+    datapointsQuery (vm) {
+      /*
+        Daily cumulative values are stamped with midnight of the relevant day.
+
+        NOTE: Time manipulation must be performed within the station's timezone (UTC offset).
+       */
+      const time = moment(vm.systemTime).utcOffset(vm.station.utc_offset / 60).startOf('d').subtract(1, 'd').toISOString()
+      return {
+        time: {
+          $gte: time,
+          $lte: time
+        },
+        $limit: 1
+      }
+    },
+    guard (vm) {
+      return vm.datastreams && vm.units && vm.systemTime && !vm.yesterday
+    },
+    fetch: fetchDatapoints,
+    assign: assignDatapoints,
+    targets: ['yesterday']
   }
 }

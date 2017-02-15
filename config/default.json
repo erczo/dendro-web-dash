@@ -5,9 +5,9 @@
     },
     "io": {
       "options": {
-        "path": "/api/v1/socket.io"
+        "path": "/socket.io"
       },
-      "uri": "http://128.32.109.75"
+      "uri": "http://localhost:3030"
     }
   },
   "host": "localhost",
