@@ -5,9 +5,9 @@
     },
     "io": {
       "options": {
-        "path": "/socket.io"
+        "path": "/api/v1/socket.io"
       },
-      "uri": "http://128.32.109.75/api/v1"
+      "uri": "http://128.32.109.75"
     }
   },
   "port": 8080,
