@@ -251,12 +251,14 @@ export default {
     assign (vm, station) {
       const orgIds = []
       const personIds = []
-      station.members.filter(m => {
-        return m.roles.indexOf('contact') > -1
-      }).forEach(m => {
-        if (m.organization_id) orgIds.push(m.organization_id)
-        if (m.person_id) personIds.push(m.person_id)
-      })
+      if (station.members) {
+        station.members.filter(m => {
+          return m.roles.indexOf('contact') > -1
+        }).forEach(m => {
+          if (m.organization_id) orgIds.push(m.organization_id)
+          if (m.person_id) personIds.push(m.person_id)
+        })
+      }
 
       return [orgIds, personIds, station]
     },

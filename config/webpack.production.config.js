@@ -99,6 +99,11 @@ const config = {
         Tether: 'tether',
         'window.jQuery': 'jquery',
         'window.Tether': 'tether'
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
     })
     // new ExtractTextPlugin('assets/styles/[name].[contenthash].css')
   ],

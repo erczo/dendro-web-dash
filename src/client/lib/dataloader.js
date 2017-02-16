@@ -103,6 +103,9 @@ class DataLoader {
 
         vm[readyKey] = true
       }).catch(err => {
+        // TODO: Remove - for debug only
+        console.log('Fetch error', err)
+
         if (vm[fetchedAtKey] !== fetchedAt) return // Cancelled
 
         vm[loadingKey] = false

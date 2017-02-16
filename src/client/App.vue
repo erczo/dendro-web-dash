@@ -118,7 +118,7 @@ export default {
       Obtain our initial preferences from local storage.
      */
     localforage.getItem('units', (err, value) => {
-      if (!err && value) {
+      if (!err && typeof value === 'string') {
         this.units = value
       } else {
         this.units = 'met' // Default

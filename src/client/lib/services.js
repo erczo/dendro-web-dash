@@ -15,7 +15,7 @@ const config = window.CLIENT_CONFIG
 const socket = io(config.io.uri, config.io.options)
 const app = feathers()
   .configure(hooks())
-  .configure(socketio(socket))
+  .configure(socketio(socket, config.socketio.options))
 
 export default {
   datapointLookup: app.service('/datapoints/lookup'),
