@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "028dfc2a3a3d2c9526e7"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "837ad34da3fcf0b2efc4"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -34563,7 +34563,15 @@
 	      var elevPres = this.getElevPres();
 	      if (typeof curPres !== 'number' || typeof elevPres !== 'number') return;
 
-	      return elevPres - curPres;
+	      var offset = elevPres - curPres;
+
+	      switch (this.units) {
+	        case 'imp':
+	          return _math2.default.round(offset, 1);
+	        case 'met':
+	          return _math2.default.round(offset, 0);
+	      }
+	      return;
 	    },
 	    presAbbr: function presAbbr() {
 	      switch (this.units) {

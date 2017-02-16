@@ -111,7 +111,15 @@ export default {
       if (typeof curPres !== 'number' || typeof elevPres !== 'number') return
 
       // TODO: Discuss this approach - diff. of rounded values
-      return elevPres - curPres
+      const offset = elevPres - curPres
+
+      switch (this.units) {
+        case 'imp':
+          return math.round(offset, 1)
+        case 'met':
+          return math.round(offset, 0)
+      }
+      return
     },
     presAbbr: function () {
       switch (this.units) {
