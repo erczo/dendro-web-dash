@@ -1,65 +1,104 @@
-// const timeGetters = {
-//   methods: {
-//     getTime (prop, impKey, metKey) {
-//     }
-//   }
-// }
+/**
+ * Exports various Vue mixins for use with dashboard tiles.
+ *
+ * @author J. Scott Smith
+ * @license BSD-2-Clause-FreeBSD
+ * @module mixins/tile
+ */
 
-// function getValue (prop, impKey, metKey, impUnit, metUnit) {
-//   if (!prop) return
+import moment from 'moment'
 
-//   switch (this.units) {
-//     case 'imp':
-//       if (prop[impKey]) {
-//         return math.round(math.unit(prop[impKey][0].v, 'degF').toNumber('degF'), 1)
-//       } else if (prop[metKey]) {
-//         return math.round(math.unit(prop[metKey][0].v, 'degC').toNumber('degF'), 1)
-//       }
-//       break
-//     case 'met':
-//       if (prop[metKey]) {
-//         return math.round(math.unit(prop[metKey][0].v, 'degC').toNumber('degC'), 1)
-//       } else if (prop[impKey]) {
-//         return math.round(math.unit(prop[impKey][0].v, 'degF').toNumber('degC'), 1)
-//       }
-//       break
-//   }
-//   return
-// }
+const abbr = {
+  methods: {
+    getAbbr (key) {
+      if (!this.unitAbbrs) return ''
+      return this.unitAbbrs[key]
+    }
+  }
+}
 
-// function valueGetters (impUnit, metUnit) {
-//   return function (prop, impKey, metKey) {
-//     return getValue(prop, impKey, metKey, impUnit, metUnit)
-//   }
-// }
+const length = {
+  computed: {
+    lenAbbr: function () {
+      switch (this.units) {
+        case 'imp':
+          return this.getAbbr('Inch')
+        case 'met':
+          return this.getAbbr('Millimeter')
+      }
+      return
+    }
+  }
+}
 
-// const valueGetters = {
-//   methods: {
-//     getValue (prop, impKey, metKey) {
-//       if (!prop) return
+const pressure = {
+  computed: {
+    presAbbr: function () {
+      switch (this.units) {
+        case 'imp':
+          return this.getAbbr('PoundForcePerSquareInch')
+        case 'met':
+          return this.getAbbr('Millibar')
+      }
+      return
+    }
+  }
+}
 
-//       switch (this.units) {
-//         case 'imp':
-//           if (prop[impKey]) {
-//             return math.round(math.unit(prop[impKey][0].v, 'degF').toNumber('degF'), 1)
-//           } else if (prop[metKey]) {
-//             return math.round(math.unit(prop[metKey][0].v, 'degC').toNumber('degF'), 1)
-//           }
-//           break
-//         case 'met':
-//           if (prop[metKey]) {
-//             return math.round(math.unit(prop[metKey][0].v, 'degC').toNumber('degC'), 1)
-//           } else if (prop[impKey]) {
-//             return math.round(math.unit(prop[impKey][0].v, 'degF').toNumber('degC'), 1)
-//           }
-//           break
-//       }
-//       return
-//     }
-//   }
-// }
+const seasonal = {
+  computed: {
+    seasMonth: function () {
+      if (this.stationTime) return moment(this.stationTime).format('MMMM')
+    }
+  }
+}
 
-// export {
-//   timeGetters,
-//   valueGetters
-// }
+const solar = {
+  computed: {
+    parAbbr: function () {
+      // TODO: Should be MicromolePerSquareMeter
+      return this.getAbbr('Micromole')
+    },
+    radAbbr: function () {
+      return this.getAbbr('WattPerSquareMeter')
+    }
+  }
+}
+
+const speed = {
+  computed: {
+    spdAbbr: function () {
+      switch (this.units) {
+        case 'imp':
+          return this.getAbbr('MilePerHour')
+        case 'met':
+          return this.getAbbr('MeterPerSecond')
+      }
+      return
+    }
+  }
+}
+
+const temperature = {
+  computed: {
+    degAbbr: function () {
+      switch (this.units) {
+        case 'imp':
+          return this.getAbbr('DegreeFahrenheit')
+        case 'met':
+          return this.getAbbr('DegreeCelsius')
+      }
+      return
+    }
+  }
+}
+
+export {
+  abbr,
+  length,
+  pressure,
+  seasonal,
+  solar,
+  speed,
+  temperature
+}

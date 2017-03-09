@@ -29,52 +29,57 @@
 <script>
 // TODO: Show warning/indicator if current readings are older than 24 hours
 // TODO: Make colors props?
-import math from '../../lib/math'
-import moment from 'moment'
+import {seasonal} from '../../mixins/tile'
+
+import ValueAcc from '../../accessors/ValueAcc'
+const VALUE_ACC_OPTIONS = {
+  round: 1
+}
+
+let avgAirMoist
+let maxSeasAirMoist
+let minSeasAirMoist
 
 export default {
   props: {
+    // Tile datasets
     current: Object,
     seasonal: Object,
-    time: Date,
-    utcOffset: Number
+
+    // Misc
+    stationTime: Number,
+    systemTime: Number,
+    unitAbbrs: Object,
+    units: String
   },
 
-  computed: {
-    curAvg: function () {
-      return this.getCurPct('Average_Air_Moisture_Percent')[0]
-    },
-    seasMax: function () {
-      return this.getSeasPct('Maximum_Seasonal_Air_Moisture_Percent')[0]
-    },
-    seasMin: function () {
-      return this.getSeasPct('Minimum_Seasonal_Air_Moisture_Percent')[0]
-    },
-    seasMonth: function () {
-      // TODO: Verify approach for seasonal month names (A or B below)
-      // A. Use current station time to get a month name
-      if (!this.time) return
-      return moment(this.time).utcOffset(this.utcOffset / 60).format('MMMM')
-      // B. Harvest the time from a datapoint to get a month name
-      // const pt = this.getSeasPct('Maximum_Seasonal_Air_Moisture_Percent')[1]
-      // if (pt) return moment(pt.t).utcOffset(pt.o / 60).format('MMMM')
+  data () {
+    return {
+      curAvg: null,
+      seasMax: null,
+      seasMin: null
     }
   },
 
-  methods: {
-    getCurPct (...args) {
-      return this.getPct(this.current, ...args)
-    },
-    getSeasPct (...args) {
-      return this.getPct(this.seasonal, ...args)
-    },
-    getPct (prop, key) {
-      if (!prop) return []
+  created () {
+    avgAirMoist = new ValueAcc(this, 'Average_Air_Moisture', VALUE_ACC_OPTIONS)
+    maxSeasAirMoist = new ValueAcc(this, 'Maximum_Seasonal_Air_Moisture', VALUE_ACC_OPTIONS)
+    minSeasAirMoist = new ValueAcc(this, 'Minimum_Seasonal_Air_Moisture', VALUE_ACC_OPTIONS)
+  },
 
-      const pts = prop[key]
+  beforeDestroy () {
+    avgAirMoist = maxSeasAirMoist = minSeasAirMoist = null
+  },
 
-      if (pts) return [math.round(pts[0].v, 1), pts[0]]
-      return []
+  mixins: [seasonal],
+
+  watch: {
+    current (newDataset) {
+      this.curAvg = avgAirMoist.init(newDataset).valRound
+    },
+    seasonal (newDataset) {
+      this.seasMax = maxSeasAirMoist.init(newDataset).valRound
+      this.seasMin = minSeasAirMoist.init(newDataset).valRound
     }
   }
 }

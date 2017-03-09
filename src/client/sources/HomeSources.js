@@ -1,25 +1,42 @@
+/**
+ * Exports DataLoader sources for the home page.
+ *
+ * @author J. Scott Smith
+ * @license BSD-2-Clause-FreeBSD
+ * @module source/StationSources
+ */
+
 import services from '../lib/services'
 
 /**
- * Data source definitions for the station dashboard; used to configure a DataLoader.
+ * Data source definitions for the home page; used to configure a DataLoader.
  */
 export default {
+
+  /*
+    Top-level datasets: stations, etc.
+   */
+
   stations: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearStations()
+    },
     guard (vm) {
-      return !vm.stations && !vm.stationsError
+      return !vm.state.stations && !vm.stationsError
     },
     fetch (vm) {
       return services.station.find({
         query: {
           enabled: true,
           station_type: 'weather',
-          slug: vm.slug
+          slug: {$exists: 1}
           // TODO: Implement limit; add 'More' button
           // $limit: 1
         }
       })
     },
-    afterFetch (res) {
+    afterFetch (vm, res) {
       if (res && res.data && res.data.length > 0) {
         return res.data.sort((a, b) => {
           if (a.name < b.name) return -1
@@ -28,26 +45,28 @@ export default {
         })
       }
     },
-    targets: ['stations']
+    assign (vm, stations) {
+      vm.store.setStations(stations)
+    }
   },
 
   // TODO: Move to AppSources.js?
   unitVocabulary: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearUnitVocabulary()
+    },
     guard (vm) {
-      return !vm.unitAbbrs
+      return !vm.state.unitAbbrs
     },
     fetch (vm) {
       return services.vocabulary.get('dt-unit')
     },
-    afterFetch (res) {
-      if (res && res.terms) {
-        const abbrs = {}
-        res.terms.forEach(term => {
-          abbrs[term.label] = term.abbreviation
-        })
-        return abbrs
-      }
+    afterFetch (vm, res) {
+      if (res) return res
     },
-    targets: ['unitAbbrs']
+    assign (vm, vocabulary) {
+      vm.store.setUnitVocabulary(vocabulary)
+    }
   }
 }

@@ -4,6 +4,7 @@
 
 <script>
 import loadGoogleMapsAPI from 'load-google-maps-api'
+import logger from '../../lib/logger'
 
 const config = window.CLIENT_CONFIG
 
@@ -42,9 +43,8 @@ export default {
 
       this.map.addListener('center_changed', this.centerChangedListener)
       this.marker.addListener('click', this.selectMarker)
-    }).catch((err) => {
-      // TODO: Do more than just log the error?
-      console.error(err)
+    }).catch(err => {
+      logger.error(err)
     })
   },
 

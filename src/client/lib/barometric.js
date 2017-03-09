@@ -1,6 +1,8 @@
 /**
- * The Barometric Function, in Javascript.
+ * The Barometric function, in JavaScript.
  * SEE: https://github.com/broofa/airjs
+ *
+ * NOTE: Refactored by JSS to use JavaScript Standard Style.
  *
  * @author Robert Kieffer
  */
@@ -19,18 +21,18 @@ var M = 0.0289644 // Molar mass of earth's air (kg/mol)
 var GMR = G * M / R // pre-multiply this stuff together
 
 /**
-  * The calculations for density and pressure air very similar so we capture
-  * the logic for both here.
-  */
+ * The calculations for density and pressure air very similar so we capture
+ * the logic for both here.
+ */
 function _calc (wat, h) {
   var hb, // Standard height
-    lb, // Standard lapse rate
-    rb, // Standard density
-    pb, // Standard pressure
-    tb, // Standard temperature
-    c,  // interim value (standard density or pressure)
-    m,  // interim value (mantissa of result)
-    e   // interim value (exponent of result)
+    lb,   // Standard lapse rate
+    rb,   // Standard density
+    pb,   // Standard pressure
+    tb,   // Standard temperature
+    c,    // interim value (standard density or pressure)
+    m,    // interim value (mantissa of result)
+    e     // interim value (exponent of result)
 
   // Set constants based on what 'layer' (b) of the atmosphere we're in
   if (h < 11000) { // b = 0
@@ -64,19 +66,21 @@ function _calc (wat, h) {
   return c * Math.pow(m, e)
 }
 
-// Public API
-module.exports = {
-  /**
-    * Get air pressure (pascals) at the given height (h) in meters.
-    */
-  pressure: function (h) {
-    return _calc(PRESSURE, h)
-  },
+/**
+ * Get air pressure (pascals) at the given height (h) in meters.
+ */
+function pressure (h) {
+  return _calc(PRESSURE, h)
+}
 
-  /**
-    * Get air density (kg/m^3) at the given height (h) in meters.
-    */
-  density: function (h) {
-    return _calc(DENSITY, h)
-  }
+/**
+ * Get air density (kg/m^3) at the given height (h) in meters.
+ */
+function density (h) {
+  return _calc(DENSITY, h)
+}
+
+export {
+  pressure,
+  density
 }

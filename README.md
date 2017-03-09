@@ -32,13 +32,3 @@ TODO: Briefly describe this repo and Project Dendro
 3. Tag the desired image, e.g. `docker tag f0ec409b5194 dendro/dendro-web-dash:latest`.
 
 4. Push it via `docker push dendro/dendro-web-dash`.
-
-
-## Tasks
-
-- [ ] Configure HMR for components
-- [ ] Add wpm install to postinstal?
-- [ ] Remember, project is in dev mode by default
-- [ ] Implement cache busting
-- [ ] Don't leak stack traces
-- [ ] Add favicon

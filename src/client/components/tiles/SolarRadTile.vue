@@ -25,47 +25,47 @@
 <script>
 // TODO: Show warning/indicator if current readings are older than 24 hours
 // TODO: Make colors props?
-import math from '../../lib/math'
+import {abbr, solar} from '../../mixins/tile'
+
+import ValueAcc from '../../accessors/ValueAcc'
+
+let avgSolarPAR
+let avgSolarRad
 
 export default {
   props: {
+    // Tile datasets
     current: Object,
-    time: Date,
-    unitAbbrs: Object
+
+    // Misc
+    stationTime: Number,
+    systemTime: Number,
+    unitAbbrs: Object,
+    units: String
   },
 
-  computed: {
-    curPAR: function () {
-      // TODO: Should be Average_Solar_PhotosyntheticallyActiveRadiation_MicromolePerSquareMeter
-      return this.getCurVal('Average_Solar_PhotosyntheticallyActiveRadiation_Micromole')[0]
-    },
-    curRad: function () {
-      return this.getCurVal('Average_Solar_Radiation_WattPerSquareMeter')[0]
-    },
-    parAbbr: function () {
-      // TODO: Should be MicromolePerSquareMeter
-      return this.getAbbr('Micromole')
-    },
-    radAbbr: function () {
-      return this.getAbbr('WattPerSquareMeter')
+  data () {
+    return {
+      curPAR: null,
+      curRad: null
     }
   },
 
-  methods: {
-    getAbbr (key) {
-      if (!this.unitAbbrs) return ''
-      return this.unitAbbrs[key]
-    },
-    getCurVal (...args) {
-      return this.getVal(this.current, ...args)
-    },
-    getVal (prop, key) {
-      if (!prop) return []
+  created () {
+    avgSolarPAR = new ValueAcc(this, 'Average_Solar_PhotosyntheticallyActiveRadiation')
+    avgSolarRad = new ValueAcc(this, 'Average_Solar_Radiation')
+  },
 
-      const pts = prop[key]
+  beforeDestroy () {
+    avgSolarPAR = avgSolarRad = null
+  },
 
-      if (pts) return [math.round(pts[0].v, 0), pts[0]]
-      return []
+  mixins: [abbr, solar],
+
+  watch: {
+    current (newDataset) {
+      this.curPAR = avgSolarPAR.init(newDataset).valRound
+      this.curRad = avgSolarRad.init(newDataset).valRound
     }
   }
 }

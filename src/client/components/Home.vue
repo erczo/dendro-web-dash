@@ -15,27 +15,31 @@
       </div>
     </section>
 
-    <section id="stations">
+    <section id="stations" v-if="stations && stations.length > 0">
       <div class="container">
         <div class="row">
           <div class="col-12">
             <ul class="list-unstyled">
-              <station-list-item :is-retina="isRetina" :station="station" :unit-abbrs="unitAbbrs" :units="units" v-for="station in stations"></station-list-item>
+              <station-list-item :is-retina="isRetina" :station="station" :unit-abbrs="state.unitAbbrs" :units="units" v-for="station in stations"></station-list-item>
             </ul>
           </div>
         </div>
       </div>
     </section>
+  </div>
 </template>
 
 <script>
 // TODO: Implement search, no results, errors and 'more' button
+import logger from '../lib/logger'
+
 import StationListItem from './StationListItem'
 
 import {DataLoader} from '../lib/dataloader'
 import HomeSources from '../sources/HomeSources'
+import HomeStore from '../stores/HomeStore'
 
-const dataLoader = new DataLoader(HomeSources)
+let dataLoader
 
 export default {
   components: {
@@ -43,22 +47,41 @@ export default {
   },
 
   props: {
-    clientTime: Date,
+    clientTime: Number,
     isRetina: Boolean,
     units: String
   },
 
   data () {
     return {
-      stations: null,
+      state: this.store.reactiveState,
+
       stationsError: null,
-      stationsLoading: false,
-      unitAbbrs: null
+      stationsLoading: false
     }
   },
 
+  beforeCreate () {
+    this.store = new HomeStore()
+  },
+
   created () {
-    dataLoader.load(this)
+    dataLoader = new DataLoader(this, HomeSources)
+    dataLoader.clear().load().then(() => {
+      logger.log('Home:created::vm', this)
+    })
+  },
+
+  computed: {
+    stations () {
+      return this.state.stations
+    }
+  },
+
+  beforeDestroy () {
+    // TODO: Implement
+    // dataLoader.cancel()
+    dataLoader = null
   }
 }
 </script>

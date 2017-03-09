@@ -9,9 +9,10 @@
       },
       "uri": "http://localhost:3030"
     },
+    "loggerEnabled": true,
     "socketio": {
       "options": {
-        "timeout": 20000
+        "timeout": 30000
       }
     }
   },

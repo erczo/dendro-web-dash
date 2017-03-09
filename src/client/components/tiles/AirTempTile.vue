@@ -30,68 +30,54 @@
 <script>
 // TODO: Show warning/indicator if current readings are older than 24 hours
 // TODO: Make colors props?
-import math from '../../lib/math'
-import moment from 'moment'
+import {seasonal} from '../../mixins/tile'
+
+import TempAcc from '../../accessors/TempAcc'
+
+let avgAirTemp
+let maxSeasAirTemp
+let minSeasAirTemp
 
 export default {
   props: {
+    // Tile datasets
     current: Object,
     seasonal: Object,
-    time: Date,
-    utcOffset: Number,
+
+    // Misc
+    stationTime: Number,
+    systemTime: Number,
+    unitAbbrs: Object,
     units: String
   },
 
-  computed: {
-    curAvg: function () {
-      return this.getCurDeg('Average_Air_Temperature_DegreeFahrenheit', 'Average_Air_Temperature_DegreeCelsius')[0]
-    },
-    seasMax: function () {
-      return this.getSeasDeg('Maximum_Seasonal_Air_Temperature_DegreeFahrenheit', 'Maximum_Seasonal_Air_Temperature_DegreeCelsius')[0]
-    },
-    seasMin: function () {
-      return this.getSeasDeg('Minimum_Seasonal_Air_Temperature_DegreeFahrenheit', 'Minimum_Seasonal_Air_Temperature_DegreeCelsius')[0]
-    },
-    seasMonth: function () {
-      // TODO: Verify approach for seasonal month names (A or B below)
-      // A. Use current station time to get a month name
-      if (!this.time) return
-      return moment(this.time).utcOffset(this.utcOffset / 60).format('MMMM')
-      // B. Harvest the time from a datapoint to get a month name
-      // const pt = this.getSeasDeg('Maximum_Seasonal_Air_Temperature_DegreeFahrenheit', 'Maximum_Seasonal_Air_Temperature_DegreeCelsius')[1]
-      // if (pt) return moment(pt.t).utcOffset(pt.o / 60).format('MMMM')
+  data () {
+    return {
+      curAvg: null,
+      seasMax: null,
+      seasMin: null
     }
   },
 
-  methods: {
-    getCurDeg (...args) {
-      return this.getDeg(this.current, ...args)
-    },
-    getSeasDeg (...args) {
-      return this.getDeg(this.seasonal, ...args)
-    },
-    getDeg (prop, impKey, metKey) {
-      if (!prop) return []
+  created () {
+    avgAirTemp = new TempAcc(this, 'Average_Air_Temperature')
+    maxSeasAirTemp = new TempAcc(this, 'Maximum_Seasonal_Air_Temperature')
+    minSeasAirTemp = new TempAcc(this, 'Minimum_Seasonal_Air_Temperature')
+  },
 
-      const [impPts, metPts] = [prop[impKey], prop[metKey]]
+  beforeDestroy () {
+    avgAirTemp = maxSeasAirTemp = minSeasAirTemp = null
+  },
 
-      switch (this.units) {
-        case 'imp':
-          if (impPts) {
-            return [math.round(math.unit(impPts[0].v, 'degF').toNumber(), 1), impPts[0]]
-          } else if (metPts) {
-            return [math.round(math.unit(metPts[0].v, 'degC').toNumber('degF'), 1), metPts[0]]
-          }
-          break
-        case 'met':
-          if (metPts) {
-            return [math.round(math.unit(metPts[0].v, 'degC').toNumber(), 1), metPts[0]]
-          } else if (impPts) {
-            return [math.round(math.unit(impPts[0].v, 'degF').toNumber('degC'), 1), impPts[0]]
-          }
-          break
-      }
-      return []
+  mixins: [seasonal],
+
+  watch: {
+    current (newDataset) {
+      this.curAvg = avgAirTemp.init(newDataset).degRound
+    },
+    seasonal (newDataset) {
+      this.seasMax = maxSeasAirTemp.init(newDataset).degRound
+      this.seasMin = minSeasAirTemp.init(newDataset).degRound
     }
   }
 }

@@ -26,12 +26,17 @@
 import math from '../lib/math'
 import moment from 'moment'
 
+import {abbr} from '../mixins/tile'
+
 export default {
   props: {
     contactOrgs: Array,
     contactPersons: Array,
     station: Object,
-    time: Date,
+
+    // Misc
+    stationTime: Number,
+    systemTime: Number,
     unitAbbrs: Object,
     units: String
   },
@@ -58,29 +63,36 @@ export default {
       return `mailto:${emails.sort().join(',')}?subject=${subject}`
     },
     elevation: function () {
-      const m = this.station.geo.coordinates[2]
-      switch (this.units) {
-        case 'imp':
-          return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getAbbr('Foot')}`
-        case 'met':
-          return `${m} ${this.getAbbr('Meter')}`
+      const station = this.station
+      if (station.geo && station.geo.coordinates && station.geo.coordinates.length > 2) {
+        const m = this.station.geo.coordinates[2]
+        switch (this.units) {
+          case 'imp':
+            return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getAbbr('Foot')}`
+          case 'met':
+            return `${m} ${this.getAbbr('Meter')}`
+        }
       }
-      return
     },
     localTime: function () {
-      if (!this.time) return
-      return moment(this.time).utcOffset(this.station.utc_offset / 60).format('LT')
+      if (this.stationTime) {
+        switch (this.units) {
+          case 'imp':
+            return moment(this.stationTime).utc().format('h:mm A')
+          case 'met':
+            return moment(this.stationTime).utc().format('HH:mm')
+        }
+      }
     },
     utcOffsetHours: function () {
-      return math.round(math.unit(this.station.utc_offset, 's').toNumber('h'), 2)
+      const offset = this.station.utc_offset
+      if (typeof offset === 'number') return math.round(math.unit(offset, 's').toNumber('h'), 2)
     }
   },
 
+  mixins: [abbr],
+
   methods: {
-    getAbbr (key) {
-      if (!this.unitAbbrs) return ''
-      return this.unitAbbrs[key]
-    },
     selectMarker () {
       this.$emit('select-marker', this.station.geo.coordinates)
     }

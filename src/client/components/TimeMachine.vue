@@ -24,184 +24,475 @@
 // TODO: Finish
 // TODO: Make colors props?
 // TODO: Break this into separate components
-
+// TODO: Refactor, reduce redundancy
+import $ from 'jquery'
 import Highcharts from 'highcharts'
 
-// TODO: Sync'd charts to be implemented later
+import {abbr, solar, speed, temperature} from '../mixins/tile'
+
+import SpeedAcc from '../accessors/SpeedAcc'
+import TempAcc from '../accessors/TempAcc'
+import ValueAcc from '../accessors/ValueAcc'
+
+let avgAirSpeed
+let avgAirTemp
+let avgSoilTemp
+let avgSolarPAR
+let avgSolarRad
+let maxAirSpeed
+
+/**
+ * Array.sort comparison predicate for sorting dataset docs.
+ */
+function compareDocsByAttrsIndex (a, b) {
+  const aIndex = a.datastream.__attrsInfo.index
+  const bIndex = b.datastream.__attrsInfo.index
+
+  if (aIndex !== bIndex) {
+    return aIndex - bIndex
+  } else if (a.datastream._id < b.datastream._id) {
+    return -1
+  } else if (a.datastream._id > b.datastream._id) {
+    return 1
+  }
+  return 0
+}
+
+// TODO: Optional sync'd chart feature
 // import HighchartsDendro from '../lib/highcharts-dendro'
 
 // HighchartsDendro(Highcharts)
 
-// function syncExtremes(e) {
-//   let thisChart = this.chart;
+/**
+ * Synchronize zooming through the setExtremes event handler.
+ */
+function syncExtremes (e) {
+  let thisChart = this.chart
 
-//   // Prevent feedback loop
-//   if (e.trigger !== 'syncExtremes') {
-//     Highcharts.each(Highcharts.charts, function (chart) {
-//       if (chart !== thisChart) {
-//         if (chart.xAxis[0].setExtremes) { // It is null while updating
-//           chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, { trigger: 'syncExtremes' });
-//         }
-//       }
-//     });
-//   }
-// }
+  // Prevent feedback loop
+  if (e.trigger !== 'syncExtremes') {
+    Highcharts.charts.forEach(function (chart) {
+      if (chart !== thisChart && chart.__custom === 'tm') {
+        if (chart.xAxis[0].setExtremes) { // It is null while updating
+          chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
+            trigger: 'syncExtremes'
+          })
+        }
+      }
+    })
+  }
+}
 
 export default {
-  data () {
-    let categories = [
-      '9/28', '9/29', '9/30', '10/1', '10/2', '10/3', '10/4',
-      '10/5', '10/6', '10/7', '10/8', '10/9', '10/10', '10/11'
-    ]
+  props: {
+    // Config
+    seriesConfig: Object,
 
-    return {
+    // Chart datasets
+    airTemp: Object,
+    soilTemp: Object,
+    solarRad: Object,
+    windSpeed: Object,
 
-      // Air temp
-      airTempOpts: {
+    // Cursor-based fetching
+    airTempCursor: null,
+    soilTempCursor: null,
+    solarRadCursor: null,
+    windSpeedCursor: null,
+
+    // Misc
+    unitAbbrs: Object,
+    units: String
+  },
+
+  created () {
+    avgAirSpeed = new SpeedAcc(this, 'Average_Air_Speed')
+    avgAirTemp = new TempAcc(this, 'Average_Air_Temperature')
+    avgSoilTemp = new TempAcc(this, 'Average_Soil_Temperature')
+    avgSolarPAR = new ValueAcc(this, 'Average_Solar_PhotosyntheticallyActiveRadiation')
+    avgSolarRad = new ValueAcc(this, 'Average_Solar_Radiation')
+    maxAirSpeed = new SpeedAcc(this, 'Maximum_Air_Speed')
+
+    // Arrange series by datastream attributes
+    avgAirTemp.docsSortPredicate = compareDocsByAttrsIndex
+    avgSoilTemp.docsSortPredicate = compareDocsByAttrsIndex
+
+    // Series data
+    this.airTempData = []
+    this.soilTempData = []
+    this.solarRadData = [[], []]
+    this.windSpeedData = [[], []]
+
+    // Series names
+    this.airTempNames = []
+    this.soilTempNames = []
+  },
+
+  mounted () {
+    this.airTempChart = Highcharts.chart(this.$el.getElementsByClassName('air-temp-chart')[0], this.airTempOptions())
+    this.soilTempChart = Highcharts.chart(this.$el.getElementsByClassName('soil-temp-chart')[0], this.soilTempOptions())
+    this.solarRadChart = Highcharts.chart(this.$el.getElementsByClassName('solar-rad-chart')[0], this.solarRadOptions())
+    this.windSpeedChart = Highcharts.chart(this.$el.getElementsByClassName('wind-speed-chart')[0], this.windSpeedOptions())
+
+    this.charts = [this.airTempChart, this.soilTempChart, this.solarRadChart, this.windSpeedChart]
+    this.charts.forEach(chart => {
+      chart.showLoading()
+      // HACK: Tag charts so that the global syncExtremes hander can exclude other charts on the page
+      chart.__custom = 'tm'
+    })
+
+    // Remove crosshairs upon mouseleave
+    $(this.$el).bind('mouseleave', (e) => {
+      this.charts.forEach(chart => {
+        chart.xAxis[0].hideCrosshair()
+      })
+    })
+
+    // Sync crosshairs across charts
+    $(this.$el).bind('mousemove touchmove touchstart', (e) => {
+      this.charts.forEach(chart => {
+        // Find coordinates within the chart
+        const event = chart.pointer.normalize(e.originalEvent)
+        if (!event) return
+
+        // Get the hovered point
+        const firstSeries = chart.series[0]
+        if (!firstSeries) return
+
+        const point = firstSeries.searchPoint(event, true)
+        if (!point) return
+
+        chart.xAxis[0].drawCrosshair(event, point)
+      })
+    })
+  },
+
+  beforeDestroy () {
+    $(this.$el).unbind()
+
+    this.charts.forEach(chart => {
+      chart.destroy()
+    })
+    this.charts = null
+    this.airTempChart = this.soilTempChart = this.solarRadChart = this.windSpeedChart = null
+    this.airTempData = this.soilTempData = this.solarRadData = this.windSpeedData = null
+    this.airTempNames = this.soilTempNames = null
+
+    avgAirSpeed = avgAirTemp = avgSoilTemp = avgSolarPAR = avgSolarRad = maxAirSpeed = null
+  },
+
+  mixins: [abbr, solar, speed, temperature],
+
+  methods: {
+    airTempOptions () {
+      return {
         chart: {
-          height: 350
+          height: 350,
+          zoomType: 'x'
         },
-
-        colors: ['#999', '#5cb6dc', '#5cdcbf'],
-
         title: {
-          text: 'Air Temperature (°C)'
+          text: 'Air Temperature'
         },
-
         xAxis: {
-          categories: categories
-        },
-
-        yAxis: {
+          crosshair: true,
+          events: {
+            setExtremes: syncExtremes
+          },
+          type: 'datetime',
           title: {
-            text: null
+            text: 'Time'
           }
         },
-
-        series: [{
-          name: 'Avg',
-          data: [
-            22.0, 18.2, 12.2, 12.3, 10.5, 10.5, 11.4, 11.2, 14.2, 17.3, 19.9, 19.6, 15.9, 12.8
-          ]
-        }, {
-          name: '2 m',
-          data: [
-            21.6, 17.9, 12.0, 12.1, 10.3, 10.4, 11.2, 11.0, 13.9, 17.1, 19.6, 19.3, 15.6, 12.5
-          ]
-        }, {
-          name: '10 m',
-          data: [
-            21.9, 18.2, 11.9, 12.0, 10.3, 10.6, 11.2, 11.2, 14.4, 17.7, 20.2, 19.8, 15.9, 11.7
-          ]
-        }]
-      },
-
-      // Soil temp
-      soilTempOpts: {
-        chart: {
-          height: 350
-        },
-
-        colors: ['#5cb6dc', '#5cdcbf', '#aedc5c', '#999'],
-
-        title: {
-          text: 'Soil Temperature (°C)'
-        },
-
-        xAxis: {
-          categories: categories
-        },
-
-        yAxis: {
+        yAxis: [{
           title: {
-            text: null
+            text: 'Degrees'
+          }
+        }, {
+          gridLineWidth: 0,
+          linkedTo: 0,
+          title: {
+            text: 'Degrees'
+          },
+          opposite: true
+        }],
+        series: []
+      }
+    },
+    soilTempOptions () {
+      return {
+        chart: {
+          height: 350,
+          zoomType: 'x'
+        },
+        title: {
+          text: 'Soil Temperature'
+        },
+        xAxis: {
+          crosshair: true,
+          events: {
+            setExtremes: syncExtremes
+          },
+          type: 'datetime',
+          title: {
+            text: 'Time'
           }
         },
-
-        series: [{
-          name: '2 in',
-          data: [25.3, 24.1, 22.1, 20.8, 19.0, 18.0, 18.5, 18.0, 18.3, 19.1, 20.0, 20.7, 20.7, 20.1]
-        }, {
-          name: '4 in',
-          data: [24.8, 24.1, 22.5, 21.2, 19.7, 18.7, 18.8, 18.5, 18.6, 19.2, 19.9, 20.6, 20.7, 20.1]
-        }, {
-          name: '8 in',
-          data: [24.1, 23.8, 22.7, 21.6, 20.5, 19.5, 19.2, 19.0, 18.9, 19.2, 19.8, 20.3, 20.5, 20.3]
-        }, {
-          name: '20 in',
-          data: [22.9, 23.0, 22.9, 22.4, 21.9, 21.4, 20.8, 20.5, 20.3, 20.2, 20.2, 20.4, 20.6, 20.7]
-        }]
-      },
-
-      // Wind speed
-      windSpeedOpts: {
-        chart: {
-          height: 350
-        },
-
-        colors: ['#a695dc', '#dc635c'],
-
-        title: {
-          text: 'Wind Speed (m/s)'
-        },
-
-        xAxis: {
-          categories: categories
-        },
-
-        yAxis: {
+        yAxis: [{
           title: {
-            text: null
+            text: 'Degrees'
           }
-        },
-
-        series: [{
-          name: 'Avg',
-          data: [1.0, 1.0, 1.8, 2.2, 2.2, 0.9, 1.7, 1.7, 1.3, 1.2, 0.9, 1.0, 1.0, 1.3]
         }, {
-          name: 'Gust',
-          data: [3.3, 3.3, 4.5, 4.6, 5.4, 2.8, 4.8, 4.9, 4.6, 3.1, 3.2, 3.5, 3.6, 3.0]
-        }]
-      },
-
-      // Solar radiation
-      solarRadOpts: {
+          gridLineWidth: 0,
+          linkedTo: 0,
+          title: {
+            text: 'Degrees'
+          },
+          opposite: true
+        }],
+        series: []
+      }
+    },
+    solarRadOptions () {
+      return {
         chart: {
-          height: 350
+          height: 350,
+          zoomType: 'x'
         },
-
-        colors: ['#dcac5c', '#f3f767'],
-
         title: {
           text: 'Solar Radiation'
         },
-
         xAxis: {
-          categories: categories
-        },
-
-        yAxis: {
+          crosshair: true,
+          events: {
+            setExtremes: syncExtremes
+          },
+          type: 'datetime',
           title: {
-            text: null
+            text: 'Time'
           }
         },
-
-        series: [{
-          name: 'Total (W/m2)',
-          data: [198.4, 197.5, 193.2, 200.4, 135.5, 75.1, 176.9, 205.1, 202.6, 185.0, 200.5, 197.3, 193.0, 233.4]
+        yAxis: [{
+          title: {
+            text: 'Total'
+          }
         }, {
-          name: 'PAR (μmol/m2)',
-          data: [224.3, 222.8, 221.8, 220.3, 137.6, 83.0, 187.1, 212.1, 211.8, 194.4, 207.4, 204.5, 200.1, 244.4]
-        }]
+          gridLineWidth: 0,
+          title: {
+            text: 'PAR'
+          },
+          opposite: true
+        }],
+        series: []
+      }
+    },
+    windSpeedOptions () {
+      return {
+        chart: {
+          height: 350,
+          zoomType: 'x'
+        },
+        title: {
+          text: `Wind Speed`
+        },
+        xAxis: {
+          crosshair: true,
+          events: {
+            setExtremes: syncExtremes
+          },
+          type: 'datetime',
+          title: {
+            text: 'Time'
+          }
+        },
+        yAxis: [{
+          title: {
+            text: 'Speed'
+          }
+        }, {
+          gridLineWidth: 0,
+          linkedTo: 0,
+          title: {
+            text: 'Speed'
+          },
+          opposite: true
+        }],
+        series: []
+      }
+    },
+    removeAllSeries (chart) {
+      while (chart.series.length > 0) {
+        chart.series[0].remove()
       }
     }
   },
 
-  mounted () {
-    this.airTempChart = Highcharts.chart(this.$el.getElementsByClassName('air-temp-chart')[0], this.airTempOpts)
-    this.soilTempChart = Highcharts.chart(this.$el.getElementsByClassName('soil-temp-chart')[0], this.soilTempOpts)
-    this.windSpeedChart = Highcharts.chart(this.$el.getElementsByClassName('wind-speed-chart')[0], this.windSpeedOpts)
-    this.solarRadChart = Highcharts.chart(this.$el.getElementsByClassName('solar-rad-chart')[0], this.solarRadOpts)
+  watch: {
+    airTemp (newDataset) {
+      const vm = this
+      if (!newDataset) {
+        this.removeAllSeries(this.airTempChart)
+        this.airTempChart.showLoading()
+        this.airTempData = []
+        this.airTempNames = []
+      } else if (this.airTempData) {
+        avgAirTemp.init(newDataset).docs.forEach(function (doc, i) {
+          this.doc = doc
+
+          // Dynamically add series based on the number of docs
+          if (i >= vm.airTempData.length) {
+            vm.airTempData.push([])
+            vm.airTempNames.push(doc.datastream.__attrsInfo.text || (i > 0 ? `Avg ${i}` : 'Avg'))
+          }
+
+          vm.airTempData[i] = vm.airTempData[i].concat(avgAirTemp.data.map(function (point) {
+            this.point = point
+            return [this.time, this.degRound]
+          }, this))
+        }, avgAirTemp)
+      }
+    },
+    airTempCursor (newCursor) {
+      if (newCursor && (newCursor.start >= newCursor.end)) {
+        this.airTempData.forEach((data, i) => {
+          this.airTempChart.addSeries({
+            color: i > 0 ? '#dcdcdc' : '#5ca1dc',
+            data: this.airTempData[i],
+            lineWidth: Math.max(2, i + 1),
+            name: this.airTempNames[i],
+            step: true,
+            zIndex: i > 0 ? i : 100
+          })
+        })
+        this.airTempData = this.airTempNames = null
+        this.airTempChart.hideLoading()
+        this.airTempChart.setTitle({
+          text: `Air Temperature (${this.degAbbr})`
+        })
+        this.$emit('series-added', 'airTemp')
+      }
+    },
+    soilTemp (newDataset) {
+      const vm = this
+      if (!newDataset) {
+        this.removeAllSeries(this.soilTempChart)
+        this.soilTempChart.showLoading()
+        this.soilTempData = []
+        this.soilTempNames = []
+      } else if (this.soilTempData) {
+        avgSoilTemp.init(newDataset).docs.forEach(function (doc, i) {
+          this.doc = doc
+
+          // Dynamically add series based on the number of docs
+          if (i >= vm.soilTempData.length) {
+            vm.soilTempData.push([])
+            vm.soilTempNames.push(doc.datastream.__attrsInfo.text || (i > 0 ? `Avg ${i}` : 'Avg'))
+          }
+
+          vm.soilTempData[i] = vm.soilTempData[i].concat(avgSoilTemp.data.map(function (point) {
+            this.point = point
+            return [this.time, this.degRound]
+          }, this))
+        }, avgSoilTemp)
+      }
+    },
+    soilTempCursor (newCursor) {
+      if (newCursor && (newCursor.start >= newCursor.end)) {
+        this.soilTempData.forEach((data, i) => {
+          this.soilTempChart.addSeries({
+            color: i > 0 ? '#dcdcdc' : '#aedc5c',
+            data: this.soilTempData[i],
+            lineWidth: Math.max(2, i + 1),
+            name: this.soilTempNames[i],
+            step: true,
+            zIndex: i > 0 ? i : 100
+          })
+        })
+        this.soilTempData = this.soilTempNames = null
+        this.soilTempChart.hideLoading()
+        this.soilTempChart.setTitle({
+          text: `Soil Temperature (${this.degAbbr})`
+        })
+        this.$emit('series-added', 'soilTemp')
+      }
+    },
+    solarRad (newDataset) {
+      if (!newDataset) {
+        this.removeAllSeries(this.solarRadChart)
+        this.solarRadChart.showLoading()
+        this.solarRadData = [[], []]
+      } else if (this.solarRadData) {
+        this.solarRadData[0] = this.solarRadData[0].concat(avgSolarPAR.init(newDataset).data.map(function (point) {
+          this.point = point
+          return [this.time, this.valRound]
+        }, avgSolarPAR))
+
+        this.solarRadData[1] = this.solarRadData[1].concat(avgSolarRad.init(newDataset).data.map(function (point) {
+          this.point = point
+          return [this.time, this.valRound]
+        }, avgSolarRad))
+      }
+    },
+    solarRadCursor (newCursor) {
+      if (newCursor && (newCursor.start >= newCursor.end)) {
+        this.solarRadChart.addSeries({
+          color: '#dcac5c',
+          data: this.solarRadData[0],
+          lineWidth: 3,
+          name: `Total (${this.radAbbr})`,
+          step: true
+        })
+        this.solarRadChart.addSeries({
+          color: '#d8dc5c',
+          data: this.solarRadData[1],
+          lineWidth: 1,
+          name: `PAR (${this.parAbbr})`,
+          step: true,
+          yAxis: 1
+        })
+        this.solarRadData = null
+        this.solarRadChart.hideLoading()
+        this.$emit('series-added', 'solarRad')
+      }
+    },
+    windSpeed (newDataset) {
+      if (!newDataset) {
+        this.removeAllSeries(this.windSpeedChart)
+        this.windSpeedChart.showLoading()
+        this.windSpeedData = [[], []]
+      } else if (this.windSpeedData) {
+        this.windSpeedData[0] = this.windSpeedData[0].concat(avgAirSpeed.init(newDataset).data.map(function (point) {
+          this.point = point
+          return [this.time, this.spdRound]
+        }, avgAirSpeed))
+
+        this.windSpeedData[1] = this.windSpeedData[1].concat(maxAirSpeed.init(newDataset).data.map(function (point) {
+          this.point = point
+          return [this.time, this.spdRound]
+        }, maxAirSpeed))
+      }
+    },
+    windSpeedCursor (newCursor) {
+      if (newCursor && (newCursor.start >= newCursor.end)) {
+        this.windSpeedChart.addSeries({
+          color: '#a695dc',
+          data: this.windSpeedData[0],
+          name: 'Avg',
+          step: true
+        })
+        this.windSpeedChart.addSeries({
+          color: '#dc635c',
+          data: this.windSpeedData[1],
+          name: 'Gust',
+          step: true
+        })
+        this.windSpeedData = null
+        this.windSpeedChart.hideLoading()
+        this.windSpeedChart.setTitle({
+          text: `Wind Speed (${this.spdAbbr})`
+        })
+        this.$emit('series-added', 'windSpeed')
+      }
+    }
   }
 }
 </script>

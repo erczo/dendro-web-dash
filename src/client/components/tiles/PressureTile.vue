@@ -22,23 +22,33 @@
 // TODO: Rename to AirPressureTile or AirPresTile?
 // TODO: Show warning/indicator if current readings are older than 24 hours
 // TODO: Make colors props?
-import air from '../../lib/air'
 import math from '../../lib/math'
+import {pressure as baroPressure} from '../../lib/barometric'
+import {abbr, pressure} from '../../mixins/tile'
 import Highcharts from 'highcharts'
+
+import PressureAcc from '../../accessors/PressureAcc'
+
+let avgAirPres
 
 export default {
   props: {
+    // Tile datasets
     coordinates: Array,
     current: Object,
-    twoWeeks: Object,
-    time: Date,
-    utcOffset: Number,
+
+    // Misc
+    stationTime: Number,
+    systemTime: Number,
     unitAbbrs: Object,
     units: String
   },
 
   data () {
     return {
+      curAvg: null,
+      elevOffset: null,
+
       opts: {
         chart: {
           backgroundColor: '#509ebf',
@@ -96,85 +106,31 @@ export default {
     }
   },
 
+  created () {
+    avgAirPres = new PressureAcc(this, 'Average_Air_BarometricPressure')
+  },
+
   mounted () {
     this.chart = Highcharts.chart(this.$el.getElementsByClassName('chart')[0], this.opts)
-    console.log('current', this.current)
   },
 
-  computed: {
-    curAvg: function () {
-      return this.getCurPres('Average_Air_BarometricPressure_PoundForcePerSquareInch', 'Average_Air_BarometricPressure_Millibar')[0]
-    },
-    elevOffset: function () {
-      const curPres = this.getCurPres('Average_Air_BarometricPressure_PoundForcePerSquareInch', 'Average_Air_BarometricPressure_Millibar')[0]
-      const elevPres = this.getElevPres()
-      if (typeof curPres !== 'number' || typeof elevPres !== 'number') return
-
-      // TODO: Discuss this approach - diff. of rounded values
-      const offset = elevPres - curPres
-
-      switch (this.units) {
-        case 'imp':
-          return math.round(offset, 1)
-        case 'met':
-          return math.round(offset, 0)
-      }
-      return
-    },
-    presAbbr: function () {
-      switch (this.units) {
-        case 'imp':
-          return this.getAbbr('PoundForcePerSquareInch')
-        case 'met':
-          return this.getAbbr('Millibar')
-      }
-      return
-    }
+  beforeDestroy () {
+    avgAirPres = null
   },
 
-  methods: {
-    getAbbr (key) {
-      if (!this.unitAbbrs) return ''
-      return this.unitAbbrs[key]
-    },
-    getCurPres (...args) {
-      return this.getPres(this.current, ...args)
-    },
-    getElevPres: function () {
-      if (!this.coordinates) return
+  mixins: [abbr, pressure],
 
-      const pa = math.unit(air.pressure(this.coordinates[2]), 'Pa')
+  watch: {
+    current (newDataset) {
+      this.curAvg = avgAirPres.init(newDataset).presRound
 
-      switch (this.units) {
-        case 'imp':
-          return math.round(pa.toNumber('psi'), 1)
-        case 'met':
-          return math.round(pa.toNumber('mbar'), 0)
+      const avgPres = avgAirPres.presNum
+      if (this.coordinates && typeof avgPres === 'number') {
+        const elevPres = avgAirPres.unitToPresNum(math.unit(baroPressure(this.coordinates[2]), 'Pa'))
+        this.elevOffset = avgAirPres.roundPres(elevPres - avgPres)
+      } else {
+        this.elevOffset = null
       }
-      return
-    },
-    getPres (prop, impKey, metKey) {
-      if (!prop) return []
-
-      const [impPts, metPts] = [prop[impKey], prop[metKey]]
-
-      switch (this.units) {
-        case 'imp':
-          if (impPts) {
-            return [math.round(math.unit(impPts[0].v, 'psi').toNumber(), 1), impPts[0]]
-          } else if (metPts) {
-            return [math.round(math.unit(metPts[0].v, 'mbar').toNumber('psi'), 1), metPts[0]]
-          }
-          break
-        case 'met':
-          if (metPts) {
-            return [math.round(math.unit(metPts[0].v, 'mbar').toNumber(), 0), metPts[0]]
-          } else if (impPts) {
-            return [math.round(math.unit(impPts[0].v, 'psi').toNumber('mbar'), 0), impPts[0]]
-          }
-          break
-      }
-      return []
     }
   }
 }

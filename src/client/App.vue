@@ -66,7 +66,7 @@
 
 <script>
 // TODO: Move navbar into a component
-// TODO: Update page footer
+// TODO: Update page footer - don't hardcode email?
 // TODO: Move localforage config to a module
 import localforage from 'localforage'
 import $ from 'jquery'
@@ -78,7 +78,7 @@ localforage.config({
 export default {
   data () {
     return {
-      clientTime: new Date(),
+      clientTime: (new Date()).getTime(),
       isRetina: false, // Keepin' it simple; it's either retina or not
       units: null
     }
@@ -111,9 +111,26 @@ export default {
       module.hot.dispose(() => {
         this.retinaMql.removeListener(this.retinaMqlListener)
         this.retinaMqlMoz.removeListener(this.retinaMqlListener)
+
+        if (this.clientTimeTid) clearInterval(this.clientTimeTid)
       })
     }
 
+    /*
+      Maintain a single reactive source of time updated approximately every minute. Strive for parity with the
+      user's system clock.
+     */
+    this.clientTimeTid = setInterval(() => {
+      const time = (new Date()).getTime()
+      const minutes = Math.floor(time / 60000)
+      if (this.minutes === minutes) return
+
+      this.minutes = minutes
+      this.clientTime = time
+    }, 17000)
+  },
+
+  mounted () {
     /*
       Obtain our initial preferences from local storage.
      */
@@ -124,20 +141,12 @@ export default {
         this.units = 'met' // Default
       }
     })
-
-    /*
-      Maintain a single reactive source of time updated approximately every minute. Strive for parity with the
-      user's system clock.
-     */
-    setInterval(() => {
-      const now = new Date()
-      const minutes = Math.floor(now.getTime() / 60000)
-      if (this.minutes === minutes) return
-
-      this.minutes = minutes
-      this.clientTime = now
-    }, 17000)
   },
+
+  // TODO: Probably don't need this since App will never unload
+  // beforeDestroy () {
+  //   if (this.clientTimeTid) clearInterval(this.clientTimeTid)
+  // },
 
   methods: {
     setUnits (units, toggleId) {

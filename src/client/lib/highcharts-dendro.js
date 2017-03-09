@@ -1,4 +1,11 @@
-// Custom extensions
+/**
+ * Highcharts custom extensions.
+ *
+ * @author J. Scott Smith
+ * @license BSD-2-Clause-FreeBSD
+ * @module lib/utils
+ */
+
 export default (H) => {
   H.wrap(H.Pointer.prototype, 'reset', (proceed, allowMove, delay) => {
     if (this.options && this.options.tooltip && (this.options.tooltip.reset === false)) return undefined

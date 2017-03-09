@@ -1,0 +1,10 @@
+{
+  "client": {
+    "io": {
+      "options": {
+        "path": "/api/v1/socket.io"
+      },
+      "uri": "http://128.32.109.75"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 <template>
   <li class="media mb-4">
     <router-link :to="{name: 'station', params: {slug: station.slug}}" class="hidden-xs-down">
-      <div class="d-flex mr-3 rounded align-items-center justify-content-center img-thumbnail photo-small" v-if="!media || media.length <= 0">
+      <div class="d-flex mr-3 rounded align-items-center justify-content-center img-thumbnail photo-small" v-if="!media || media.length === 0">
         <i class="fa fa-picture-o fa-lg" aria-hidden="true"></i>
       </div>
       <img class="d-flex mr-3 rounded photo-small" :src="isRetina && media[0].sizes.small_2x ? media[0].sizes.small_2x.url : media[0].sizes.small.url" v-if="media && media.length > 0">
@@ -24,10 +24,14 @@
 <script>
 import math from '../lib/math'
 
+import {abbr} from '../mixins/tile'
+
 export default {
   props: {
     isRetina: Boolean,
     station: Object,
+
+    // Misc
     unitAbbrs: Object,
     units: String
   },
@@ -35,26 +39,22 @@ export default {
   computed: {
     // TODO: Move to StationElevation.vue?
     elevation: function () {
-      const m = this.station.geo.coordinates[2]
-      switch (this.units) {
-        case 'imp':
-          return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getAbbr('Foot')}`
-        case 'met':
-          return `${m} ${this.getAbbr('Meter')}`
+      if (this.station.geo && this.station.geo.coordinates && this.station.geo.coordinates.length > 2) {
+        const m = this.station.geo.coordinates[2]
+        switch (this.units) {
+          case 'imp':
+            return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getAbbr('Foot')}`
+          case 'met':
+            return `${m} ${this.getAbbr('Meter')}`
+        }
       }
-      return
     },
     media: function () {
       return this.station.media
     }
   },
 
-  methods: {
-    getAbbr (key) {
-      if (!this.unitAbbrs) return ''
-      return this.unitAbbrs[key]
-    }
-  }
+  mixins: [abbr]
 }
 </script>
 

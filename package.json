@@ -1,6 +1,6 @@
 {
   "name": "dendro-web-dash",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Project Dendro web dashboards.",
   "license": "BSD-2-Clause-FreeBSD",
   "author": "J. Scott Smith <scott@newleafsolutionsinc.com>",
@@ -58,7 +58,7 @@
     "feathers": "^2.0.3",
     "feathers-socketio": "^1.4.2",
     "file-loader": "^0.9.0",
-    "highcharts": "^5.0.0",
+    "highcharts": "^5.0.7",
     "highcharts-more": "^0.1.2",
     "jquery": "^3.1.1",
     "json-loader": "^0.5.4",

@@ -40,93 +40,63 @@
 <script>
 // TODO: Show warning/indicator if current readings are older than 24 hours
 // TODO: Make colors props?
-import math from '../../lib/math'
-import moment from 'moment'
-import {windDegToIndex} from '../../lib/utils'
+import {abbr, seasonal, speed} from '../../mixins/tile'
 
-const DIRECTIONS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
+import CardinalDirAcc from '../../accessors/CardinalDirAcc'
+import SpeedAcc from '../../accessors/SpeedAcc'
+
+let avgAirDir
+let avgAirSpeed
+let avgSeasAirSpeed
+let maxSeasAirSpeed
+let minSeasAirSpeed
 
 export default {
   props: {
+    // Tile datasets
     current: Object,
     seasonal: Object,
-    time: Date,
-    utcOffset: Number,
+
+    // Misc
+    stationTime: Number,
+    systemTime: Number,
     unitAbbrs: Object,
     units: String
   },
 
-  computed: {
-    curAvg: function () {
-      return this.getCurSpd('Average_Air_Speed_MilePerHour', 'Average_Air_Speed_MeterPerSecond')[0]
-    },
-    curDir: function () {
-      if (!this.current) return
-      const pts = this.current.Average_Air_Direction_DegreeAngle
-      if (pts) return DIRECTIONS[windDegToIndex(pts[0].v)]
-    },
-    seasAvg: function () {
-      return this.getSeasSpd('Average_Seasonal_Air_Speed_MilePerHour', 'Average_Seasonal_Air_Speed_MeterPerSecond')[0]
-    },
-    seasMax: function () {
-      return this.getSeasSpd('Maximum_Seasonal_Air_Speed_MilePerHour', 'Maximum_Seasonal_Air_Speed_MeterPerSecond')[0]
-    },
-    seasMin: function () {
-      return this.getSeasSpd('Minimum_Seasonal_Air_Speed_MilePerHour', 'Minimum_Seasonal_Air_Speed_MeterPerSecond')[0]
-    },
-    seasMonth: function () {
-      // TODO: Verify approach for seasonal month names (A or B below)
-      // A. Use current station time to get a month name
-      if (!this.time) return
-      return moment(this.time).utcOffset(this.utcOffset / 60).format('MMMM')
-      // B. Harvest the time from a datapoint to get a month name
-      // const pt = this.getSeasSpd('Maximum_Seasonal_Air_Speed_MilePerHour', 'Maximum_Seasonal_Air_Speed_MeterPerSecond')[1]
-      // if (pt) return moment(pt.t).utcOffset(pt.o / 60).format('MMMM')
-    },
-    spdAbbr: function () {
-      switch (this.units) {
-        case 'imp':
-          return this.getAbbr('MilePerHour')
-        case 'met':
-          return this.getAbbr('MeterPerSecond')
-      }
-      return
+  data () {
+    return {
+      curDir: null,
+      curAvg: null,
+      seasAvg: null,
+      seasMax: null,
+      seasMin: null
     }
   },
 
-  methods: {
-    getAbbr (key) {
-      if (!this.unitAbbrs) return ''
-      return this.unitAbbrs[key]
-    },
-    getCurSpd (...args) {
-      return this.getSpd(this.current, ...args)
-    },
-    getSeasSpd (...args) {
-      return this.getSpd(this.seasonal, ...args)
-    },
-    getSpd (prop, impKey, metKey) {
-      if (!prop) return []
+  created () {
+    avgAirDir = new CardinalDirAcc(this, 'Average_Air_Direction')
+    avgAirSpeed = new SpeedAcc(this, 'Average_Air_Speed')
+    avgSeasAirSpeed = new SpeedAcc(this, 'Average_Seasonal_Air_Speed')
+    maxSeasAirSpeed = new SpeedAcc(this, 'Maximum_Seasonal_Air_Speed')
+    minSeasAirSpeed = new SpeedAcc(this, 'Minimum_Seasonal_Air_Speed')
+  },
 
-      const [impPts, metPts] = [prop[impKey], prop[metKey]]
+  beforeDestroy () {
+    avgAirDir = avgAirSpeed = avgSeasAirSpeed = maxSeasAirSpeed = minSeasAirSpeed = null
+  },
 
-      switch (this.units) {
-        case 'imp':
-          if (impPts) {
-            return [math.round(math.unit(impPts[0].v, 'mi/h').toNumber(), 1), impPts[0]]
-          } else if (metPts) {
-            return [math.round(math.unit(metPts[0].v, 'm/s').toNumber('mi/h'), 1), metPts[0]]
-          }
-          break
-        case 'met':
-          if (metPts) {
-            return [math.round(math.unit(metPts[0].v, 'm/s').toNumber(), 1), metPts[0]]
-          } else if (impPts) {
-            return [math.round(math.unit(impPts[0].v, 'mi/h').toNumber('m/s'), 1), impPts[0]]
-          }
-          break
-      }
-      return []
+  mixins: [abbr, seasonal, speed],
+
+  watch: {
+    current (newDataset) {
+      this.curDir = avgAirDir.init(newDataset).dirName
+      this.curAvg = avgAirSpeed.init(newDataset).spdRound
+    },
+    seasonal (newDataset) {
+      this.seasAvg = avgSeasAirSpeed.init(newDataset).spdRound
+      this.seasMax = maxSeasAirSpeed.init(newDataset).spdRound
+      this.seasMin = minSeasAirSpeed.init(newDataset).spdRound
     }
   }
 }

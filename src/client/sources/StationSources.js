@@ -1,62 +1,164 @@
-import moment from 'moment'
-import services from '../lib/services'
-import {tagsToKey} from '../lib/utils'
-import {UNIT_STRATEGIES} from '../lib/unit'
-
 /**
- * Helper used on datapoints to assign the target after fetching.
+ * Exports DataLoader sources for the station dashboard. Includes helpers to manage the fetching of dashboard data.
+ *
+ * @author J. Scott Smith
+ * @license BSD-2-Clause-FreeBSD
+ * @module source/StationSources
  */
-function assignDatapoints (vm, res) {
-  const obj = {}
 
-  /*
-    The datapointLookup service returns an array of documents, each with a datatream _id and datapoints.data.
-   */
-  res.forEach(doc => {
-    // Lookup the _id in the key-map to get a friendly object key in order to assign
-    const key = vm.datastreamsIdKeyMap[doc._id]
+import moment from 'moment'
+import logger from '../lib/logger'
+import services from '../lib/services'
 
-    // If data was returned, then assign a propery in our obj that's used to assign the target
-    if (key && doc.datapoints && doc.datapoints.data && doc.datapoints.data.length > 0) {
-      obj[key] = doc.datapoints.data
-    }
-  })
+const SERIES_FETCH_DAYS = 4 // Fetch 4 days at a time
+const SERIES_QUERY_LIMIT = 2000
 
-  return [obj]
+const UNITS_ORDER = {
+  imp: {all: 2, imp: 2, met: 1},
+  met: {all: 2, imp: 1, met: 2}
+}
+
+function stationToUTCTime (stationTime, offset) {
+  return (new Date(stationTime)).getTime() - (typeof offset === 'number' ? offset * 1000 : 0)
 }
 
 /**
- * Helper used on datapoints to fetch data.
+ * Reusable datapointsQuery and guard for cursor-based fetching.
  */
-function fetchDatapoints (vm) {
-  const strategy = UNIT_STRATEGIES[vm.units] || []
+function fwdCursorDatapointsQuery (vm) {
+  const cursor = vm[this.cursorName]
+  const startTime = stationToUTCTime(cursor.start.valueOf(), vm.state.station.utc_offset)
+  const posTime = stationToUTCTime(cursor.pos.valueOf(), vm.state.station.utc_offset)
+
+  return {
+    time: {
+      $gte: moment(startTime).utc().toISOString(),
+      $lt: moment(posTime).utc().toISOString()
+    },
+    $limit: SERIES_QUERY_LIMIT,
+    $sort: {time: 1} // ASC
+  }
+}
+
+function fwdCursorDatapointsGuard (vm) {
+  const cursor = vm[this.cursorName]
+  return vm.store.plainState.datastreams && vm.units && vm.stationTime && (!cursor || (cursor.start < cursor.end))
+}
+
+/**
+ * Return an array of datastream ids for the given display units and search specifiers.
+ *
+ * Example specs:
+ *  [
+ *    {dsKey: 'Average_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
+ *    {dsKey: 'Average_Air_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}}
+ *  ]
+ */
+function getDatastreamIdsForLookup (datastreamsByDsKey, specs, filter, units) {
+  const filterFn = typeof filter === 'function' ? filter : function () {
+    return true
+  }
+  const order = UNITS_ORDER[units]
   const ids = []
 
-  for (let key of this.datastreamKeys) {
-    for (let u of strategy) {
-      if (!key[u]) continue
-      const found = vm.datastreams.find(datastream => {
-        return (datastream.__key === key[u]) && this.datastreamFilter(datastream)
+  specs.forEach(spec => {
+    const hashIdMap = [{}, {}]
+    const datastreams = datastreamsByDsKey[spec.dsKey]
+    if (datastreams) {
+      datastreams.filter(filterFn).forEach(datastream => {
+        let u = spec.dtUnits[datastream.__dtUnit]
+        if (u) {
+          const n = order[u]
+          if (n > 0) hashIdMap[n - 1][datastream.__attrsInfo.hash] = datastream._id
+        }
       })
-      if (found) {
-        ids.push(found._id)
-        break
-      }
     }
-  }
+
+    const merged = Object.assign(...hashIdMap)
+    ids.push(...Object.keys(merged).map(k => {
+      return merged[k]
+    }))
+  })
+
+  return ids
+}
+
+/**
+ * Reusable beforeFetch and afterFetch for chart series data.
+ */
+function beforeFetchSeries (vm) {
+  if (vm[this.cursorName]) return
+
+  /*
+    Init cursor interval [start, pos). Points are fetched within this interval, then we move the cursor forward.
+   */
+  const config = vm.seriesConfig
+  const newCursor = vm[this.cursorName] = {}
+  newCursor.start = moment(config.start).utc()
+  newCursor.pos = moment(config.start).add(SERIES_FETCH_DAYS - 1, 'd')
+  newCursor.end = moment(config.end)
+}
+
+function afterFetchSeries (vm, res) {
+  /*
+    Move the cursor to the right (i.e. forwards in time). Fetch datapoints for SERIES_FETCH_DAYS at a time.
+   */
+  const cursor = vm[this.cursorName]
+  cursor.start.add(SERIES_FETCH_DAYS, 'd')
+  cursor.pos.add(SERIES_FETCH_DAYS, 'd')
+
+  // Clamp pos to the end time
+  if (cursor.pos > cursor.end) cursor.pos = cursor.end
+
+  // Assign a new object for reactive updates
+  const newCursor = vm[this.cursorName] = {}
+  newCursor.start = cursor.start.clone()
+  newCursor.pos = cursor.pos.clone()
+  newCursor.end = cursor.end
+
+  return res
+}
+
+/**
+ * Custom/reusable assigner to set model variables after fetching datapoints.
+ */
+function assignDatapoints (vm, res) {
+  // datapointLookup returns an array of documents, each having datastream meatdata and datapoints
+  // TODO: Remove - deprecated
+  // vm.store.setDataset(this.datasetKey, res.filter(doc => {
+  //   return doc.datapoints && doc.datapoints.data && doc.datapoints.data.length > 0
+  // }))
+  vm.store.setDataset(this.datasetKey, res)
+}
+
+/**
+ * Reusable fetch for retrieving datapoints based on extended source properties (e.g. datastreamSpecs).
+ */
+function fetchDatapoints (vm) {
+  const ids = getDatastreamIdsForLookup(vm.store.plainState.datastreamsByDsKey, this.datastreamSpecs, this.datastreamFilter, vm.units)
+  const query = Object.assign(this.datapointsQuery(vm), {
+    _id: ids.join(',')
+  })
+
+  logger.log('StationSources:fetchDatapoints::query', query)
 
   return services.datapointLookup.find({
-    query: Object.assign(this.datapointsQuery(vm), {
-      _id: ids.join(',')
-    })
+    query: query
   })
 }
 
 /**
- * Datapoints filter for absence of attributes.
+ * Clears the dataset associated with a source.
+ */
+function clearDataset (vm) {
+  vm[this.cursorName] = null
+  vm.store.clearDataset(this.datasetKey)
+}
+
+/**
+ * Datastream filter for absence of attributes (i.e. the 'default' datastream).
  */
 function noAttributesFilter (datastream) {
-  // TODO: Should we test for a isDefault attribute instead?
   return !datastream.attributes
 }
 
@@ -64,174 +166,95 @@ function noAttributesFilter (datastream) {
  * Data source definitions for the station dashboard; used to configure a DataLoader.
  */
 export default {
+
+  /*
+    Top-level datasets: station, contacts, datastreams, etc.
+   */
+
   contactOrgs: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearContactOrgs()
+    },
     guard (vm) {
-      return vm.contactOrgIds && !vm.contactOrgs
+      return vm.state.contactOrgIds && !vm.state.contactOrgs
     },
     fetch (vm) {
       return services.organization.find({
         query: {
-          _id: {$in: vm.contactOrgIds},
+          _id: {$in: vm.state.contactOrgIds},
           email: {$exists: true},
           $select: ['_id', 'email', 'name']
         }
       })
     },
-    afterFetch (res) {
-      if (res && res.data) {
-        return res.data
-      }
+    afterFetch (vm, res) {
+      if (res && res.data) return res.data
     },
-    targets: ['contactOrgs']
+    assign (vm, orgs) {
+      vm.store.setContactOrgs(orgs)
+    }
   },
 
   contactPersons: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearContactPersons()
+    },
     guard (vm) {
-      return vm.contactPersonIds && !vm.contactPersons
+      return vm.state.contactPersonIds && !vm.state.contactPersons
     },
     fetch (vm) {
       return services.person.find({
         query: {
-          _id: {$in: vm.contactPersonIds},
+          _id: {$in: vm.state.contactPersonIds},
           email: {$exists: true},
           $select: ['_id', 'email', 'name']
         }
       })
     },
-    afterFetch (res) {
-      if (res && res.data) {
-        return res.data
-      }
+    afterFetch (vm, res) {
+      if (res && res.data) return res.data
     },
-    targets: ['contactPersons']
-  },
-
-  current: {
-    datastreamFilter: noAttributesFilter,
-    datastreamKeys: [
-      {imp: 'Average_Air_BarometricPressure_PoundForcePerSquareInch', met: 'Average_Air_BarometricPressure_Millibar'},
-      {imp: 'Average_Air_Direction_DegreeAngle', met: 'Average_Air_Direction_DegreeAngle'},
-      {imp: 'Average_Air_Moisture_Percent', met: 'Average_Air_Moisture_Percent'},
-      {imp: 'Average_Air_Speed_MilePerHour', met: 'Average_Air_Speed_MeterPerSecond'},
-      {imp: 'Average_Air_Temperature_DegreeFahrenheit', met: 'Average_Air_Temperature_DegreeCelsius'},
-      // TODO: Should be Average_Solar_PhotosyntheticallyActiveRadiation_MicromolePerSquareMeter
-      {imp: 'Average_Solar_PhotosyntheticallyActiveRadiation_Micromole', met: 'Average_Solar_PhotosyntheticallyActiveRadiation_Micromole'},
-      {imp: 'Average_Solar_Radiation_WattPerSquareMeter', met: 'Average_Solar_Radiation_WattPerSquareMeter'},
-      // TODO: Should be Cumulative_Precipitation_Height_InchPerHour
-      // TODO: Should be Cumulative_Precipitation_Height_MillimeterPerHour
-      {imp: 'Cumulative_Precipitation_Height_Inch', met: 'Cumulative_Precipitation_Height_Millimeter'}
-    ],
-    datapointsQuery () {
-      return {
-        $limit: 1
-      }
-    },
-    guard (vm) {
-      return vm.datastreams && vm.units && !vm.current
-    },
-    fetch: fetchDatapoints,
-    assign: assignDatapoints,
-    targets: ['current']
+    assign (vm, persons) {
+      vm.store.setContactPersons(persons)
+    }
   },
 
   datastreams: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearDatastreams()
+    },
     guard (vm) {
-      return vm.station && !vm.datastreams
+      // NOTE: unitAbbrs is a dependency since __attrsInfo.text is populated in setDatastreams
+      return vm.state.station && vm.state.unitAbbrs && !vm.store.plainState.datastreams
     },
     fetch (vm) {
       return services.datastream.find({
         query: {
           enabled: true,
-          station_id: vm.station._id,
+          station_id: vm.state.station._id,
           $limit: 100,
           $select: ['_id', 'attributes', 'tags']
         }
       })
     },
-    afterFetch (res) {
-      if (res && res.data && res.data.length > 0) {
-        res.data.forEach(datastream => {
-          datastream.__key = tagsToKey(datastream.tags)
-          delete datastream.tags
-        })
-        return res.data
-      }
+    afterFetch (vm, res) {
+      if (res && res.data && res.data.length > 0) return res.data
     },
     assign (vm, datastreams) {
-      const idKeyMap = {}
-      datastreams.forEach(datastream => {
-        idKeyMap[datastream._id] = datastream.__key
-      })
-
-      return [idKeyMap, datastreams]
-    },
-    targets: ['datastreamsIdKeyMap', 'datastreams']
-  },
-
-  // TODO: Finish!!!
-  // twoWeeks: {
-  //   datastreamFilter: noAttributesFilter,
-  //   datastreamKeys: [
-  //     {imp: 'Average_Air_BarometricPressure_PoundForcePerSquareInch', met: 'Average_Air_BarometricPressure_Millibar'}
-  //   ],
-  //   datapointsQuery (vm) {
-  //     /*
-  //       NOTE: Time manipulation must be performed within the station's timezone (UTC offset).
-  //      */
-  //     const time = moment(vm.systemTime).utcOffset(vm.station.utc_offset / 60).startOf('d').subtract(1, 'd').toISOString()
-  //     return {
-  //       time: {
-  //         $gte: time,
-  //         $lte: time
-  //       },
-  //       $limit: 1
-  //     }
-  //   },
-  //   guard (vm) {
-  //     return vm.datastreams && vm.units && vm.systemTime && !vm.yesterday
-  //   },
-  //   fetch: fetchDatapoints,
-  //   assign: assignDatapoints,
-  //   targets: ['lastTwoWeeks']
-  // }
-
-  seasonal: {
-    datastreamFilter: noAttributesFilter,
-    datastreamKeys: [
-      {imp: 'Average_Seasonal_Air_Speed_MilePerHour', met: 'Average_Seasonal_Air_Speed_MeterPerSecond'},
-      {imp: 'Maximum_Seasonal_Air_Moisture_Percent', met: 'Maximum_Seasonal_Air_Moisture_Percent'},
-      {imp: 'Maximum_Seasonal_Air_Speed_MilePerHour', met: 'Maximum_Seasonal_Air_Speed_MeterPerSecond'},
-      {imp: 'Minimum_Seasonal_Air_Speed_MilePerHour', met: 'Minimum_Seasonal_Air_Speed_MeterPerSecond'},
-      {imp: 'Maximum_Seasonal_Air_Temperature_DegreeFahrenheit', met: 'Maximum_Seasonal_Air_Temperature_DegreeCelsius'},
-      {imp: 'Minimum_Seasonal_Air_Moisture_Percent', met: 'Minimum_Seasonal_Air_Moisture_Percent'},
-      {imp: 'Minimum_Seasonal_Air_Temperature_DegreeFahrenheit', met: 'Minimum_Seasonal_Air_Temperature_DegreeCelsius'}
-    ],
-    datapointsQuery (vm) {
-      /*
-        Monthly seasonal values are stamped with the first day of the current month in the prior year.
-
-        NOTE: Time manipulation must be performed within the station's timezone (UTC offset).
-       */
-      const time = moment(vm.systemTime).utcOffset(vm.station.utc_offset / 60).startOf('M').subtract(1, 'y').toISOString()
-      return {
-        time: {
-          $gte: time,
-          $lte: time
-        },
-        $limit: 1
-      }
-    },
-    guard (vm) {
-      return vm.datastreams && vm.units && vm.systemTime && !vm.seasonal
-    },
-    fetch: fetchDatapoints,
-    assign: assignDatapoints,
-    targets: ['seasonal']
+      vm.store.setDatastreams(datastreams)
+    }
   },
 
   station: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearStation()
+    },
     guard (vm) {
-      return vm.slug && !vm.station && !vm.stationError
+      return vm.slug && !vm.state.station && !vm.stationError
     },
     fetch (vm) {
       return services.station.find({
@@ -243,70 +266,136 @@ export default {
         }
       })
     },
-    afterFetch (res) {
-      if (res && res.data && res.data.length > 0) {
-        return res.data[0]
-      }
+    afterFetch (vm, res) {
+      if (res && res.data && res.data.length > 0) return res.data[0]
     },
     assign (vm, station) {
-      const orgIds = []
-      const personIds = []
-      if (station.members) {
-        station.members.filter(m => {
-          return m.roles.indexOf('contact') > -1
-        }).forEach(m => {
-          if (m.organization_id) orgIds.push(m.organization_id)
-          if (m.person_id) personIds.push(m.person_id)
-        })
-      }
-
-      return [orgIds, personIds, station]
-    },
-    targets: ['contactOrgIds', 'contactPersonIds', 'station']
+      vm.store.setStation(station)
+    }
   },
 
   // TODO: Move to AppSources.js?
   systemTime: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearSystemTime()
+    },
     guard (vm) {
-      return !vm.systemTime
+      return !vm.state.systemTime
     },
     fetch (vm) {
       return services.systemTime.get('utc')
     },
-    afterFetch (res) {
-      if (res && res.now) {
-        return new Date(res.now)
-      }
+    afterFetch (vm, res) {
+      if (res) return res
     },
-    targets: ['systemTime']
+    assign (vm, systemTime) {
+      vm.store.setSystemTime(systemTime)
+    }
   },
 
   // TODO: Move to AppSources.js?
   unitVocabulary: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearUnitVocabulary()
+    },
     guard (vm) {
-      return !vm.unitAbbrs
+      return !vm.state.unitAbbrs
     },
     fetch (vm) {
       return services.vocabulary.get('dt-unit')
     },
-    afterFetch (res) {
-      if (res && res.terms) {
-        const abbrs = {}
-        res.terms.forEach(term => {
-          abbrs[term.label] = term.abbreviation
-        })
-        return abbrs
-      }
+    afterFetch (vm, res) {
+      if (res) return res
     },
-    targets: ['unitAbbrs']
+    assign (vm, vocabulary) {
+      vm.store.setUnitVocabulary(vocabulary)
+    }
   },
 
-  yesterday: {
+  /*
+    Single-value stats
+   */
+
+  currentStats: {
+    // Extra config
+    datasetKey: 'current',
     datastreamFilter: noAttributesFilter,
-    datastreamKeys: [
-      // TODO: Should be Cumulative_Day_Precipitation_Height_InchPerDay
-      // TODO: Should be Cumulative_Day_Precipitation_Height_MillimeterPerDay
-      {imp: 'Cumulative_Day_Precipitation_Height_Inch', met: 'Cumulative_Day_Precipitation_Height_Millimeter'}
+    datastreamSpecs: [
+      {dsKey: 'Average_Air_BarometricPressure', dtUnits: {'PoundForcePerSquareInch': 'imp', 'Millibar': 'met'}},
+      {dsKey: 'Average_Air_Direction', dtUnits: {'DegreeAngle': 'all'}},
+      {dsKey: 'Average_Air_Moisture', dtUnits: {'Percent': 'all'}},
+      {dsKey: 'Average_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
+      {dsKey: 'Average_Air_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}},
+      // TODO: Should be Average_Solar_PhotosyntheticallyActiveRadiation, MicromolePerSquareMeter
+      {dsKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: {'Micromole': 'all'}},
+      {dsKey: 'Average_Solar_Radiation', dtUnits: {'WattPerSquareMeter': 'all'}},
+      // TODO: Should be Cumulative_Precipitation_Height, InchPerHour/MillimeterPerHour
+      {dsKey: 'Cumulative_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
+    ],
+    datapointsQuery () {
+      return {
+        $limit: 1
+      }
+    },
+
+    // Loader config
+    clear: clearDataset,
+    guard (vm) {
+      return vm.store.plainState.datastreams && vm.units && !vm.state.datasets.current
+    },
+    fetch: fetchDatapoints,
+    assign: assignDatapoints
+  },
+
+  seasonalStats: {
+    // Extra config
+    datasetKey: 'seasonal',
+    datastreamFilter: noAttributesFilter,
+    datastreamSpecs: [
+      {dsKey: 'Average_Seasonal_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
+      {dsKey: 'Maximum_Seasonal_Air_Moisture', dtUnits: {'Percent': 'all'}},
+      {dsKey: 'Maximum_Seasonal_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
+      {dsKey: 'Maximum_Seasonal_Air_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}},
+      {dsKey: 'Minimum_Seasonal_Air_Moisture', dtUnits: {'Percent': 'all'}},
+      {dsKey: 'Minimum_Seasonal_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
+      {dsKey: 'Minimum_Seasonal_Air_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}}
+    ],
+    datapointsQuery (vm) {
+      /*
+        Monthly seasonal values are stamped with the first day of the current month in the prior year.
+
+        NOTE: Time manipulation must be performed within the station's timezone (UTC offset).
+       */
+      const startOfMonthPriorYear = moment(vm.stationTime).utc().startOf('M').subtract(1, 'y')
+      const time = stationToUTCTime(startOfMonthPriorYear.valueOf(), vm.state.station.utc_offset)
+      const iso = moment(time).utc().toISOString()
+      return {
+        time: {
+          $gte: iso,
+          $lte: iso
+        },
+        $limit: 1
+      }
+    },
+
+    // Loader config
+    clear: clearDataset,
+    guard (vm) {
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.datasets.seasonal
+    },
+    fetch: fetchDatapoints,
+    assign: assignDatapoints
+  },
+
+  yesterdayStats: {
+    // Extra config
+    datasetKey: 'yesterday',
+    datastreamFilter: noAttributesFilter,
+    datastreamSpecs: [
+      // TODO: Should be Cumulative_Day_Precipitation_Height, InchPerDay/MillimeterPerDay
+      {dsKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
     ],
     datapointsQuery (vm) {
       /*
@@ -314,20 +403,105 @@ export default {
 
         NOTE: Time manipulation must be performed within the station's timezone (UTC offset).
        */
-      const time = moment(vm.systemTime).utcOffset(vm.station.utc_offset / 60).startOf('d').subtract(1, 'd').toISOString()
+      const startOfDayPriorDay = moment(vm.stationTime).utc().startOf('d').subtract(1, 'd')
+      const time = stationToUTCTime(startOfDayPriorDay.valueOf(), vm.state.station.utc_offset)
+      const iso = moment(time).utc().toISOString()
       return {
         time: {
-          $gte: time,
-          $lte: time
+          $gte: iso,
+          $lte: iso
         },
         $limit: 1
       }
     },
+
+    // Loader config
+    clear: clearDataset,
     guard (vm) {
-      return vm.datastreams && vm.units && vm.systemTime && !vm.yesterday
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.datasets.yesterday
     },
     fetch: fetchDatapoints,
-    assign: assignDatapoints,
-    targets: ['yesterday']
+    assign: assignDatapoints
+  },
+
+  /*
+    Chart series
+   */
+
+  airTempSeries: {
+    // Extra config
+    cursorName: 'airTempCursor',
+    datasetKey: 'airTemp',
+    datastreamSpecs: [
+      {dsKey: 'Average_Air_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}}
+    ],
+    datapointsQuery: fwdCursorDatapointsQuery,
+
+    // Loader config
+    clear: clearDataset,
+    guard: fwdCursorDatapointsGuard,
+    beforeFetch: beforeFetchSeries,
+    fetch: fetchDatapoints,
+    afterFetch: afterFetchSeries,
+    assign: assignDatapoints
+  },
+
+  soilTempSeries: {
+    // Extra config
+    cursorName: 'soilTempCursor',
+    datasetKey: 'soilTemp',
+    datastreamSpecs: [
+      {dsKey: 'Average_Soil_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}}
+    ],
+    datapointsQuery: fwdCursorDatapointsQuery,
+
+    // Loader config
+    clear: clearDataset,
+    guard: fwdCursorDatapointsGuard,
+    beforeFetch: beforeFetchSeries,
+    fetch: fetchDatapoints,
+    afterFetch: afterFetchSeries,
+    assign: assignDatapoints
+  },
+
+  solarRadSeries: {
+    // Extra config
+    cursorName: 'solarRadCursor',
+    datasetKey: 'solarRad',
+    datastreamFilter: noAttributesFilter,
+    datastreamSpecs: [
+      // TODO: Should be Average_Solar_PhotosyntheticallyActiveRadiation, MicromolePerSquareMeter
+      {dsKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: {'Micromole': 'all'}},
+      {dsKey: 'Average_Solar_Radiation', dtUnits: {'WattPerSquareMeter': 'all'}}
+    ],
+    datapointsQuery: fwdCursorDatapointsQuery,
+
+    // Loader config
+    clear: clearDataset,
+    guard: fwdCursorDatapointsGuard,
+    beforeFetch: beforeFetchSeries,
+    fetch: fetchDatapoints,
+    afterFetch: afterFetchSeries,
+    assign: assignDatapoints
+  },
+
+  windSpeedSeries: {
+    // Extra config
+    cursorName: 'windSpeedCursor',
+    datasetKey: 'windSpeed',
+    datastreamFilter: noAttributesFilter,
+    datastreamSpecs: [
+      {dsKey: 'Average_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
+      {dsKey: 'Maximum_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}}
+    ],
+    datapointsQuery: fwdCursorDatapointsQuery,
+
+    // Loader config
+    clear: clearDataset,
+    guard: fwdCursorDatapointsGuard,
+    beforeFetch: beforeFetchSeries,
+    fetch: fetchDatapoints,
+    afterFetch: afterFetchSeries,
+    assign: assignDatapoints
   }
 }
