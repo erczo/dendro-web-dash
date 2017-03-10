@@ -10,7 +10,8 @@ import moment from 'moment'
 import logger from '../lib/logger'
 import services from '../lib/services'
 
-const SERIES_FETCH_DAYS = 4 // Fetch 4 days at a time
+// Allow up to 6 datastreams to be fetched at a time, given 5 min data
+const SERIES_FETCH_DAYS = 1
 const SERIES_QUERY_LIMIT = 2000
 
 const UNITS_ORDER = {
@@ -103,17 +104,19 @@ function afterFetchSeries (vm, res) {
   /*
     Move the cursor to the right (i.e. forwards in time). Fetch datapoints for SERIES_FETCH_DAYS at a time.
    */
+
+  // TODO: This could be improved by inspecting the last datapoint fetched
   const cursor = vm[this.cursorName]
-  cursor.start.add(SERIES_FETCH_DAYS, 'd')
-  cursor.pos.add(SERIES_FETCH_DAYS, 'd')
+  const newStart = cursor.pos
+  let newPos = cursor.pos.clone().add(SERIES_FETCH_DAYS, 'd')
 
   // Clamp pos to the end time
-  if (cursor.pos > cursor.end) cursor.pos = cursor.end
+  if (newPos > cursor.end) newPos = cursor.end
 
   // Assign a new object for reactive updates
   const newCursor = vm[this.cursorName] = {}
-  newCursor.start = cursor.start.clone()
-  newCursor.pos = cursor.pos.clone()
+  newCursor.start = newStart.clone()
+  newCursor.pos = newPos.clone()
   newCursor.end = cursor.end
 
   return res

@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "80d95651e60b001d6e3b"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "6573da5885d90af9f932"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -18319,7 +18319,7 @@
 	    (0, _classCallCheck3.default)(this, DataLoader);
 
 	    this._isLoading = false;
-	    this.maxIterations = 9;
+	    this.maxIterations = 24;
 	    this.sources = sources;
 	    this.vm = vm;
 	  }
@@ -34575,7 +34575,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var SERIES_FETCH_DAYS = 4; /**
+	var SERIES_FETCH_DAYS = 1; /**
 	                            * Exports DataLoader sources for the station dashboard. Includes helpers to manage the fetching of dashboard data.
 	                            *
 	                            * @author J. Scott Smith
@@ -34654,14 +34654,14 @@
 
 	function afterFetchSeries(vm, res) {
 	  var cursor = vm[this.cursorName];
-	  cursor.start.add(SERIES_FETCH_DAYS, 'd');
-	  cursor.pos.add(SERIES_FETCH_DAYS, 'd');
+	  var newStart = cursor.pos;
+	  var newPos = cursor.pos.clone().add(SERIES_FETCH_DAYS, 'd');
 
-	  if (cursor.pos > cursor.end) cursor.pos = cursor.end;
+	  if (newPos > cursor.end) newPos = cursor.end;
 
 	  var newCursor = vm[this.cursorName] = {};
-	  newCursor.start = cursor.start.clone();
-	  newCursor.pos = cursor.pos.clone();
+	  newCursor.start = newStart.clone();
+	  newCursor.pos = newPos.clone();
 	  newCursor.end = cursor.end;
 
 	  return res;

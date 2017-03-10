@@ -10,10 +10,11 @@ import logger from './logger'
 
 const NEVER_FETCHED = 8640000000000000
 
+// TODO: Refactor this to use generators
 class DataLoader {
   constructor (vm, sources) {
     this._isLoading = false
-    this.maxIterations = 9
+    this.maxIterations = 24
     this.sources = sources
     this.vm = vm
   }

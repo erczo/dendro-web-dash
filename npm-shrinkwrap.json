@@ -1,6 +1,6 @@
 {
   "name": "dendro-web-dash",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "dependencies": {
     "@types/express": {
       "version": "4.0.35",
