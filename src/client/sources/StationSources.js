@@ -10,8 +10,10 @@ import moment from 'moment'
 import logger from '../lib/logger'
 import services from '../lib/services'
 
-// Allow up to 6 datastreams to be fetched at a time, given 5 min data
-const SERIES_FETCH_DAYS = 1
+/*
+  NOTE: Given 5 min data, fetching 4 days at a time will yield 1152 datapoints per fetch.
+ */
+const SERIES_FETCH_DAYS = 4
 const SERIES_QUERY_LIMIT = 2000
 
 const UNITS_ORDER = {

@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "6573da5885d90af9f932"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "c7ca6ae600d2f44b2f1f"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -18319,7 +18319,7 @@
 	    (0, _classCallCheck3.default)(this, DataLoader);
 
 	    this._isLoading = false;
-	    this.maxIterations = 24;
+	    this.maxIterations = 10;
 	    this.sources = sources;
 	    this.vm = vm;
 	  }
@@ -34575,7 +34575,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var SERIES_FETCH_DAYS = 1; /**
+	var SERIES_FETCH_DAYS = 4; /**
 	                            * Exports DataLoader sources for the station dashboard. Includes helpers to manage the fetching of dashboard data.
 	                            *
 	                            * @author J. Scott Smith
