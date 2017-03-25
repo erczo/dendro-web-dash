@@ -60,7 +60,12 @@
         </div>
 
         <div class="row row-md">
-          <wind-rose-tile class="not-implemented"></wind-rose-tile>
+          <wind-rose-tile
+            :series-config="seriesConfig"
+            :air-speed="datasets.airSpeed" :air-speed-cursor="airSpeedCursor"
+            :station-time="stationTime" :system-time="state.systemTime"
+            :unit-abbrs="state.unitAbbrs" :units="units"
+            @series-added="seriesAdded"></wind-rose-tile>
 
           <div class="col-12 col-lg-4 component">
             <wind-speed-tile
@@ -86,24 +91,32 @@
           </div>
 
           <div class="col-12 col-lg-6 component">
-            <precipitation-tile
+            <precip-tile
               :current="datasets.current" :yesterday="datasets.yesterday"
               :station-time="stationTime" :system-time="state.systemTime"
-              :unit-abbrs="state.unitAbbrs" :units="units"></precipitation-tile>
+              :unit-abbrs="state.unitAbbrs" :units="units"></precip-tile>
           </div>
         </div>
 
         <div class="row row-md">
           <div class="col-12 col-lg-6 component">
-            <pressure-tile
+            <air-pres-tile
               :coordinates="coordinates"
               :current="datasets.current"
+              :series-config="seriesConfig"
+              :air-pres="datasets.airPres" :air-pres-cursor="airPresCursor"
               :station-time="stationTime" :system-time="state.systemTime"
-              :unit-abbrs="state.unitAbbrs" :units="units"></pressure-tile>
+              :unit-abbrs="state.unitAbbrs" :units="units"
+              @series-added="seriesAdded"></air-pres-tile>
           </div>
 
           <div class="col-12 col-lg-6 component">
-            <cumulative-rain-tile class="not-implemented"></cumulative-rain-tile>
+            <water-year-tile
+              :series-config="wySeriesConfig"
+              :precip="datasets.wyPrecip" :precip-cursor="wyPrecipCursor"
+              :station-time="stationTime" :system-time="state.systemTime"
+              :unit-abbrs="state.unitAbbrs" :units="units"
+              @series-added="seriesAdded"></water-year-tile>
           </div>
         </div>
 
@@ -120,10 +133,10 @@
     <section id="timeMachine" class="py-4" v-if="station">
       <time-machine
         :series-config="seriesConfig"
+        :air-speed="datasets.airSpeed" :air-speed-cursor="airSpeedCursor"
         :air-temp="datasets.airTemp" :air-temp-cursor="airTempCursor"
         :soil-temp="datasets.soilTemp" :soil-temp-cursor="soilTempCursor"
         :solar-rad="datasets.solarRad" :solar-rad-cursor="solarRadCursor"
-        :wind-speed="datasets.windSpeed" :wind-speed-cursor="windSpeedCursor"
         :unit-abbrs="state.unitAbbrs" :units="units"
         @series-added="seriesAdded"></time-machine>
     </section>
@@ -139,17 +152,17 @@ import PhotoCollage from './PhotoCollage'
 import StationInfo from './StationInfo'
 
 // TODO: Move these to Tiles.vue?
+import AirPresTile from './tiles/AirPresTile'
 import AirTempTile from './tiles/AirTempTile'
-import CumulativeRainTile from './tiles/CumulativeRainTile'
 import DownloadTile from './tiles/DownloadTile'
 import ForecastTile from './tiles/ForecastTile'
 import HumidityTile from './tiles/HumidityTile'
 import MapTile from './tiles/MapTile'
 import NotificationTile from './tiles/NotificationTile'
-import PrecipitationTile from './tiles/PrecipitationTile'
-import PressureTile from './tiles/PressureTile'
+import PrecipTile from './tiles/PrecipTile'
 import SolarRadTile from './tiles/SolarRadTile'
 import TimeMachine from './TimeMachine'
+import WaterYearTile from './tiles/WaterYearTile'
 import WindRoseTile from './tiles/WindRoseTile'
 import WindSpeedTile from './tiles/WindSpeedTile'
 
@@ -166,17 +179,17 @@ export default {
     StationInfo,
 
     // Dashboard tiles
+    AirPresTile,
     AirTempTile,
-    CumulativeRainTile,
     DownloadTile,
     ForecastTile,
     HumidityTile,
     MapTile,
     NotificationTile,
-    PrecipitationTile,
-    PressureTile,
+    PrecipTile,
     SolarRadTile,
     TimeMachine,
+    WaterYearTile,
     WindRoseTile,
     WindSpeedTile
   },
@@ -196,10 +209,12 @@ export default {
       stationLoading: false,
 
       // Cursor-based fetching
+      airPresCursor: null,
+      airSpeedCursor: null,
       airTempCursor: null,
       soilTempCursor: null,
       solarRadCursor: null,
-      windSpeedCursor: null,
+      wyPrecipCursor: null,
 
       // Misc
       lightboxOptions: null
@@ -233,14 +248,6 @@ export default {
     datasets () {
       return this.state.datasets
     },
-    seriesConfig () {
-      const startOfDay = moment(this.stationTime).utc().startOf('d')
-      return {
-        // TODO: Hardcoded to 14 days!
-        start: startOfDay.clone().subtract(13, 'd').valueOf(),
-        end: startOfDay.clone().add(1, 'd').valueOf()
-      }
-    },
     station () {
       return this.state.station
     },
@@ -248,6 +255,22 @@ export default {
       if (this.state.systemTime && this.state.station) {
         const offset = this.state.station.utc_offset
         return this.state.systemTime + (typeof offset === 'number' ? offset * 1000 : 0)
+      }
+    },
+    seriesConfig () {
+      const startOfDay = moment(this.stationTime).utc().startOf('d')
+      return {
+        // NOTE: Hardcoded to 14 days!
+        start: startOfDay.clone().subtract(13, 'd').valueOf(),
+        end: startOfDay.clone().add(1, 'd').valueOf()
+      }
+    },
+    wySeriesConfig () {
+      const startOfWY = moment(this.stationTime).utc().startOf('M').subtract(9, 'M').startOf('y').add(9, 'M')
+      return {
+        // NOTE: Hardcoded to 2 years!
+        start: startOfWY.clone().subtract(12, 'M').startOf('M').valueOf(),
+        end: startOfWY.clone().add(12, 'M').startOf('M').valueOf()
       }
     }
   },
@@ -265,6 +288,7 @@ export default {
     seriesAdded (datasetKey) {
       // HACK: Release memory
       this.store.setDataset(datasetKey)
+      logger.log('Station:methods.seriesAdded::datasetKey', datasetKey)
     },
     showLightbox (index) {
       this.lightboxOptions = {

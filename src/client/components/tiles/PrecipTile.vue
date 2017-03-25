@@ -21,7 +21,6 @@ import {abbr, length} from '../../mixins/tile'
 
 import LengthAcc from '../../accessors/LengthAcc'
 
-let cuPrecipHeight
 let cuDayPrecipHeight
 
 export default {
@@ -45,19 +44,18 @@ export default {
   },
 
   created () {
-    cuPrecipHeight = new LengthAcc(this, 'Cumulative_Precipitation_Height')
     cuDayPrecipHeight = new LengthAcc(this, 'Cumulative_Day_Precipitation_Height')
   },
 
   beforeDestroy () {
-    cuPrecipHeight = cuDayPrecipHeight = null
+    cuDayPrecipHeight = null
   },
 
   mixins: [abbr, length],
 
   watch: {
     current (newDataset) {
-      this.curCu = cuPrecipHeight.init(newDataset).lenRound
+      this.curCu = cuDayPrecipHeight.init(newDataset).lenRound
     },
     yesterday (newDataset) {
       this.ydaCu = cuDayPrecipHeight.init(newDataset).lenRound

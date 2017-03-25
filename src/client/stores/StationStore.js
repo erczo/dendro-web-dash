@@ -92,12 +92,14 @@ class StationStore {
 
       // Datapoints are organized into datasets; populated by data loading
       datasets: {
+        airPres: null,
+        airSpeed: null,
         airTemp: null,
         current: null,
         seasonal: null,
         soilTemp: null,
         solarRad: null,
-        windSpeed: null,
+        wyPrecip: null,
         yesterday: null
       },
 

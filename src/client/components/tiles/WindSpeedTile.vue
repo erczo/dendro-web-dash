@@ -42,7 +42,7 @@
 // TODO: Make colors props?
 import {abbr, seasonal, speed} from '../../mixins/tile'
 
-import CardinalDirAcc from '../../accessors/CardinalDirAcc'
+import AirDirAcc from '../../accessors/AirDirAcc'
 import SpeedAcc from '../../accessors/SpeedAcc'
 
 let avgAirDir
@@ -75,7 +75,7 @@ export default {
   },
 
   created () {
-    avgAirDir = new CardinalDirAcc(this, 'Average_Air_Direction')
+    avgAirDir = new AirDirAcc(this, 'Average_Air_Direction')
     avgAirSpeed = new SpeedAcc(this, 'Average_Air_Speed')
     avgSeasAirSpeed = new SpeedAcc(this, 'Average_Seasonal_Air_Speed')
     maxSeasAirSpeed = new SpeedAcc(this, 'Maximum_Seasonal_Air_Speed')

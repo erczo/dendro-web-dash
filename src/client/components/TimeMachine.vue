@@ -28,6 +28,10 @@
 import $ from 'jquery'
 import Highcharts from 'highcharts'
 
+// TODO: Optional sync'd chart feature - not implemented
+// import HighchartsDendro from '../lib/highcharts-dendro'
+// HighchartsDendro(Highcharts)
+
 import {abbr, solar, speed, temperature} from '../mixins/tile'
 
 import SpeedAcc from '../accessors/SpeedAcc'
@@ -58,11 +62,6 @@ function compareDocsByAttrsIndex (a, b) {
   return 0
 }
 
-// TODO: Optional sync'd chart feature
-// import HighchartsDendro from '../lib/highcharts-dendro'
-
-// HighchartsDendro(Highcharts)
-
 /**
  * Synchronize zooming through the setExtremes event handler.
  */
@@ -85,20 +84,20 @@ function syncExtremes (e) {
 
 export default {
   props: {
-    // Config
+    // Chart config
     seriesConfig: Object,
 
     // Chart datasets
+    airSpeed: Object,
     airTemp: Object,
     soilTemp: Object,
     solarRad: Object,
-    windSpeed: Object,
 
     // Cursor-based fetching
+    airSpeedCursor: null,
     airTempCursor: null,
     soilTempCursor: null,
     solarRadCursor: null,
-    windSpeedCursor: null,
 
     // Misc
     unitAbbrs: Object,
@@ -319,6 +318,7 @@ export default {
         series: []
       }
     },
+    // TODO: Move to a mixin
     removeAllSeries (chart) {
       while (chart.series.length > 0) {
         chart.series[0].remove()
@@ -327,6 +327,45 @@ export default {
   },
 
   watch: {
+    airSpeed (newDataset) {
+      if (!newDataset) {
+        this.removeAllSeries(this.windSpeedChart)
+        this.windSpeedChart.showLoading()
+        this.windSpeedData = [[], []]
+      } else if (this.windSpeedData) {
+        this.windSpeedData[0] = this.windSpeedData[0].concat(avgAirSpeed.init(newDataset).data.map(function (point) {
+          this.point = point
+          return [this.time, this.spdRound]
+        }, avgAirSpeed))
+
+        this.windSpeedData[1] = this.windSpeedData[1].concat(maxAirSpeed.init(newDataset).data.map(function (point) {
+          this.point = point
+          return [this.time, this.spdRound]
+        }, maxAirSpeed))
+      }
+    },
+    airSpeedCursor (newCursor) {
+      if (newCursor && (newCursor.start >= newCursor.end)) {
+        this.windSpeedChart.addSeries({
+          color: '#a695dc',
+          data: this.windSpeedData[0],
+          name: 'Avg',
+          step: true
+        })
+        this.windSpeedChart.addSeries({
+          color: '#dc635c',
+          data: this.windSpeedData[1],
+          name: 'Gust',
+          step: true
+        })
+        this.windSpeedData = null
+        this.windSpeedChart.hideLoading()
+        this.windSpeedChart.setTitle({
+          text: `Wind Speed (${this.spdAbbr})`
+        })
+        this.$emit('series-added', 'airSpeed')
+      }
+    },
     airTemp (newDataset) {
       const vm = this
       if (!newDataset) {
@@ -356,7 +395,7 @@ export default {
         this.airTempData.forEach((data, i) => {
           this.airTempChart.addSeries({
             color: i > 0 ? '#dcdcdc' : '#5ca1dc',
-            data: this.airTempData[i],
+            data: data,
             lineWidth: Math.max(2, i + 1),
             name: this.airTempNames[i],
             step: true,
@@ -400,7 +439,7 @@ export default {
         this.soilTempData.forEach((data, i) => {
           this.soilTempChart.addSeries({
             color: i > 0 ? '#dcdcdc' : '#aedc5c',
-            data: this.soilTempData[i],
+            data: data,
             lineWidth: Math.max(2, i + 1),
             name: this.soilTempNames[i],
             step: true,
@@ -452,45 +491,6 @@ export default {
         this.solarRadData = null
         this.solarRadChart.hideLoading()
         this.$emit('series-added', 'solarRad')
-      }
-    },
-    windSpeed (newDataset) {
-      if (!newDataset) {
-        this.removeAllSeries(this.windSpeedChart)
-        this.windSpeedChart.showLoading()
-        this.windSpeedData = [[], []]
-      } else if (this.windSpeedData) {
-        this.windSpeedData[0] = this.windSpeedData[0].concat(avgAirSpeed.init(newDataset).data.map(function (point) {
-          this.point = point
-          return [this.time, this.spdRound]
-        }, avgAirSpeed))
-
-        this.windSpeedData[1] = this.windSpeedData[1].concat(maxAirSpeed.init(newDataset).data.map(function (point) {
-          this.point = point
-          return [this.time, this.spdRound]
-        }, maxAirSpeed))
-      }
-    },
-    windSpeedCursor (newCursor) {
-      if (newCursor && (newCursor.start >= newCursor.end)) {
-        this.windSpeedChart.addSeries({
-          color: '#a695dc',
-          data: this.windSpeedData[0],
-          name: 'Avg',
-          step: true
-        })
-        this.windSpeedChart.addSeries({
-          color: '#dc635c',
-          data: this.windSpeedData[1],
-          name: 'Gust',
-          step: true
-        })
-        this.windSpeedData = null
-        this.windSpeedChart.hideLoading()
-        this.windSpeedChart.setTitle({
-          text: `Wind Speed (${this.spdAbbr})`
-        })
-        this.$emit('series-added', 'windSpeed')
       }
     }
   }

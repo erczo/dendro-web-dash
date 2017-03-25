@@ -1,9 +1,9 @@
 /**
- * Cardinal direction data accessor.
+ * Air (wind) direction data accessor.
  *
  * @author J. Scott Smith
  * @license BSD-2-Clause-FreeBSD
- * @module lib/CardinalDirAcc
+ * @module lib/AirDirAcc
  */
 
 import math from '../lib/math'
@@ -18,7 +18,7 @@ function degToIndex (deg) {
   return Math.abs(Math.round((deg % 360 + (deg < 0 ? 360 : 0) - 11.25) / 22.5))
 }
 
-class CardinalDirAcc extends DataAccessor {
+class AirDirAcc extends DataAccessor {
 
   roundDeg (n) { return math.round(n, 1) }
 
@@ -46,4 +46,6 @@ class CardinalDirAcc extends DataAccessor {
   }
 }
 
-export default CardinalDirAcc
+AirDirAcc.DIR_NAMES = DIR_NAMES
+
+export default AirDirAcc

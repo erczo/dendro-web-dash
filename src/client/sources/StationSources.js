@@ -10,10 +10,10 @@ import moment from 'moment'
 import logger from '../lib/logger'
 import services from '../lib/services'
 
-/*
-  NOTE: Given 5 min data, fetching 4 days at a time will yield 1152 datapoints per fetch.
- */
+// Given 5 min data, fetching 4 days at a time will yield 1152 datapoints per fetch
 const SERIES_FETCH_DAYS = 4
+
+// Maximum number of datapoints per fetch
 const SERIES_QUERY_LIMIT = 2000
 
 const UNITS_ORDER = {
@@ -21,8 +21,8 @@ const UNITS_ORDER = {
   met: {all: 2, imp: 1, met: 2}
 }
 
-function stationToUTCTime (stationTime, offset) {
-  return (new Date(stationTime)).getTime() - (typeof offset === 'number' ? offset * 1000 : 0)
+function stationMomentToUTCTime (stationMoment, offset) {
+  return stationMoment.valueOf() - (typeof offset === 'number' ? offset * 1000 : 0)
 }
 
 /**
@@ -30,8 +30,8 @@ function stationToUTCTime (stationTime, offset) {
  */
 function fwdCursorDatapointsQuery (vm) {
   const cursor = vm[this.cursorName]
-  const startTime = stationToUTCTime(cursor.start.valueOf(), vm.state.station.utc_offset)
-  const posTime = stationToUTCTime(cursor.pos.valueOf(), vm.state.station.utc_offset)
+  const startTime = stationMomentToUTCTime(cursor.start, vm.state.station.utc_offset)
+  const posTime = stationMomentToUTCTime(cursor.pos, vm.state.station.utc_offset)
 
   return {
     time: {
@@ -98,8 +98,8 @@ function beforeFetchSeries (vm) {
   const config = vm.seriesConfig
   const newCursor = vm[this.cursorName] = {}
   newCursor.start = moment(config.start).utc()
-  newCursor.pos = moment(config.start).add(SERIES_FETCH_DAYS - 1, 'd')
-  newCursor.end = moment(config.end)
+  newCursor.pos = moment(config.start).utc().add(SERIES_FETCH_DAYS - 1, 'd')
+  newCursor.end = moment(config.end).utc()
 }
 
 function afterFetchSeries (vm, res) {
@@ -336,11 +336,22 @@ export default {
       // TODO: Should be Average_Solar_PhotosyntheticallyActiveRadiation, MicromolePerSquareMeter
       {dsKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: {'Micromole': 'all'}},
       {dsKey: 'Average_Solar_Radiation', dtUnits: {'WattPerSquareMeter': 'all'}},
-      // TODO: Should be Cumulative_Precipitation_Height, InchPerHour/MillimeterPerHour
-      {dsKey: 'Cumulative_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
+      // TODO: Should be Cumulative_Day_Precipitation_Height, InchPerDay/MillimeterPerDay
+      {dsKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
     ],
-    datapointsQuery () {
+    // TODO: Remove - deprecated
+    // datapointsQuery () {
+    //   return {
+    //     $limit: 1
+    //   }
+    // },
+    datapointsQuery (vm) {
+      const startOfToday = moment(vm.stationTime).utc().startOf('d')
+      const time = stationMomentToUTCTime(startOfToday, vm.state.station.utc_offset)
       return {
+        time: {
+          $gte: moment(time).utc().toISOString()
+        },
         $limit: 1
       }
     },
@@ -370,11 +381,9 @@ export default {
     datapointsQuery (vm) {
       /*
         Monthly seasonal values are stamped with the first day of the current month in the prior year.
-
-        NOTE: Time manipulation must be performed within the station's timezone (UTC offset).
        */
       const startOfMonthPriorYear = moment(vm.stationTime).utc().startOf('M').subtract(1, 'y')
-      const time = stationToUTCTime(startOfMonthPriorYear.valueOf(), vm.state.station.utc_offset)
+      const time = stationMomentToUTCTime(startOfMonthPriorYear, vm.state.station.utc_offset)
       const iso = moment(time).utc().toISOString()
       return {
         time: {
@@ -403,18 +412,14 @@ export default {
       {dsKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
     ],
     datapointsQuery (vm) {
-      /*
-        Daily cumulative values are stamped with midnight of the relevant day.
-
-        NOTE: Time manipulation must be performed within the station's timezone (UTC offset).
-       */
-      const startOfDayPriorDay = moment(vm.stationTime).utc().startOf('d').subtract(1, 'd')
-      const time = stationToUTCTime(startOfDayPriorDay.valueOf(), vm.state.station.utc_offset)
-      const iso = moment(time).utc().toISOString()
+      const startOfToday = moment(vm.stationTime).utc().startOf('d')
+      const startOfYesterday = startOfToday.clone().subtract(1, 'd')
+      const startTime = stationMomentToUTCTime(startOfYesterday, vm.state.station.utc_offset)
+      const endTime = stationMomentToUTCTime(startOfToday, vm.state.station.utc_offset)
       return {
         time: {
-          $gte: iso,
-          $lte: iso
+          $gte: moment(startTime).utc().toISOString(),
+          $lt: moment(endTime).utc().toISOString()
         },
         $limit: 1
       }
@@ -430,8 +435,48 @@ export default {
   },
 
   /*
-    Chart series
+    Chart timeseries data
    */
+
+  airPresSeries: {
+    // Extra config
+    cursorName: 'airPresCursor',
+    datasetKey: 'airPres',
+    datastreamFilter: noAttributesFilter,
+    datastreamSpecs: [
+      {dsKey: 'Average_Air_BarometricPressure', dtUnits: {'PoundForcePerSquareInch': 'imp', 'Millibar': 'met'}}
+    ],
+    datapointsQuery: fwdCursorDatapointsQuery,
+
+    // Loader config
+    clear: clearDataset,
+    guard: fwdCursorDatapointsGuard,
+    beforeFetch: beforeFetchSeries,
+    fetch: fetchDatapoints,
+    afterFetch: afterFetchSeries,
+    assign: assignDatapoints
+  },
+
+  airSpeedSeries: {
+    // Extra config
+    cursorName: 'airSpeedCursor',
+    datasetKey: 'airSpeed',
+    datastreamFilter: noAttributesFilter,
+    datastreamSpecs: [
+      {dsKey: 'Average_Air_Direction', dtUnits: {'DegreeAngle': 'all'}},
+      {dsKey: 'Average_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
+      {dsKey: 'Maximum_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}}
+    ],
+    datapointsQuery: fwdCursorDatapointsQuery,
+
+    // Loader config
+    clear: clearDataset,
+    guard: fwdCursorDatapointsGuard,
+    beforeFetch: beforeFetchSeries,
+    fetch: fetchDatapoints,
+    afterFetch: afterFetchSeries,
+    assign: assignDatapoints
+  },
 
   airTempSeries: {
     // Extra config
@@ -490,21 +535,32 @@ export default {
     assign: assignDatapoints
   },
 
-  windSpeedSeries: {
+  wyPrecipSeries: {
     // Extra config
-    cursorName: 'windSpeedCursor',
-    datasetKey: 'windSpeed',
+    cursorName: 'wyPrecipCursor',
+    datasetKey: 'wyPrecip',
     datastreamFilter: noAttributesFilter,
     datastreamSpecs: [
-      {dsKey: 'Average_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
-      {dsKey: 'Maximum_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}}
+      // TODO: Should be Cumulative_Day_Precipitation_Height, InchPerDay/MillimeterPerDay
+      {dsKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
     ],
     datapointsQuery: fwdCursorDatapointsQuery,
 
     // Loader config
     clear: clearDataset,
     guard: fwdCursorDatapointsGuard,
-    beforeFetch: beforeFetchSeries,
+    beforeFetch (vm) {
+      if (vm[this.cursorName]) return
+
+      /*
+        NOTE: Two years of daily precip. data will be fetched in one iteration.
+       */
+      const config = vm.wySeriesConfig
+      const newCursor = vm[this.cursorName] = {}
+      newCursor.start = moment(config.start).utc()
+      newCursor.pos = moment(config.end).utc()
+      newCursor.end = moment(config.end).utc()
+    },
     fetch: fetchDatapoints,
     afterFetch: afterFetchSeries,
     assign: assignDatapoints

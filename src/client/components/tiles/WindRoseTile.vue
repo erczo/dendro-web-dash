@@ -1,32 +1,95 @@
 <template>
   <div class="col-12 col-lg-4 component">
     <div class="d-flex flex-column h-100 rounded tile">
-      <div class="d-flex flex-1 flex-column justify-content-center text-center chart"></div>
+      <div class="d-flex flex-1 flex-column justify-content-center text-center wind-rose-chart"></div>
     </div>
   </div>
 </template>
 
 <script>
-// TODO: Finish
 // TODO: Make colors props?
-
+import math from '../../lib/math'
 import Highcharts from 'highcharts'
-import HighchartsMore from 'highcharts-more'
 
+// Needed for polar charts
+// SEE: http://www.highcharts.com/docs/export-module/setting-up-the-server
+import HighchartsMore from 'highcharts-more'
 HighchartsMore(Highcharts)
 
+import {abbr, speed} from '../../mixins/tile'
+
+import AirDirAcc from '../../accessors/AirDirAcc'
+import AirSpeedAcc from '../../accessors/AirSpeedAcc'
+
+let avgAirDir
+let avgAirSpeed
+
+const WIND_FORCE_LEVELS = [{
+  color: '#5cb6dc',
+  // NOTE: Ranges for display only; actual wind force index is eval'd in AirSpeedAcc
+  range: [0, 3]
+}, {
+  color: '#aedc5c',
+  range: [3.1, 5]
+}, {
+  color: '#f3f767',
+  range: [5.1, 8]
+}, {
+  color: '#dcac5c',
+  range: [8.1]
+}]
+
 export default {
-  data () {
-    return {
-      opts: {
+  props: {
+    // Chart config
+    seriesConfig: Object,
+
+    // Chart datasets
+    airSpeed: Object,
+
+    // Cursor-based fetching
+    airSpeedCursor: null,
+
+    // Misc
+    stationTime: Number,
+    systemTime: Number,
+    unitAbbrs: Object,
+    units: String
+  },
+
+  created () {
+    avgAirDir = new AirDirAcc(this, 'Average_Air_Direction')
+    avgAirSpeed = new AirSpeedAcc(this, 'Average_Air_Speed')
+
+    // Series data
+    this.initWindRoseData()
+  },
+
+  mounted () {
+    this.windRoseChart = Highcharts.chart(this.$el.getElementsByClassName('wind-rose-chart')[0], this.windRoseOptions())
+
+    this.windRoseChart.showLoading()
+  },
+
+  beforeDestroy () {
+    this.windRoseChart.destroy()
+    this.windRoseChart = null
+    this.windRoseData = null
+    this.windDirByTime = null
+
+    avgAirDir = avgAirSpeed = null
+  },
+
+  mixins: [abbr, speed],
+
+  methods: {
+    windRoseOptions () {
+      return {
         chart: {
           backgroundColor: '#9081bf',
           polar: true,
           type: 'column'
         },
-
-        colors: ['#5cb6dc', '#aedc5c', '#f3f767', '#dcac5c'],
-
         legend: {
           align: 'center',
           itemStyle: {
@@ -35,11 +98,18 @@ export default {
           layout: 'horizontal',
           verticalAlign: 'top'
         },
-
+        loading: {
+          labelStyle: {
+            color: '#fff'
+          },
+          style: {
+            backgroundColor: '#000',
+            opacity: 0.2
+          }
+        },
         pane: {
           size: '80%'
         },
-
         plotOptions: {
           series: {
             groupPadding: 0,
@@ -48,99 +118,14 @@ export default {
             stacking: 'normal'
           }
         },
-
-        series: [{
-          name: '0-3 m/s',
-          data: [
-            ['N', 1.81],
-            ['NNE', 0.64],
-            ['NE', 0.82],
-            ['ENE', 0.59],
-            ['E', 0.62],
-            ['ESE', 1.22],
-            ['SE', 1.61],
-            ['SSE', 2.04],
-            ['S', 2.66],
-            ['SSW', 2.96],
-            ['SW', 2.53],
-            ['WSW', 1.97],
-            ['W', 1.64],
-            ['WNW', 1.32],
-            ['NW', 1.58],
-            ['NNW', 1.51]
-          ]
-        }, {
-          name: '3.1-5 m/s',
-          data: [
-            ['N', 1.94],
-            ['NNE', 1.09],
-            ['NE', 0.89],
-            ['ENE', 1.29],
-            ['E', 2.69],
-            ['ESE', 3.56],
-            ['SE', 5.43],
-            ['SSE', 5.39],
-            ['S', 5.17],
-            ['SSW', 4.4],
-            ['SW', 5.23],
-            ['WSW', 4.63],
-            ['W', 2.63],
-            ['WNW', 3.39],
-            ['NW', 5.56],
-            ['NNW', 6.32]
-          ]
-        }, {
-          name: '5.1-8 m/s',
-          data: [
-            ['N', 0],
-            ['NNE', 0],
-            ['NE', 0],
-            ['ENE', 0],
-            ['E', 0],
-            ['ESE', 0.43],
-            ['SE', 3.88],
-            ['SSE', 1.39],
-            ['S', 0],
-            ['SSW', 0],
-            ['SW', 0.62],
-            ['WSW', 1.09],
-            ['W', 1.71],
-            ['WNW', 1.94],
-            ['NW', 1.42],
-            ['NNW', 0.36]
-          ]
-        }, {
-          name: '8+ m/s',
-          data: [
-            ['N', 0],
-            ['NNE', 0],
-            ['NE', 0],
-            ['ENE', 0],
-            ['E', 0],
-            ['ESE', 0],
-            ['SE', 0.52],
-            ['SSE', 0.49],
-            ['S', 0],
-            ['SSW', 0],
-            ['SW', 0],
-            ['WSW', 0],
-            ['W', 0.1],
-            ['WNW', 0],
-            ['NW', 0.72],
-            ['NNW', 0.2]
-          ]
-        }],
-
         title: {
           text: null
         },
-
         tooltip: {
           valueSuffix: '%'
         },
-
         xAxis: {
-          categories: ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'],
+          categories: AirDirAcc.DIR_NAMES,
           gridLineColor: 'rgba(255, 255, 255, 0.4)',
           labels: {
             style: {
@@ -150,7 +135,6 @@ export default {
           lineColor: 'rgba(255, 255, 255, 0.4)',
           tickmarkPlacement: 'on'
         },
-
         yAxis: {
           endOnTick: false,
           gridLineColor: '#fff',
@@ -171,13 +155,83 @@ export default {
             },
             text: null
           }
-        }
+        },
+        series: []
       }
+    },
+    initWindRoseData () {
+      this.numReadings = 0
+
+      this.windRoseData = {}
+      WIND_FORCE_LEVELS.forEach((_, i) => {
+        this.windRoseData[i] = new Array(AirDirAcc.DIR_NAMES.length).fill(0)
+      })
+
+      // Used to correlate wind direction and speed datapoints
+      this.windDirByTime = {}
+    },
+    meterPerSecToUnitNum (mps) {
+      return avgAirSpeed.roundSpd(avgAirSpeed.unitToSpdNum(math.unit(mps, 'm/s')))
+    },
+    // TODO: Move to a mixin
+    removeAllSeries (chart) {
+      while (chart.series.length > 0) {
+        chart.series[0].remove()
+      }
+    },
+    seriesName (range) {
+      const m = this.meterPerSecToUnitNum(range[0])
+      if (range.length > 1) {
+        const n = this.meterPerSecToUnitNum(range[1])
+        return `${m}-${n} ${this.spdAbbr}`
+      }
+      return `${m}+ ${this.spdAbbr}`
     }
   },
 
-  mounted () {
-    this.chart = Highcharts.chart(this.$el.getElementsByClassName('chart')[0], this.opts)
+  watch: {
+    airSpeed (newDataset) {
+      const vm = this
+      if (!newDataset) {
+        this.removeAllSeries(this.windRoseChart)
+        this.windRoseChart.showLoading()
+        this.initWindRoseData()
+      } else if (this.windRoseData) {
+        avgAirDir.init(newDataset).data.forEach(function (point) {
+          this.point = point
+          vm.windDirByTime[this.time] = this.dirIndex
+        }, avgAirDir)
+
+        avgAirSpeed.init(newDataset).data.forEach(function (point) {
+          this.point = point
+
+          const dirIndex = vm.windDirByTime[this.time]
+          const spdIndex = this.spdIndex
+
+          if (typeof dirIndex === 'number' && typeof spdIndex === 'number') {
+            // Count the number of occasions the wind speed falls within each bin
+            vm.windRoseData[spdIndex][dirIndex]++
+            vm.numReadings++
+          }
+        }, avgAirSpeed)
+      }
+    },
+    airSpeedCursor (newCursor) {
+      if (newCursor && (newCursor.start >= newCursor.end)) {
+        WIND_FORCE_LEVELS.forEach((level, spdIndex) => {
+          this.windRoseChart.addSeries({
+            color: level.color,
+            data: this.windRoseData[spdIndex].map((n, dirIndex) => {
+              return [dirIndex, math.round(n / this.numReadings * 100, 1)]
+            }),
+            name: this.seriesName(level.range)
+          })
+        })
+        this.windRoseData = this.windDirByTime = null
+        this.windRoseChart.hideLoading()
+        this.$emit('series-added', 'airSpeed')
+      }
+    }
   }
 }
 </script>

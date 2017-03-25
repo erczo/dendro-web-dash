@@ -12,22 +12,21 @@
       </div>
     </div>
 
-    <div class="d-flex flex-1 flex-column justify-content-center text-center chart not-implemented"></div>
+    <div class="d-flex flex-1 flex-column justify-content-center text-center air-pres-chart"></div>
 
   </div>
 </template>
 
 <script>
-// TODO: Finish
-// TODO: Rename to AirPressureTile or AirPresTile?
 // TODO: Show warning/indicator if current readings are older than 24 hours
 // TODO: Make colors props?
 import math from '../../lib/math'
-import {pressure as baroPressure} from '../../lib/barometric'
-import {abbr, pressure} from '../../mixins/tile'
 import Highcharts from 'highcharts'
 
-import PressureAcc from '../../accessors/PressureAcc'
+import {pressure as baroPressure} from '../../lib/barometric'
+import {abbr, pressure} from '../../mixins/tile'
+
+import PresAcc from '../../accessors/PresAcc'
 
 let avgAirPres
 
@@ -36,6 +35,15 @@ export default {
     // Tile datasets
     coordinates: Array,
     current: Object,
+
+    // Chart config
+    seriesConfig: Object,
+
+    // Chart datasets
+    airPres: Object,
+
+    // Cursor-based fetching
+    airPresCursor: null,
 
     // Misc
     stationTime: Number,
@@ -47,38 +55,66 @@ export default {
   data () {
     return {
       curAvg: null,
-      elevOffset: null,
+      elevOffset: null
+    }
+  },
 
-      opts: {
+  created () {
+    avgAirPres = new PresAcc(this, 'Average_Air_BarometricPressure')
+
+    // Series data
+    this.airPresData = []
+  },
+
+  mounted () {
+    this.airPresChart = Highcharts.chart(this.$el.getElementsByClassName('air-pres-chart')[0], this.airPresOptions())
+
+    this.airPresChart.showLoading()
+  },
+
+  beforeDestroy () {
+    this.airPresChart.destroy()
+    this.airPresChart = null
+    this.airPresData = null
+
+    avgAirPres = null
+  },
+
+  mixins: [abbr, pressure],
+
+  methods: {
+    airPresOptions () {
+      return {
         chart: {
           backgroundColor: '#509ebf',
-          height: 120
+          height: 120,
+          zoomType: 'x'
         },
-
-        colors: ['#f3f767'],
-
         legend: {
           enabled: false
         },
-
+        loading: {
+          labelStyle: {
+            color: '#fff'
+          },
+          style: {
+            backgroundColor: '#000',
+            opacity: 0.2
+          }
+        },
         title: {
           text: null
         },
-
         xAxis: {
-          categories: [
-            '9/28', '9/29', '9/30', '10/1', '10/2', '10/3', '10/4',
-            '10/5', '10/6', '10/7', '10/8', '10/9', '10/10', '10/11'
-          ],
           gridLineColor: 'rgba(255, 255, 255, 0.4)',
           labels: {
             style: {
               color: 'rgba(255, 255, 255, 0.4)'
             }
           },
-          lineColor: 'rgba(255, 255, 255, 0.4)'
+          lineColor: 'rgba(255, 255, 255, 0.4)',
+          type: 'datetime'
         },
-
         yAxis: {
           gridLineColor: '#fff',
           labels: {
@@ -93,32 +129,16 @@ export default {
             text: null
           }
         },
-
-        series: [{
-          name: 'Sample',
-          // SEE: http://api.highcharts.com/highcharts/Series.setData
-          data: [
-            946.1, 950.3, 951.6, 951.4, 950.0, 950.0, 948.4,
-            949.9, 949.8, 948.4, 946.9, 947.9, 947.7, 949.6
-          ]
-        }]
+        series: []
+      }
+    },
+    // TODO: Move to a mixin
+    removeAllSeries (chart) {
+      while (chart.series.length > 0) {
+        chart.series[0].remove()
       }
     }
   },
-
-  created () {
-    avgAirPres = new PressureAcc(this, 'Average_Air_BarometricPressure')
-  },
-
-  mounted () {
-    this.chart = Highcharts.chart(this.$el.getElementsByClassName('chart')[0], this.opts)
-  },
-
-  beforeDestroy () {
-    avgAirPres = null
-  },
-
-  mixins: [abbr, pressure],
 
   watch: {
     current (newDataset) {
@@ -130,6 +150,31 @@ export default {
         this.elevOffset = avgAirPres.roundPres(elevPres - avgPres)
       } else {
         this.elevOffset = null
+      }
+    },
+    airPres (newDataset) {
+      if (!newDataset) {
+        this.removeAllSeries(this.airPresChart)
+        this.airPresChart.showLoading()
+        this.airPresData = []
+      } else if (this.airPresData) {
+        this.airPresData = this.airPresData.concat(avgAirPres.init(newDataset).data.map(function (point) {
+          this.point = point
+          return [this.time, this.presRound]
+        }, avgAirPres))
+      }
+    },
+    airPresCursor (newCursor) {
+      if (newCursor && (newCursor.start >= newCursor.end)) {
+        this.airPresChart.addSeries({
+          color: '#f3f767',
+          data: this.airPresData,
+          name: 'Avg',
+          step: true
+        })
+        this.airPresData = null
+        this.airPresChart.hideLoading()
+        this.$emit('series-added', 'airPres')
       }
     }
   }

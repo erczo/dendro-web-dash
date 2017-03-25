@@ -3,14 +3,14 @@
  *
  * @author J. Scott Smith
  * @license BSD-2-Clause-FreeBSD
- * @module lib/PressureAcc
+ * @module lib/PresAcc
  */
 
 import math from '../lib/math'
 import {DataAccessor} from '../lib/dataaccessor'
 
 const ROUND_PRES = {
-  imp: (n) => { return math.round(n, 1) },
+  imp: (n) => { return math.round(n, 3) },
   met: (n) => { return math.round(n, 1) }
 }
 
@@ -25,7 +25,7 @@ const RAW_PRES_TO_UNIT = {
   Undefined: (raw) => { return raw }
 }
 
-class PressureAcc extends DataAccessor {
+class PresAcc extends DataAccessor {
 
   set doc (newDoc) {
     super.doc = newDoc
@@ -59,4 +59,4 @@ class PressureAcc extends DataAccessor {
   }
 }
 
-export default PressureAcc
+export default PresAcc
