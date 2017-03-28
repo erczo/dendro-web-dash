@@ -1,7 +1,7 @@
 <template>
   <div class="component">
     <section id="banner">
-      <div class="jumbotron jumbotron-fluid">
+      <div class="jumbotron jumbotron">
         <div class="container">
           <form>
             <p class="lead">Welcome to the Dendro weather station network.</p>

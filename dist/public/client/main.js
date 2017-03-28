@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "3bebd198c3ddcef6674b"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "484626795c397707f888"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -18766,10 +18766,11 @@
 	  function DataLoader(vm, sources) {
 	    (0, _classCallCheck3.default)(this, DataLoader);
 
-	    this._isLoading = false;
 	    this.maxIterations = 10;
 	    this.sources = sources;
 	    this.vm = vm;
+
+	    vm.dataLoading = false;
 	  }
 
 	  (0, _createClass3.default)(DataLoader, [{
@@ -18879,10 +18880,10 @@
 	  }, {
 	    key: 'isLoading',
 	    get: function get() {
-	      return this._isLoading;
+	      return this.vm.dataLoading;
 	    },
 	    set: function set(newIsLoading) {
-	      this._isLoading = newIsLoading;
+	      this.vm.dataLoading = newIsLoading;
 
 	      if (newIsLoading) _logger2.default.time('DataLoader.load');else _logger2.default.timeEnd('DataLoader.load');
 	    }
@@ -35777,7 +35778,7 @@
 	          enabled: true,
 	          station_id: vm.state.station._id,
 	          $limit: 100,
-	          $select: ['_id', 'attributes', 'tags']
+	          $select: ['_id', 'attributes', 'name', 'source_type', 'tags']
 	        }
 	      });
 	    },
@@ -35855,11 +35856,12 @@
 	    datastreamFilter: noAttributesFilter,
 	    datastreamSpecs: [{ dsKey: 'Average_Air_BarometricPressure', dtUnits: { 'PoundForcePerSquareInch': 'imp', 'Millibar': 'met' } }, { dsKey: 'Average_Air_Direction', dtUnits: { 'DegreeAngle': 'all' } }, { dsKey: 'Average_Air_Moisture', dtUnits: { 'Percent': 'all' } }, { dsKey: 'Average_Air_Speed', dtUnits: { 'MilePerHour': 'imp', 'MeterPerSecond': 'met' } }, { dsKey: 'Average_Air_Temperature', dtUnits: { 'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met' } }, { dsKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: { 'Micromole': 'all' } }, { dsKey: 'Average_Solar_Radiation', dtUnits: { 'WattPerSquareMeter': 'all' } }, { dsKey: 'Cumulative_Day_Precipitation_Height', dtUnits: { 'Inch': 'imp', 'Millimeter': 'met' } }],
 	    datapointsQuery: function datapointsQuery(vm) {
-	      var startOfToday = (0, _moment2.default)(vm.stationTime).utc().startOf('d');
-	      var time = stationMomentToUTCTime(startOfToday, vm.state.station.utc_offset);
+	      var twentyFourHoursAgo = (0, _moment2.default)(vm.stationTime).utc().subtract(24, 'h');
+	      var time = stationMomentToUTCTime(twentyFourHoursAgo, vm.state.station.utc_offset);
+	      var iso = (0, _moment2.default)(time).utc().toISOString();
 	      return {
 	        time: {
-	          $gte: (0, _moment2.default)(time).utc().toISOString()
+	          $gte: iso
 	        },
 	        $limit: 1
 	      };
@@ -36202,7 +36204,9 @@
 	    this.plainState = {
 	      datastreams: null,
 	      datastreamsByDsKey: null,
-	      datastreamsById: null
+	      datastreamsById: null,
+
+	      timestamps: null
 	    };
 
 	    this.reactiveState = {
@@ -36291,7 +36295,21 @@
 
 	        doc.datastream = datastream;
 
+	        if (doc.datapoints && doc.datapoints.data && doc.datapoints.data.length > 0) {
+	          var data = doc.datapoints.data;
+	          var firstPoint = data[0];
+	          var lastPoint = data[data.length - 1];
+	          var firstTime = new Date(firstPoint.t).getTime() + (typeof firstPoint.o === 'number' ? firstPoint.o * 1000 : 0);
+	          var lastTime = new Date(lastPoint.t).getTime() + (typeof lastPoint.o === 'number' ? lastPoint.o * 1000 : 0);
+
+	          _this.plainState.timestamps[doc._id] = Math.max(_this.plainState.timestamps[doc._id] || 0, firstTime, lastTime);
+	          _this.plainState.timestamps._max = Math.max(_this.plainState.timestamps._max || 0, firstTime, lastTime);
+	        } else {
+	          _this.plainState.timestamps[doc._id] = _this.plainState.timestamps[doc._id] || 0;
+	        }
+
 	        delete doc.attributes;
+	        delete doc.station_id;
 	        delete doc.tags;
 	        delete doc._id;
 
@@ -36304,8 +36322,9 @@
 	    value: function setDatastreams(newValue) {
 	      var _this2 = this;
 
-	      var byDsKey = null,
-	          byId = null;
+	      var _ref = [null, null, null],
+	          byDsKey = _ref[0],
+	          byId = _ref[1];
 
 
 	      if (newValue) {
@@ -36328,10 +36347,11 @@
 	        });
 	      }
 
-	      var _ref = [newValue, byDsKey, byId];
-	      this.plainState.datastreams = _ref[0];
-	      this.plainState.datastreamsByDsKey = _ref[1];
-	      this.plainState.datastreamsById = _ref[2];
+	      var _ref2 = [newValue, byDsKey, byId, {}];
+	      this.plainState.datastreams = _ref2[0];
+	      this.plainState.datastreamsByDsKey = _ref2[1];
+	      this.plainState.datastreamsById = _ref2[2];
+	      this.plainState.timestamps = _ref2[3];
 	    }
 	  }, {
 	    key: 'setStation',
@@ -36353,10 +36373,10 @@
 	        });
 	      }
 
-	      var _ref2 = [newValue, orgIds, personIds];
-	      this.reactiveState.station = _ref2[0];
-	      this.reactiveState.contactOrgIds = _ref2[1];
-	      this.reactiveState.contactPersonIds = _ref2[2];
+	      var _ref3 = [newValue, orgIds, personIds];
+	      this.reactiveState.station = _ref3[0];
+	      this.reactiveState.contactOrgIds = _ref3[1];
+	      this.reactiveState.contactPersonIds = _ref3[2];
 	    }
 	  }, {
 	    key: 'setSystemTime',
@@ -36757,6 +36777,8 @@
 
 	  data: function data() {
 	    return {
+	      dataLoading: false,
+
 	      state: this.store.reactiveState,
 
 	      slug: null,
@@ -36855,9 +36877,9 @@
 	    clientTime: function clientTime(newTime) {
 	      var _this3 = this;
 
-	      if (newTime - this.currentFetchedAt > 162000) {
+	      if (newTime - this.currentStatsFetchedAt > 324000) {
 	        dataLoader.clear(function (source) {
-	          return (/^\w*(Stats|systemTime)$/.test(source)
+	          return (/^\w*(Series|Stats|systemTime)$/.test(source)
 	          );
 	        }).load().then(function () {
 	          _logger2.default.log('Station:watch.clientTime::vm', _this3);
@@ -36868,7 +36890,7 @@
 	      var _this4 = this;
 
 	      dataLoader.clear(function (source) {
-	        return (/^\w*(Series|Stats)$/.test(source)
+	        return (/^\w*(Series|Stats|systemTime)$/.test(source)
 	        );
 	      }).load().then(function () {
 	        _logger2.default.log('Station:watch.units::vm', _this4);
@@ -36937,7 +36959,7 @@
 	        }
 	      }
 	    },
-	    localTime: function localTime() {
+	    localTimeFormat: function localTimeFormat() {
 	      if (this.stationTime) {
 	        switch (this.units) {
 	          case 'imp':
@@ -37895,9 +37917,90 @@
 
 /***/ },
 /* 364 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _moment = __webpack_require__(1);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	  props: {
+	    dataLoading: false,
+
+	    datastreams: Array,
+	    timestamps: Object,
+
+	    stationTime: Number,
+	    systemTime: Number
+	  },
+
+	  data: function data() {
+	    return {
+	      events: [{
+	        level: null,
+	        text: 'Loading...',
+	        when: ''
+	      }],
+	      isOnline: true
+	    };
+	  },
+
+
+	  watch: {
+	    dataLoading: function dataLoading(newDataLoading) {
+	      var _this = this;
+
+	      if (newDataLoading) return;
+
+	      var maxTime = this.timestamps._max || 0;
+	      var maxMoment = (0, _moment2.default)(maxTime).utc();
+	      var stationTime = this.stationTime;
+	      var stationMoment = (0, _moment2.default)(stationTime).utc();
+
+	      this.isOnline = stationTime - maxTime < 7200000;
+
+	      var newEvents = this.datastreams.map(function (datastream) {
+	        var ts = _this.timestamps[datastream._id];
+	        return {
+	          _id: datastream._id,
+	          name: datastream.name,
+	          source_type: datastream.source_type,
+	          interval: typeof ts === 'number' ? maxTime - ts : null,
+	          timestamp: ts
+	        };
+	      }).filter(function (datastream) {
+	        if (datastream.source_type === 'sensor' && typeof datastream.interval === 'number') return !(datastream.interval < 86400000);
+	        return false;
+	      }).sort(function (a, b) {
+	        return a.interval - b.interval;
+	      }).map(function (datastream) {
+	        return {
+	          level: 1,
+	          text: 'Sensor [' + datastream.name + '] offline',
+	          when: datastream.timestamp === 0 ? 'Long ago' : (0, _moment2.default)(datastream.ts).utc().from(maxMoment)
+	        };
+	      });
+
+	      if (this.isOnline) {
+	        newEvents.unshift({
+	          level: 0,
+	          text: 'Data received',
+	          when: (0, _moment2.default)(maxMoment).utc().from(stationMoment)
+	        });
+	      }
+
+	      this.events = newEvents;
+	    }
+	  }
+	};
 
 /***/ },
 /* 365 */
@@ -67846,22 +67949,13 @@
 /***/ function(module, exports) {
 
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-	  return _vm._m(0)
-	},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
 	  return _c('div', {
-	    staticClass: "col-12 col-lg-4 component"
-	  }, [_c('div', {
 	    staticClass: "d-flex flex-1 flex-column h-100 rounded tile"
-	  }, [_c('div', {
+	  }, [(_vm.isOnline) ? _c('div', {
+	    staticClass: "d-flex flex-1 flex-column justify-content-center text-center border-bottom status-cell status-cell-online"
+	  }, [_vm._m(0)]) : _vm._e(), _vm._v(" "), (!_vm.isOnline) ? _c('div', {
 	    staticClass: "d-flex flex-1 flex-column justify-content-center text-center border-bottom status-cell status-cell-offline"
-	  }, [_c('h3', [_c('i', {
-	    staticClass: "fa fa-exclamation-triangle",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  }), _vm._v(" Offline")]), _vm._v(" "), _c('span', {
-	    staticClass: "text-muted"
-	  }, [_vm._v("Last online: 10/11 11:22 AM")])]), _vm._v(" "), _c('div', {
+	  }, [_vm._m(1)]) : _vm._e(), _vm._v(" "), _c('div', {
 	    staticClass: "d-flex flex-4 flex-column",
 	    staticStyle: {
 	      "overflow-y": "scroll",
@@ -67869,61 +67963,37 @@
 	    }
 	  }, [_c('table', {
 	    staticClass: "table table-sm table-hover"
-	  }, [_c('tbody', [_c('tr', [_c('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_c('i', {
-	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  })]), _vm._v(" "), _c('td', [_vm._v("5 min ago")]), _vm._v(" "), _c('td', [_vm._v("Deliberately offline for demo.")])]), _vm._v(" "), _c('tr', [_c('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_c('i', {
-	    staticClass: "fa fa-lg fa-check-circle-o text-success",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  })]), _vm._v(" "), _c('td', [_vm._v("Today 9:00 AM")]), _vm._v(" "), _c('td', [_vm._v("NL115 ethernet module replaced. System back online.")])]), _vm._v(" "), _c('tr', [_c('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_c('i', {
-	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
+	  }, [_c('tbody', _vm._l((_vm.events), function(event) {
+	    return _c('tr', [_c('th', {
+	      attrs: {
+	        "scope": "row"
+	      }
+	    }, [(event.level == 0) ? _c('i', {
+	      staticClass: "fa fa-lg fa-check-circle-o text-success",
+	      attrs: {
+	        "aria-hidden": "true"
+	      }
+	    }) : _vm._e(), _vm._v(" "), (event.level > 0) ? _c('i', {
+	      staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
+	      attrs: {
+	        "aria-hidden": "true"
+	      }
+	    }) : _vm._e()]), _vm._v(" "), _c('td', [_vm._v(_vm._s(event.when))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(event.text))])])
+	  }))])])])
+	},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('h2', [_c('i', {
+	    staticClass: "fa fa-check-circle-o",
 	    attrs: {
 	      "aria-hidden": "true"
 	    }
-	  })]), _vm._v(" "), _c('td', [_vm._v("9/20 10:42 PM")]), _vm._v(" "), _c('td', [_vm._v("Network disconnect. No data lost.")])]), _vm._v(" "), _c('tr', [_c('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_c('i', {
-	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
+	  }), _vm._v(" Online")])
+	},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('h3', [_c('i', {
+	    staticClass: "fa fa-exclamation-triangle",
 	    attrs: {
 	      "aria-hidden": "true"
 	    }
-	  })]), _vm._v(" "), _c('td', [_vm._v("9/10 8:50 AM")]), _vm._v(" "), _c('td', [_vm._v("Annual calibration. System down for 2 hours.")])]), _vm._v(" "), _c('tr', [_c('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_c('i', {
-	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  })]), _vm._v(" "), _c('td', [_vm._v("9/10 8:50 AM")]), _vm._v(" "), _c('td', [_vm._v("Annual calibration. System down for 2 hours.")])]), _vm._v(" "), _c('tr', [_c('th', {
-	    attrs: {
-	      "scope": "row"
-	    }
-	  }, [_c('i', {
-	    staticClass: "fa fa-lg fa-exclamation-triangle text-danger",
-	    attrs: {
-	      "aria-hidden": "true"
-	    }
-	  })]), _vm._v(" "), _c('td', [_vm._v("9/10 8:50 AM")]), _vm._v(" "), _c('td', [_vm._v("Annual calibration. System down for 2 hours.")])])])])])])])
+	  }), _vm._v(" Offline")])
 	}]}
 
 /***/ },
@@ -67933,7 +68003,7 @@
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
 	  return _c('div', [_c('p', {
 	    staticClass: "text-center text-lg-left"
-	  }, [_vm._v(_vm._s(_vm.localTime) + " " + _vm._s(_vm.station.time_zone) + " "), _c('em', [_vm._v("(UTC " + _vm._s(_vm.utcOffsetHours) + " hours)")])]), _vm._v(" "), _c('h2', {
+	  }, [_vm._v(_vm._s(_vm.localTimeFormat) + " " + _vm._s(_vm.station.time_zone) + " "), _c('em', [_vm._v("(UTC " + _vm._s(_vm.utcOffsetHours) + " hours)")])]), _vm._v(" "), _c('h2', {
 	    staticClass: "text-center text-lg-left"
 	  }, [_vm._v(_vm._s(_vm.station.name) + " "), _c('small', {
 	    staticClass: "text-muted hidden-md-down"
@@ -68276,9 +68346,17 @@
 	      "unit-abbrs": _vm.state.unitAbbrs,
 	      "units": _vm.units
 	    }
-	  })], 1), _vm._v(" "), _c('notification-tile', {
-	    staticClass: "not-implemented"
 	  })], 1), _vm._v(" "), _c('div', {
+	    staticClass: "col-12 col-lg-4 component"
+	  }, [_c('notification-tile', {
+	    attrs: {
+	      "data-loading": _vm.dataLoading,
+	      "datastreams": _vm.store.plainState.datastreams,
+	      "timestamps": _vm.store.plainState.timestamps,
+	      "station-time": _vm.stationTime,
+	      "system-time": _vm.state.systemTime
+	    }
+	  })], 1)]), _vm._v(" "), _c('div', {
 	    staticClass: "row row-md"
 	  }, [_c('wind-rose-tile', {
 	    attrs: {
@@ -68496,7 +68574,7 @@
 	      "id": "banner"
 	    }
 	  }, [_c('div', {
-	    staticClass: "jumbotron jumbotron-fluid"
+	    staticClass: "jumbotron jumbotron"
 	  }, [_c('div', {
 	    staticClass: "container"
 	  }, [_c('form', [_c('p', {
@@ -68545,7 +68623,7 @@
 	    attrs: {
 	      "scope": "row"
 	    }
-	  }, [_vm._v("Daytime Average")]), _vm._v(" "), _c('td', {
+	  }, [_vm._v("Seasonal Average")]), _vm._v(" "), _c('td', {
 	    staticClass: "h2 text-right"
 	  }, [_vm._v(_vm._s(_vm._f("placeholder")(_vm.seasAvg)))])]), _vm._v(" "), _c('tr', {
 	    staticClass: "bg-darken"
@@ -68554,14 +68632,14 @@
 	    attrs: {
 	      "scope": "row"
 	    }
-	  }, [_vm._v("Nighttime Average")]), _vm._v(" "), _c('td', {
+	  }, [_vm._v("Seasonal Low")]), _vm._v(" "), _c('td', {
 	    staticClass: "h2 text-right"
 	  }, [_vm._v(_vm._s(_vm._f("placeholder")(_vm.seasMin)))])]), _vm._v(" "), _c('tr', [_c('th', {
 	    staticClass: "text-muted",
 	    attrs: {
 	      "scope": "row"
 	    }
-	  }, [_vm._v("Seasonal Gusts")]), _vm._v(" "), _c('td', {
+	  }, [_vm._v("Seasonal High")]), _vm._v(" "), _c('td', {
 	    staticClass: "h2 text-right"
 	  }, [_vm._v(_vm._s(_vm._f("placeholder")(_vm.seasMax)))])])])])]), _vm._v(" "), _c('div', {
 	    staticClass: "d-flex flex-column justify-content-center py-2 text-center text-muted"

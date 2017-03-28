@@ -56,7 +56,13 @@
               :unit-abbrs="state.unitAbbrs" :units="units"></air-temp-tile>
           </div>
 
-          <notification-tile class="not-implemented"></notification-tile>
+          <div class="col-12 col-lg-4 component">
+            <notification-tile
+              :data-loading="dataLoading"
+              :datastreams="store.plainState.datastreams"
+              :timestamps="store.plainState.timestamps"
+              :station-time="stationTime" :system-time="state.systemTime"></notification-tile>
+          </div>
         </div>
 
         <div class="row row-md">
@@ -202,6 +208,9 @@ export default {
 
   data () {
     return {
+      // DataLoader state
+      dataLoading: false,
+
       state: this.store.reactiveState,
 
       slug: null,
@@ -305,11 +314,11 @@ export default {
   watch: {
     $route: 'fetchStation',
     clientTime (newTime) {
-      // Update datapoints every 2.7 minutes
+      // Update datapoints every 5.4 minutes
       // TODO: Make this configurable
-      if (newTime - this.currentFetchedAt > 162000) {
+      if (newTime - this.currentStatsFetchedAt > 324000) {
         dataLoader.clear(source => {
-          return /^\w*(Stats|systemTime)$/.test(source)
+          return /^\w*(Series|Stats|systemTime)$/.test(source)
         }).load().then(() => {
           logger.log('Station:watch.clientTime::vm', this)
         })
@@ -317,7 +326,7 @@ export default {
     },
     units () {
       dataLoader.clear(source => {
-        return /^\w*(Series|Stats)$/.test(source)
+        return /^\w*(Series|Stats|systemTime)$/.test(source)
       }).load().then(() => {
         logger.log('Station:watch.units::vm', this)
       })

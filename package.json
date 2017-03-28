@@ -1,6 +1,6 @@
 {
   "name": "dendro-web-dash",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Project Dendro web dashboards.",
   "license": "BSD-2-Clause-FreeBSD",
   "author": "J. Scott Smith <scott@newleafsolutionsinc.com>",

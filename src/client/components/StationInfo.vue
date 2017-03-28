@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="text-center text-lg-left">{{ localTime }} {{ station.time_zone }} <em>(UTC {{ utcOffsetHours }} hours)</em></p>
+    <p class="text-center text-lg-left">{{ localTimeFormat }} {{ station.time_zone }} <em>(UTC {{ utcOffsetHours }} hours)</em></p>
 
     <h2 class="text-center text-lg-left">{{ station.name }} <small class="text-muted hidden-md-down">Weather Station</small></h2>
 
@@ -74,7 +74,7 @@ export default {
         }
       }
     },
-    localTime: function () {
+    localTimeFormat: function () {
       if (this.stationTime) {
         switch (this.units) {
           case 'imp':

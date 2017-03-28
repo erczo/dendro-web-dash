@@ -13,17 +13,17 @@
       <table class="table table-sm">
         <tbody>
           <tr class="bg-lighten">
-            <th class="text-muted" scope="row">Daytime Average</th>
+            <th class="text-muted" scope="row">Seasonal Average</th>
             <td class="h2 text-right">{{ seasAvg | placeholder }}</td>
           </tr>
 
           <tr class="bg-darken">
-            <th class="text-muted" scope="row">Nighttime Average</th>
+            <th class="text-muted" scope="row">Seasonal Low</th>
             <td class="h2 text-right">{{ seasMin | placeholder }}</td>
           </tr>
 
           <tr>
-            <th class="text-muted" scope="row">Seasonal Gusts</th>
+            <th class="text-muted" scope="row">Seasonal High</th>
             <td class="h2 text-right">{{ seasMax | placeholder }}</td>
           </tr>
         </tbody>

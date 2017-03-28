@@ -13,10 +13,11 @@ const NEVER_FETCHED = 8640000000000000
 // TODO: Refactor this to use generators?
 class DataLoader {
   constructor (vm, sources) {
-    this._isLoading = false
     this.maxIterations = 10
     this.sources = sources
     this.vm = vm
+
+    vm.dataLoading = false
   }
 
   /**
@@ -50,9 +51,9 @@ class DataLoader {
     return this
   }
 
-  get isLoading () { return this._isLoading }
+  get isLoading () { return this.vm.dataLoading }
   set isLoading (newIsLoading) {
-    this._isLoading = newIsLoading
+    this.vm.dataLoading = newIsLoading
 
     if (newIsLoading) logger.time('DataLoader.load')
     else logger.timeEnd('DataLoader.load')

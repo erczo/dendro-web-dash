@@ -241,7 +241,7 @@ export default {
           enabled: true,
           station_id: vm.state.station._id,
           $limit: 100,
-          $select: ['_id', 'attributes', 'tags']
+          $select: ['_id', 'attributes', 'name', 'source_type', 'tags']
         }
       })
     },
@@ -346,11 +346,12 @@ export default {
     //   }
     // },
     datapointsQuery (vm) {
-      const startOfToday = moment(vm.stationTime).utc().startOf('d')
-      const time = stationMomentToUTCTime(startOfToday, vm.state.station.utc_offset)
+      const twentyFourHoursAgo = moment(vm.stationTime).utc().subtract(24, 'h')
+      const time = stationMomentToUTCTime(twentyFourHoursAgo, vm.state.station.utc_offset)
+      const iso = moment(time).utc().toISOString()
       return {
         time: {
-          $gte: moment(time).utc().toISOString()
+          $gte: iso
         },
         $limit: 1
       }

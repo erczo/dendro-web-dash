@@ -80,7 +80,10 @@ class StationStore {
     this.plainState = {
       datastreams: null,
       datastreamsByDsKey: null,
-      datastreamsById: null
+      datastreamsById: null,
+
+      // Recent datapoint time for each datastream; includes _max
+      timestamps: null
     }
 
     // State that is observed and triggers reactivity in Vue
@@ -132,11 +135,19 @@ class StationStore {
   }
 
   setDataset (datasetKey, docs) {
+    /*
+      NOTE: We start with an empty object and THEN assign properties. This is important since we intentionally want
+      to avoid observing every datapoint. Simply put, we are leveraging the fact that Vue cannot detect property
+      addition or deletion - you must use $set to achieve that.
+
+      SEE: https://vuejs.org/v2/guide/reactivity.html
+     */
     const obj = this.reactiveState.datasets[datasetKey] = {}
 
     if (!docs) return
 
     docs.forEach(doc => {
+      // Lookup datastream in memory
       const datastream = this.plainState.datastreamsById[doc._id]
       if (!datastream) return
       const dsKey = datastream.__dsKey
@@ -145,8 +156,24 @@ class StationStore {
       // Link the result doc to its datastream
       doc.datastream = datastream
 
+      // Maintain latest time of datapoints for notifications
+      if (doc.datapoints && doc.datapoints.data && doc.datapoints.data.length > 0) {
+        // We count on the fact that datapoints are either sorted ASC or DESC by time
+        const data = doc.datapoints.data
+        const firstPoint = data[0]
+        const lastPoint = data[data.length - 1]
+        const firstTime = (new Date(firstPoint.t)).getTime() + (typeof firstPoint.o === 'number' ? firstPoint.o * 1000 : 0)
+        const lastTime = (new Date(lastPoint.t)).getTime() + (typeof lastPoint.o === 'number' ? lastPoint.o * 1000 : 0)
+
+        this.plainState.timestamps[doc._id] = Math.max(this.plainState.timestamps[doc._id] || 0, firstTime, lastTime)
+        this.plainState.timestamps._max = Math.max(this.plainState.timestamps._max || 0, firstTime, lastTime)
+      } else {
+        this.plainState.timestamps[doc._id] = this.plainState.timestamps[doc._id] || 0
+      }
+
       // Thin-out the result doc
       delete doc.attributes
+      delete doc.station_id
       delete doc.tags
       delete doc._id
 
@@ -160,7 +187,7 @@ class StationStore {
   }
 
   setDatastreams (newValue) {
-    let [byDsKey, byId] = [null, null]
+    let [byDsKey, byId] = [null, null, null]
 
     if (newValue) {
       byDsKey = {}
@@ -187,7 +214,7 @@ class StationStore {
       })
     }
 
-    [this.plainState.datastreams, this.plainState.datastreamsByDsKey, this.plainState.datastreamsById] = [newValue, byDsKey, byId]
+    [this.plainState.datastreams, this.plainState.datastreamsByDsKey, this.plainState.datastreamsById, this.plainState.timestamps] = [newValue, byDsKey, byId, {}]
   }
 
   setStation (newValue) {
