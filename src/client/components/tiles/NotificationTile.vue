@@ -2,13 +2,13 @@
   <div class="d-flex flex-1 flex-column h-100 rounded tile">
 
     <!-- Status -->
-    <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom status-cell status-cell-online" v-if="isOnline">
+    <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom status-cell" :style="{backgroundColor: colors.TILE.NOTIFY_ONLINE}" v-if="isOnline">
       <h2><i class="fa fa-check-circle-o" aria-hidden="true"></i> Online</h2>
       <!-- TODO: Implement this -->
       <!-- <span class="text-muted">Last offline: 11/11 11:22</span> -->
     </div>
 
-    <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom status-cell status-cell-offline" v-if="!isOnline">
+    <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom status-cell status-cell-offline" :style="{backgroundColor: colors.TILE.NOTIFY_OFFLINE}" v-if="!isOnline">
       <h3><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Offline</h3>
       <!-- TODO: Implement this -->
       <!-- <span class="text-muted">Last online: 10/11 11:22 AM</span> -->
@@ -26,38 +26,6 @@
             <td>{{ event.when }}</td>
             <td>{{ event.text }}</td>
           </tr>
-<!--
-          <tr>
-            <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
-            <td>5 min ago</td>
-            <td>Deliberately offline for demo.</td>
-          </tr>
-          <tr>
-            <th scope="row"><i class="fa fa-lg fa-check-circle-o text-success" aria-hidden="true"></i></th>
-            <td>Today 9:00 AM</td>
-            <td>NL115 ethernet module replaced. System back online.</td>
-          </tr>
-          <tr>
-            <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
-            <td>9/20 10:42 PM</td>
-            <td>Network disconnect. No data lost.</td>
-          </tr>
-          <tr>
-            <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
-            <td>9/10 8:50 AM</td>
-            <td>Annual calibration. System down for 2 hours.</td>
-          </tr>
-          <tr>
-            <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
-            <td>9/10 8:50 AM</td>
-            <td>Annual calibration. System down for 2 hours.</td>
-          </tr>
-          <tr>
-            <th scope="row"><i class="fa fa-lg fa-exclamation-triangle text-danger" aria-hidden="true"></i></th>
-            <td>9/10 8:50 AM</td>
-            <td>Annual calibration. System down for 2 hours.</td>
-          </tr>
- -->
         </tbody>
       </table>
     </div>
@@ -66,9 +34,9 @@
 </template>
 
 <script>
-// TODO: Finish
-// TODO: Make colors props?
 import moment from 'moment'
+
+import {color} from '../../mixins/tile'
 
 export default {
   props: {
@@ -97,6 +65,8 @@ export default {
     }
   },
 
+  mixins: [color],
+
   watch: {
     dataLoading (newDataLoading) {
       if (newDataLoading) return
@@ -114,43 +84,54 @@ export default {
         NOTE: Datastream timestamps are set as follows:
         - If we never fetched data for the datastream, the timestamp is null
         - If the datastream didn't return data, the timestamp is 0
-        - Otherwise, the timestamp is from the latest point
+        - Otherwise, the timestamp is from the latest datapoint
        */
 
       // Determine sensor failure events based on timestamps
-      const newEvents = this.datastreams.map(datastream => {
-        const ts = this.timestamps[datastream._id]
-        return {
-          _id: datastream._id,
-          name: datastream.name,
-          source_type: datastream.source_type,
-          interval: typeof ts === 'number' ? maxTime - ts : null,
-          timestamp: ts
-        }
-      }).filter(datastream => {
-        // Sensor failure if 24 hours without data, from most recent timestamp (_max)
-        // TODO: Make this configurable
-        // TODO: Only concerned about 'sensor' types now; resolve this with proper event logging
-        if ((datastream.source_type === 'sensor') && (typeof datastream.interval === 'number')) return !(datastream.interval < 86400000)
-        return false
-      })
-      .sort((a, b) => {
-        return a.interval - b.interval
-      }).map(datastream => {
-        return {
-          level: 1,
-          text: `Sensor [${datastream.name}] offline`,
-          when: datastream.timestamp === 0 ? 'Long ago' : moment(datastream.ts).utc().from(maxMoment)
-        }
-      })
+      // TODO: Refactor this all
+      let newEvents
 
-      // Prepend data received event
+      if (this.datastreams) {
+        newEvents = this.datastreams.map(datastream => {
+          const ts = this.timestamps[datastream._id]
+          return {
+            _id: datastream._id,
+            name: datastream.name,
+            source_type: datastream.source_type,
+            interval: typeof ts === 'number' ? maxTime - ts : null,
+            timestamp: ts
+          }
+        }).filter(datastream => {
+          // Sensor failure if 24 hours without data, from most recent timestamp (_max)
+          // TODO: Make this configurable
+          if (typeof datastream.interval === 'number') return !(datastream.interval < 86400000)
+          return false
+        })
+        .sort((a, b) => {
+          return a.interval - b.interval
+        }).map(datastream => {
+          return {
+            level: 1,
+            text: `Sensor [${datastream.name}] offline`,
+            when: datastream.timestamp === 0 ? 'Long ago' : maxMoment.from(moment(datastream.ts).utc())
+          }
+        })
+      }
+
       if (this.isOnline) {
+        // Prepend data received event
         newEvents.unshift({
           level: 0,
           text: 'Data received',
-          when: moment(maxMoment).utc().from(stationMoment)
+          when: maxMoment.from(stationMoment)
         })
+      } else {
+        // Offline station supersedes events
+        newEvents = [{
+          level: 1,
+          text: 'No data received',
+          when: maxTime === 0 ? 'Long ago' : maxMoment.from(stationMoment)
+        }]
       }
 
       this.events = newEvents
@@ -179,11 +160,5 @@ export default {
 
 .status-cell {
   color: #fff;
-}
-.status-cell-offline {
-  background-color: #bf5750;
-}
-.status-cell-online {
-  background-color: #97bf50;
 }
 </style>

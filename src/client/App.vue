@@ -173,7 +173,7 @@ body {
 }
 
 header .navbar {
-  background-color: rgba(80, 139, 191, 0.96);
+  background-color: rgba(92, 161, 220, 0.96);
   border-bottom: 1px solid rgb(80, 139, 191)
 }
 

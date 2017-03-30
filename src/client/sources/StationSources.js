@@ -147,6 +147,12 @@ function fetchDatapoints (vm) {
 
   logger.log('StationSources:fetchDatapoints::query', query)
 
+  if (ids.length === 0) {
+    // TODO: Cleanup - for debug
+    console.error('No datastreams found for source', this)
+    return Promise.reject(new Error('No datastreams found for source'))
+  }
+
   return services.datapointLookup.find({
     query: query
   })

@@ -7,12 +7,21 @@
  */
 
 import moment from 'moment'
+import colors from '../lib/colors'
 
 const abbr = {
   methods: {
     getAbbr (key) {
       if (!this.unitAbbrs) return ''
       return this.unitAbbrs[key]
+    }
+  }
+}
+
+const color = {
+  computed: {
+    colors () {
+      return colors
     }
   }
 }
@@ -95,6 +104,7 @@ const temperature = {
 
 export {
   abbr,
+  color,
   length,
   pressure,
   seasonal,

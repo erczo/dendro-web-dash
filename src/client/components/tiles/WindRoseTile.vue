@@ -1,13 +1,12 @@
 <template>
   <div class="col-12 col-lg-4 component">
-    <div class="d-flex flex-column h-100 rounded tile">
+    <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.WIND}">
       <div class="d-flex flex-1 flex-column justify-content-center text-center wind-rose-chart"></div>
     </div>
   </div>
 </template>
 
 <script>
-// TODO: Make colors props?
 import math from '../../lib/math'
 import Highcharts from 'highcharts'
 
@@ -16,7 +15,7 @@ import Highcharts from 'highcharts'
 import HighchartsMore from 'highcharts-more'
 HighchartsMore(Highcharts)
 
-import {abbr, speed} from '../../mixins/tile'
+import {abbr, color, speed} from '../../mixins/tile'
 
 import AirDirAcc from '../../accessors/AirDirAcc'
 import AirSpeedAcc from '../../accessors/AirSpeedAcc'
@@ -80,13 +79,13 @@ export default {
     avgAirDir = avgAirSpeed = null
   },
 
-  mixins: [abbr, speed],
+  mixins: [abbr, color, speed],
 
   methods: {
     windRoseOptions () {
       return {
         chart: {
-          backgroundColor: '#9081bf',
+          backgroundColor: this.colors.TILE.WIND,
           polar: true,
           type: 'column'
         },
@@ -239,7 +238,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .tile {
-  background-color: #9081bf;
   color: #fff;
 }
 </style>

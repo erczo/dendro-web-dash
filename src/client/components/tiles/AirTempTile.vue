@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-100 rounded tile">
+  <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.AIR_TEMP}">
 
     <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom">
       <h1 class="display-3">{{ curAvg | placeholder }}
@@ -28,9 +28,7 @@
 </template>
 
 <script>
-// TODO: Show warning/indicator if current readings are older than 24 hours
-// TODO: Make colors props?
-import {seasonal} from '../../mixins/tile'
+import {color, seasonal} from '../../mixins/tile'
 
 import TempAcc from '../../accessors/TempAcc'
 
@@ -69,7 +67,7 @@ export default {
     avgAirTemp = maxSeasAirTemp = minSeasAirTemp = null
   },
 
-  mixins: [seasonal],
+  mixins: [color, seasonal],
 
   watch: {
     current (newDataset) {
@@ -86,7 +84,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .tile {
-  background-color: #509ebf;
   color: #fff;
 }
 </style>

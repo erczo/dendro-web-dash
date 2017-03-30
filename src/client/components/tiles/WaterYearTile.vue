@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-100 rounded tile">
+  <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.PRECIP}">
 
     <div class="d-flex flex-1 flex-row justify-content-center text-center border-bottom">
       <div class="d-flex flex-1 flex-column justify-content-center text-center">
@@ -18,10 +18,9 @@
 </template>
 
 <script>
-// TODO: Make colors props?
 import Highcharts from 'highcharts'
 
-import {abbr, length} from '../../mixins/tile'
+import {abbr, color, length} from '../../mixins/tile'
 
 import LengthAcc from '../../accessors/LengthAcc'
 
@@ -73,13 +72,13 @@ export default {
     cuDayPrecipHeight = null
   },
 
-  mixins: [abbr, length],
+  mixins: [abbr, color, length],
 
   methods: {
     precipOptions () {
       return {
         chart: {
-          backgroundColor: '#50bfa6',
+          backgroundColor: this.colors.TILE.PRECIP,
           height: 120,
           zoomType: 'x'
         },
@@ -233,7 +232,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .tile {
-  background-color: #50bfa6;
   color: #fff;
 }
 </style>

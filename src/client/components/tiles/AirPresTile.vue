@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-100 rounded tile">
+  <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.AIR_PRES}">
 
     <div class="d-flex flex-1 flex-row justify-content-center text-center border-bottom">
       <div class="d-flex flex-1 flex-column justify-content-center text-center">
@@ -18,13 +18,11 @@
 </template>
 
 <script>
-// TODO: Show warning/indicator if current readings are older than 24 hours
-// TODO: Make colors props?
 import math from '../../lib/math'
 import Highcharts from 'highcharts'
 
 import {pressure as baroPressure} from '../../lib/barometric'
-import {abbr, pressure} from '../../mixins/tile'
+import {abbr, color, pressure} from '../../mixins/tile'
 
 import PresAcc from '../../accessors/PresAcc'
 
@@ -80,13 +78,13 @@ export default {
     avgAirPres = null
   },
 
-  mixins: [abbr, pressure],
+  mixins: [abbr, color, pressure],
 
   methods: {
     airPresOptions () {
       return {
         chart: {
-          backgroundColor: '#509ebf',
+          backgroundColor: this.colors.TILE.AIR_PRES,
           height: 120,
           zoomType: 'x'
         },
@@ -184,7 +182,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .tile {
-  background-color: #509ebf;
   color: #fff;
 }
 </style>

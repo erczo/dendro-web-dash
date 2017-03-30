@@ -23,17 +23,29 @@ export default {
       vm.store.clearStations()
     },
     guard (vm) {
-      return !vm.state.stations && !vm.stationsError
+      // TODO: Finish this!!!
+      return !vm.state.stations && !vm.stationsError // !vm.stationsReady
     },
     fetch (vm) {
-      return services.station.find({
-        query: {
-          enabled: true,
-          station_type: 'weather',
-          slug: {$exists: 1}
-          // TODO: Implement limit; add 'More' button
-          // $limit: 1
+      const searchText = vm.searchText.trim()
+      const query = {
+        enabled: true,
+        station_type: 'weather',
+        slug: {$exists: 1},
+        // TODO: Finish this!!!
+        // $limit: vm.queryLimit + 1,
+        $limit: 100,
+        $sort: {name: 1} // ASC
+      }
+      if (searchText.length > 0) {
+        query.name = {
+          $regex: searchText,
+          $options: 'i'
         }
+      }
+
+      return services.station.find({
+        query: query
       })
     },
     afterFetch (vm, res) {

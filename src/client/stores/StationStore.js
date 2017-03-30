@@ -157,7 +157,10 @@ class StationStore {
       doc.datastream = datastream
 
       // Maintain latest time of datapoints for notifications
-      if (doc.datapoints && doc.datapoints.data && doc.datapoints.data.length > 0) {
+      // TODO: Only concerned about 'sensor' types now; resolve this with proper event logging
+      if (datastream.source_type !== 'sensor') {
+        // Exclude types other than sensor
+      } else if (doc.datapoints && doc.datapoints.data && doc.datapoints.data.length > 0) {
         // We count on the fact that datapoints are either sorted ASC or DESC by time
         const data = doc.datapoints.data
         const firstPoint = data[0]

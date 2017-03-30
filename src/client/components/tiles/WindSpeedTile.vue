@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-100 rounded tile">
+  <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.WIND}">
 
     <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom">
       <h1 class="display-4">{{ curAvg | placeholder }}
@@ -40,7 +40,7 @@
 <script>
 // TODO: Show warning/indicator if current readings are older than 24 hours
 // TODO: Make colors props?
-import {abbr, seasonal, speed} from '../../mixins/tile'
+import {abbr, color, seasonal, speed} from '../../mixins/tile'
 
 import AirDirAcc from '../../accessors/AirDirAcc'
 import SpeedAcc from '../../accessors/SpeedAcc'
@@ -86,7 +86,7 @@ export default {
     avgAirDir = avgAirSpeed = avgSeasAirSpeed = maxSeasAirSpeed = minSeasAirSpeed = null
   },
 
-  mixins: [abbr, seasonal, speed],
+  mixins: [abbr, color, seasonal, speed],
 
   watch: {
     current (newDataset) {
@@ -115,7 +115,6 @@ export default {
 }
 
 .tile {
-  background-color: #9081bf;
   color: #fff;
 }
 </style>

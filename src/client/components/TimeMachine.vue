@@ -21,18 +21,17 @@
 </template>
 
 <script>
-// TODO: Finish
-// TODO: Make colors props?
 // TODO: Break this into separate components
 // TODO: Refactor, reduce redundancy
 import $ from 'jquery'
+// import chroma from 'chroma-js'
 import Highcharts from 'highcharts'
 
 // TODO: Optional sync'd chart feature - not implemented
 // import HighchartsDendro from '../lib/highcharts-dendro'
 // HighchartsDendro(Highcharts)
 
-import {abbr, solar, speed, temperature} from '../mixins/tile'
+import {abbr, color, solar, speed, temperature} from '../mixins/tile'
 
 import SpeedAcc from '../accessors/SpeedAcc'
 import TempAcc from '../accessors/TempAcc'
@@ -180,7 +179,7 @@ export default {
     avgAirSpeed = avgAirTemp = avgSoilTemp = avgSolarPAR = avgSolarRad = maxAirSpeed = null
   },
 
-  mixins: [abbr, solar, speed, temperature],
+  mixins: [abbr, color, solar, speed, temperature],
 
   methods: {
     airTempOptions () {
@@ -392,9 +391,14 @@ export default {
     },
     airTempCursor (newCursor) {
       if (newCursor && (newCursor.start >= newCursor.end)) {
+        // TODO: Finish this!!!
+        // const colors = chroma.scale([this.color.WHEEL.RED, this.color.WHEEL.YELLOW]).colors(this.airTempData.length)
+
         this.airTempData.forEach((data, i) => {
           this.airTempChart.addSeries({
             color: i > 0 ? '#dcdcdc' : '#5ca1dc',
+            // TODO: Finish this!!!
+            // color: colors(i).hex(),
             data: data,
             lineWidth: Math.max(2, i + 1),
             name: this.airTempNames[i],
