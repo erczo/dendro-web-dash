@@ -165,6 +165,7 @@ export default {
     airPresCursor (newCursor) {
       if (newCursor && (newCursor.start >= newCursor.end)) {
         this.airPresChart.addSeries({
+          // TODO: Use colors.js lib
           color: '#f3f767',
           data: this.airPresData,
           name: 'Avg',

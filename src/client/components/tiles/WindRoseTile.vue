@@ -23,6 +23,7 @@ import AirSpeedAcc from '../../accessors/AirSpeedAcc'
 let avgAirDir
 let avgAirSpeed
 
+// TODO: Use colors.js lib
 const WIND_FORCE_LEVELS = [{
   color: '#5cb6dc',
   // NOTE: Ranges for display only; actual wind force index is eval'd in AirSpeedAcc

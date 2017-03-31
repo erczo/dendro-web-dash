@@ -23,11 +23,11 @@
     <section id="banner" class="pt-3" v-if="station">
       <div class="container">
         <div class="row align-items-end">
-          <div class="col-12 col-lg-4 pb-3" v-if="station.media">
+          <div class="col-12 col-lg-4 pb-3" v-if="station.media && !isMediaError">
             <lightbox :is-retina="isRetina" :media="station.media" :options="lightboxOptions"></lightbox>
             <photo-collage
-              :is-retina="isRetina" :media="station.media" v-if="station.media"
-              @select="showLightbox"></photo-collage>
+              :is-retina="isRetina" :media="station.media"
+              @error="collageError" @select="showLightbox"></photo-collage>
           </div>
 
           <div class="col-12 col-lg-8 pb-3">
@@ -226,6 +226,7 @@ export default {
       wyPrecipCursor: null,
 
       // Misc
+      isMediaError: false,
       lightboxOptions: null
     }
   },
@@ -293,6 +294,9 @@ export default {
       }).load().then(() => {
         logger.log('Station:methods.fetchStation::vm', this)
       })
+    },
+    collageError () {
+      this.isMediaError = true
     },
     seriesAdded (datasetKey) {
       // HACK: Release memory

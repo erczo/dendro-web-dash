@@ -109,8 +109,16 @@ function afterFetchSeries (vm, res) {
 
   // TODO: This could be improved by inspecting the last datapoint fetched
   const cursor = vm[this.cursorName]
-  const newStart = cursor.pos
-  let newPos = cursor.pos.clone().add(SERIES_FETCH_DAYS, 'd')
+
+  let newStart
+  let newPos
+
+  if (Array.isArray(res) && res.length > 0) {
+    newStart = cursor.pos
+    newPos = cursor.pos.clone().add(SERIES_FETCH_DAYS, 'd')
+  } else {
+    newStart = newPos = cursor.end
+  }
 
   // Clamp pos to the end time
   if (newPos > cursor.end) newPos = cursor.end
@@ -148,9 +156,8 @@ function fetchDatapoints (vm) {
   logger.log('StationSources:fetchDatapoints::query', query)
 
   if (ids.length === 0) {
-    // TODO: Cleanup - for debug
-    console.error('No datastreams found for source', this)
-    return Promise.reject(new Error('No datastreams found for source'))
+    logger.warn('StationSources:fetchDatapoints::noDatastreamsForSource', this)
+    return Promise.resolve([])
   }
 
   return services.datapointLookup.find({

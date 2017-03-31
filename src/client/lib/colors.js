@@ -37,6 +37,21 @@ const BOOTSTRAP = {
   PURPLE: WHEEL.BLUE_VIOLET
 }
 
+// Other random colors not in the wheel
+// SEE: http://chir.ag/projects/name-that-color/#6195ED
+const NAMED = {
+  HEMLOCK_APPROX: '#615c42'
+}
+
+const SERIES = {
+  AIR_SPEED_AVG: WHEEL.BLUE_VIOLET,
+  AIR_SPEED_MAX: WHEEL.RED,
+  AIR_TEMP: [WHEEL.BLUE, WHEEL.YELLOW],
+  SOIL_TEMP: [WHEEL.ORANGE, NAMED.HEMLOCK_APPROX],
+  SOLAR_RAD: WHEEL.ORANGE,
+  SOLAR_PAR: WHEEL.YELLOW_GREEN
+}
+
 const TILE = {
   AIR_MOIST: chroma(WHEEL.BLUE).darken(0.5).hex(),
   AIR_PRES: chroma(WHEEL.BLUE).darken(0.5).hex(),
@@ -50,6 +65,8 @@ const TILE = {
 
 export default {
   BOOTSTRAP,
+  NAMED,
+  SERIES,
   TILE,
   WHEEL
 }

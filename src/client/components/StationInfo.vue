@@ -70,7 +70,7 @@ export default {
           case 'imp':
             return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getAbbr('Foot')}`
           case 'met':
-            return `${m} ${this.getAbbr('Meter')}`
+            return `${math.round(m, 1)} ${this.getAbbr('Meter')}`
         }
       }
     },

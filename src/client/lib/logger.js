@@ -24,7 +24,7 @@ class Logger {
     this._enabled = newEnabled
 
     Object.keys(this.methods).forEach(key => {
-      this[key] = newEnabled ? this.methods[key] : this._nada
+      this[key] = newEnabled || key === 'error' || key === 'warn' ? this.methods[key] : this._nada
     })
   }
 }

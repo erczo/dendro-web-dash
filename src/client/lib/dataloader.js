@@ -113,7 +113,7 @@ class DataLoader {
 
         vm[readyKey] = true
       }).catch(err => {
-        logger.log('DataLoader#load::error', err)
+        logger.error('DataLoader#load::error', err)
 
         if (vm[fetchedAtKey] !== fetchedAt) return // Cancelled
 

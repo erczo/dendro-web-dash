@@ -19,10 +19,22 @@
 </template>
 
 <script>
+import $ from 'jquery'
+
 export default {
   props: {
     isRetina: Boolean,
     media: Array
+  },
+
+  mounted () {
+    $(this.$el).find('img').bind('error', (e) => {
+      this.$emit('error')
+    })
+  },
+
+  beforeDestroy () {
+    $(this.$el).find('img').unbind()
   },
 
   methods: {

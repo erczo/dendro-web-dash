@@ -182,6 +182,7 @@ export default {
         waterYears.forEach((wy, i) => {
           const data = this.precipData[wy]
           this.precipChart.addSeries({
+            // TODO: Use colors.js lib
             color: i === waterYears.length - 1 ? '#f3f767' : '#fff',
             data: data.d,
             name: `wy${wy}`,

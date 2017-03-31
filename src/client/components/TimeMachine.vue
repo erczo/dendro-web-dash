@@ -24,7 +24,7 @@
 // TODO: Break this into separate components
 // TODO: Refactor, reduce redundancy
 import $ from 'jquery'
-// import chroma from 'chroma-js'
+import chroma from 'chroma-js'
 import Highcharts from 'highcharts'
 
 // TODO: Optional sync'd chart feature - not implemented
@@ -346,14 +346,15 @@ export default {
     airSpeedCursor (newCursor) {
       if (newCursor && (newCursor.start >= newCursor.end)) {
         this.windSpeedChart.addSeries({
-          color: '#a695dc',
+          color: this.colors.SERIES.AIR_SPEED_AVG,
           data: this.windSpeedData[0],
           name: 'Avg',
           step: true
         })
         this.windSpeedChart.addSeries({
-          color: '#dc635c',
+          color: this.colors.SERIES.AIR_SPEED_MAX,
           data: this.windSpeedData[1],
+          lineWidth: 3,
           name: 'Gust',
           step: true
         })
@@ -391,16 +392,12 @@ export default {
     },
     airTempCursor (newCursor) {
       if (newCursor && (newCursor.start >= newCursor.end)) {
-        // TODO: Finish this!!!
-        // const colors = chroma.scale([this.color.WHEEL.RED, this.color.WHEEL.YELLOW]).colors(this.airTempData.length)
+        const colors = this.airTempData.length < 2 ? [this.colors.SERIES.AIR_TEMP[0]] : chroma.scale(this.colors.SERIES.AIR_TEMP).colors(this.airTempData.length)
 
         this.airTempData.forEach((data, i) => {
           this.airTempChart.addSeries({
-            color: i > 0 ? '#dcdcdc' : '#5ca1dc',
-            // TODO: Finish this!!!
-            // color: colors(i).hex(),
+            color: colors[i],
             data: data,
-            lineWidth: Math.max(2, i + 1),
             name: this.airTempNames[i],
             step: true,
             zIndex: i > 0 ? i : 100
@@ -440,11 +437,12 @@ export default {
     },
     soilTempCursor (newCursor) {
       if (newCursor && (newCursor.start >= newCursor.end)) {
+        const colors = this.soilTempData.length < 2 ? [this.colors.SERIES.SOIL_TEMP[0]] : chroma.scale(this.colors.SERIES.SOIL_TEMP).colors(this.soilTempData.length)
+
         this.soilTempData.forEach((data, i) => {
           this.soilTempChart.addSeries({
-            color: i > 0 ? '#dcdcdc' : '#aedc5c',
+            color: colors[i],
             data: data,
-            lineWidth: Math.max(2, i + 1),
             name: this.soilTempNames[i],
             step: true,
             zIndex: i > 0 ? i : 100
@@ -478,14 +476,14 @@ export default {
     solarRadCursor (newCursor) {
       if (newCursor && (newCursor.start >= newCursor.end)) {
         this.solarRadChart.addSeries({
-          color: '#dcac5c',
+          color: this.colors.SERIES.SOLAR_RAD,
           data: this.solarRadData[0],
           lineWidth: 3,
           name: `Total (${this.radAbbr})`,
           step: true
         })
         this.solarRadChart.addSeries({
-          color: '#d8dc5c',
+          color: this.colors.SERIES.SOLAR_PAR,
           data: this.solarRadData[1],
           lineWidth: 1,
           name: `PAR (${this.parAbbr})`,

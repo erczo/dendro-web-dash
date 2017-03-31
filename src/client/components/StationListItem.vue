@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import $ from 'jquery'
 import math from '../lib/math'
 
 import {abbr} from '../mixins/tile'
@@ -36,6 +37,22 @@ export default {
     units: String
   },
 
+  data () {
+    return {
+      isMediaError: false
+    }
+  },
+
+  mounted () {
+    $(this.$el).find('img').bind('error', (e) => {
+      this.isMediaError = true
+    })
+  },
+
+  beforeDestroy () {
+    $(this.$el).find('img').unbind()
+  },
+
   computed: {
     // TODO: Move to StationElevation.vue?
     elevation: function () {
@@ -45,16 +62,22 @@ export default {
           case 'imp':
             return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getAbbr('Foot')}`
           case 'met':
-            return `${m} ${this.getAbbr('Meter')}`
+            return `${math.round(m, 1)} ${this.getAbbr('Meter')}`
         }
       }
     },
     media: function () {
-      return this.station.media
+      if (!this.isMediaError) return this.station.media
     }
   },
 
-  mixins: [abbr]
+  mixins: [abbr],
+
+  methods: {
+    onError: function () {
+      console.log('IMAGEERROR2')
+    }
+  }
 }
 </script>
 
