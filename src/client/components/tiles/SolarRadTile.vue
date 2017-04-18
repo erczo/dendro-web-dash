@@ -1,6 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.SOLAR}">
-
+  <div class="component d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.SOLAR}">
     <div class="d-flex flex-1 flex-row justify-content-center text-center border-bottom">
       <div class="d-flex flex-1 flex-column justify-content-center text-center">
         <h1 class="display-3">{{ curPAR | placeholder }}</h1>
@@ -18,7 +17,6 @@
         <!-- <i class="wi wi-day-cloudy"></i> Partially Cloudy -->
       </h2>
     </div>
-
   </div>
 </template>
 

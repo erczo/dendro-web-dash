@@ -11,11 +11,13 @@ import 'bootstrap/js/bootstrap.js'
 import 'font-awesome/css/font-awesome.css'
 import 'weather-icons/css/weather-icons.min.css'
 import 'weather-icons/css/weather-icons-wind.min.css'
+import 'velocity-animate'
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App'
 
+import Download from './components/Download'
 import Home from './components/Home'
 import Station from './components/Station'
 
@@ -46,9 +48,10 @@ const router = new VueRouter({
   // SEE: https://router.vuejs.org/en/advanced/scroll-behavior.html
   // mode: 'history',
   routes: [
-    {path: '/', component: Home},
+    {path: '/download', name: 'download', component: Download},
     {path: '/stations/:slug', name: 'station', component: Station},
     {path: '/:slug', redirect: '/stations/:slug'},
+    {path: '/', name: 'home', component: Home},
     {path: '*', redirect: '/'}
   ]
 })

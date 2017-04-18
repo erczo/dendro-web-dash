@@ -1,62 +1,73 @@
 <template>
-  <div class="component">
+  <div class="component p-fixed">
+    <section>
+      <div class="container-fluid">
+        <div class="row py-2 border-bottom">
+          <div class="col-12 text-muted">Weather Station Dashboard</div>
+        </div>
+      </div>
+    </section>
+
     <section class="py-3" v-if="stationError">
-      <div class="container">
+      <div class="container-fluid">
         <div class="row">
           <div class="col-12">
-            <h1>{{ stationError }}</h1>
+            <h2>Oops!</h2>
+            <p>{{ stationError }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <section class="py-3" v-if="stationLoading">
-      <div class="container">
+      <div class="container-fluid">
         <div class="row">
-          <div class="col-12">
-            <h1>Loading...</h1>
+          <div class="col-12 text-center text-muted">
+            <i class="fa fa-spinner fa-pulse fa-3x fa-fw" aria-hidden="true"></i>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="banner" class="pt-3" v-if="station">
-      <div class="container">
-        <div class="row align-items-end">
-          <div class="col-12 col-lg-4 pb-3" v-if="station.media && !isMediaError">
+    <section class="py-3" v-if="station">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md col-md-auto" v-if="station.media && !isMediaError">
             <lightbox :is-retina="isRetina" :media="station.media" :options="lightboxOptions"></lightbox>
             <photo-collage
               :is-retina="isRetina" :media="station.media"
               @error="collageError" @select="showLightbox"></photo-collage>
           </div>
 
-          <div class="col-12 col-lg-8 pb-3">
+          <div class="col-md">
             <station-info
               :contact-orgs="state.contactOrgs" :contact-persons="state.contactPersons"
               :station="station"
               :station-time="stationTime" :system-time="state.systemTime"
               :unit-abbrs="state.unitAbbrs" :units="units"
-              @select-marker="showMap"></station-info>
+              @select-download="downloadData" @select-marker="showMap"></station-info>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="tiles" class="bg-faded border-bottom border-top py-3" v-if="station">
-      <div class="container">
+    <section class="bg-faded py-3" v-if="station">
+      <div class="container-fluid">
         <div class="row row-md">
-          <div class="col-12 col-lg-4 component" v-if="coordinates">
-            <map-tile :coordinates="coordinates" :title="station.name" @select-marker="showMap"></map-tile>
+          <div class="col-12 col-lg-4 pb-3" v-if="coordinates">
+            <map-tile
+              :coordinates="coordinates" :title="station.name"
+              @select-marker="showMap"></map-tile>
           </div>
 
-          <div class="col-12 col-lg-4 component">
+          <div class="col-12 col-lg-4 pb-3">
             <air-temp-tile
               :current="datasets.current" :seasonal="datasets.seasonal"
               :station-time="stationTime" :system-time="state.systemTime"
               :unit-abbrs="state.unitAbbrs" :units="units"></air-temp-tile>
           </div>
 
-          <div class="col-12 col-lg-4 component">
+          <div class="col-12 col-lg-4 pb-3">
             <notification-tile
               :data-loading="dataLoading"
               :datastreams="store.plainState.datastreams"
@@ -66,21 +77,23 @@
         </div>
 
         <div class="row row-md">
-          <wind-rose-tile
-            :series-config="seriesConfig"
-            :air-speed="datasets.airSpeed" :air-speed-cursor="airSpeedCursor"
-            :station-time="stationTime" :system-time="state.systemTime"
-            :unit-abbrs="state.unitAbbrs" :units="units"
-            @series-added="seriesAdded"></wind-rose-tile>
+          <div class="col-12 col-lg-4 pb-3">
+            <wind-rose-tile
+              :series-config="seriesConfig"
+              :air-speed="datasets.airSpeed" :air-speed-cursor="airSpeedCursor"
+              :station-time="stationTime" :system-time="state.systemTime"
+              :unit-abbrs="state.unitAbbrs" :units="units"
+              @series-added="seriesAdded"></wind-rose-tile>
+          </div>
 
-          <div class="col-12 col-lg-4 component">
+          <div class="col-12 col-lg-4 pb-3">
             <wind-speed-tile
               :current="datasets.current" :seasonal="datasets.seasonal"
               :station-time="stationTime" :system-time="state.systemTime"
               :unit-abbrs="state.unitAbbrs" :units="units"></wind-speed-tile>
           </div>
 
-          <div class="col-12 col-lg-4 component">
+          <div class="col-12 col-lg-4 pb-3">
             <humidity-tile
               :current="datasets.current" :seasonal="datasets.seasonal"
               :station-time="stationTime" :system-time="state.systemTime"
@@ -89,14 +102,14 @@
         </div>
 
         <div class="row row-md">
-          <div class="col-12 col-lg-6 component">
+          <div class="col-12 col-lg-6 pb-3">
             <solar-rad-tile
               :current="datasets.current"
               :station-time="stationTime" :system-time="state.systemTime"
               :unit-abbrs="state.unitAbbrs" :units="units"></solar-rad-tile>
           </div>
 
-          <div class="col-12 col-lg-6 component">
+          <div class="col-12 col-lg-6 pb-3">
             <precip-tile
               :current="datasets.current" :yesterday="datasets.yesterday"
               :station-time="stationTime" :system-time="state.systemTime"
@@ -105,7 +118,7 @@
         </div>
 
         <div class="row row-md">
-          <div class="col-12 col-lg-6 component">
+          <div class="col-12 col-lg-6 pb-3">
             <air-pres-tile
               :coordinates="coordinates"
               :current="datasets.current"
@@ -116,7 +129,7 @@
               @series-added="seriesAdded"></air-pres-tile>
           </div>
 
-          <div class="col-12 col-lg-6 component">
+          <div class="col-12 col-lg-6 pb-3">
             <water-year-tile
               :series-config="wySeriesConfig"
               :precip="datasets.wyPrecip" :precip-cursor="wyPrecipCursor"
@@ -127,16 +140,19 @@
         </div>
 
         <div class="row row-sm">
-          <forecast-tile class="not-implemented"></forecast-tile>
+          <div class="col-12">
+            <forecast-tile class="not-implemented"></forecast-tile>
+          </div>
         </div>
-
+<!--
         <div class="row">
-          <download-tile class="not-implemented"></download-tile>
+          <download-tile></download-tile>
         </div>
+ -->
       </div>
     </section>
 
-    <section id="timeMachine" class="py-4" v-if="station">
+    <section class="py-3" v-if="station">
       <time-machine
         :series-config="seriesConfig"
         :air-speed="datasets.airSpeed" :air-speed-cursor="airSpeedCursor"
@@ -174,6 +190,9 @@ import WindSpeedTile from './tiles/WindSpeedTile'
 
 import {DataLoader} from '../lib/dataloader'
 import StationSources from '../sources/StationSources'
+import SystemTimeSources from '../sources/SystemTimeSources'
+import VocabularySources from '../sources/VocabularySources'
+
 import StationStore from '../stores/StationStore'
 
 let dataLoader
@@ -201,6 +220,10 @@ export default {
   },
 
   props: {
+    // Download 'cart'
+    downloadStore: Object,
+
+    // Misc
     clientTime: Number,
     isRetina: Boolean,
     units: String
@@ -238,7 +261,7 @@ export default {
   created () {
     this.slug = this.$route.params.slug
 
-    dataLoader = new DataLoader(this, StationSources)
+    dataLoader = new DataLoader(this, Object.assign({}, StationSources, SystemTimeSources, VocabularySources))
     dataLoader.clear().load().then(() => {
       logger.log('Station:created::vm', this)
     })
@@ -286,6 +309,16 @@ export default {
   },
 
   methods: {
+    collageError () {
+      this.isMediaError = true
+    },
+    downloadData () {
+      this.downloadStore.initFields()
+      this.downloadStore.addFieldsForStationDatastreams(this.state.station, this.store.plainState.datastreams)
+      this.downloadStore.setPreset(this.downloadStore.presets.recentTwoWeeks)
+
+      this.$router.push({name: 'download'})
+    },
     fetchStation () {
       this.slug = this.$route.params.slug
 
@@ -294,9 +327,6 @@ export default {
       }).load().then(() => {
         logger.log('Station:methods.fetchStation::vm', this)
       })
-    },
-    collageError () {
-      this.isMediaError = true
     },
     seriesAdded (datasetKey) {
       // HACK: Release memory
@@ -328,6 +358,13 @@ export default {
         })
       }
     },
+    'state.station': function (newStation) {
+      if (newStation) {
+        this.$emit('update-header', {
+          title: newStation.name
+        })
+      }
+    },
     units () {
       dataLoader.clear(source => {
         return /^\w*(Series|Stats|systemTime)$/.test(source)
@@ -341,13 +378,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.row .component {
-  padding-bottom: 1rem;
-}
 .row-md .component {
-  height: 22rem !important;
+  height: 24rem !important;
 }
 .row-sm .component {
-  height: 12rem !important;
+  height: 14rem !important;
 }
 </style>

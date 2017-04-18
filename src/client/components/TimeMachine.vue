@@ -1,22 +1,20 @@
 <template>
-  <div class="container">
-
+  <div class="component container-fluid">
     <div class="row">
-      <div class="col-12 py-2 air-temp-chart"></div>
+      <div class="col-12 pb-4" ref="airTempChart"></div>
     </div>
 
     <div class="row">
-      <div class="col-12 py-2 soil-temp-chart"></div>
+      <div class="col-12 pb-4" ref="soilTempChart"></div>
     </div>
 
     <div class="row">
-      <div class="col-12 py-2 wind-speed-chart"></div>
+      <div class="col-12 pb-4" ref="windSpeedChart"></div>
     </div>
 
     <div class="row">
-      <div class="col-12 py-2 solar-rad-chart"></div>
+      <div class="col-12" ref="solarRadChart"></div>
     </div>
-
   </div>
 </template>
 
@@ -36,6 +34,8 @@ import {abbr, color, solar, speed, temperature} from '../mixins/tile'
 import SpeedAcc from '../accessors/SpeedAcc'
 import TempAcc from '../accessors/TempAcc'
 import ValueAcc from '../accessors/ValueAcc'
+
+const CHART_HEIGHT = 380
 
 let avgAirSpeed
 let avgAirTemp
@@ -70,7 +70,7 @@ function syncExtremes (e) {
   // Prevent feedback loop
   if (e.trigger !== 'syncExtremes') {
     Highcharts.charts.forEach(function (chart) {
-      if (chart !== thisChart && chart.__custom === 'tm') {
+      if (chart && chart !== thisChart && chart.__custom === 'tm') {
         if (chart.xAxis[0].setExtremes) { // It is null while updating
           chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
             trigger: 'syncExtremes'
@@ -127,10 +127,10 @@ export default {
   },
 
   mounted () {
-    this.airTempChart = Highcharts.chart(this.$el.getElementsByClassName('air-temp-chart')[0], this.airTempOptions())
-    this.soilTempChart = Highcharts.chart(this.$el.getElementsByClassName('soil-temp-chart')[0], this.soilTempOptions())
-    this.solarRadChart = Highcharts.chart(this.$el.getElementsByClassName('solar-rad-chart')[0], this.solarRadOptions())
-    this.windSpeedChart = Highcharts.chart(this.$el.getElementsByClassName('wind-speed-chart')[0], this.windSpeedOptions())
+    this.airTempChart = Highcharts.chart(this.$refs.airTempChart, this.airTempOptions())
+    this.soilTempChart = Highcharts.chart(this.$refs.soilTempChart, this.soilTempOptions())
+    this.solarRadChart = Highcharts.chart(this.$refs.solarRadChart, this.solarRadOptions())
+    this.windSpeedChart = Highcharts.chart(this.$refs.windSpeedChart, this.windSpeedOptions())
 
     this.charts = [this.airTempChart, this.soilTempChart, this.solarRadChart, this.windSpeedChart]
     this.charts.forEach(chart => {
@@ -185,7 +185,7 @@ export default {
     airTempOptions () {
       return {
         chart: {
-          height: 350,
+          height: CHART_HEIGHT,
           zoomType: 'x'
         },
         title: {
@@ -219,7 +219,7 @@ export default {
     soilTempOptions () {
       return {
         chart: {
-          height: 350,
+          height: CHART_HEIGHT,
           zoomType: 'x'
         },
         title: {
@@ -253,7 +253,7 @@ export default {
     solarRadOptions () {
       return {
         chart: {
-          height: 350,
+          height: CHART_HEIGHT,
           zoomType: 'x'
         },
         title: {
@@ -286,7 +286,7 @@ export default {
     windSpeedOptions () {
       return {
         chart: {
-          height: 350,
+          height: CHART_HEIGHT,
           zoomType: 'x'
         },
         title: {
@@ -462,15 +462,15 @@ export default {
         this.solarRadChart.showLoading()
         this.solarRadData = [[], []]
       } else if (this.solarRadData) {
-        this.solarRadData[0] = this.solarRadData[0].concat(avgSolarPAR.init(newDataset).data.map(function (point) {
-          this.point = point
-          return [this.time, this.valRound]
-        }, avgSolarPAR))
-
-        this.solarRadData[1] = this.solarRadData[1].concat(avgSolarRad.init(newDataset).data.map(function (point) {
+        this.solarRadData[0] = this.solarRadData[0].concat(avgSolarRad.init(newDataset).data.map(function (point) {
           this.point = point
           return [this.time, this.valRound]
         }, avgSolarRad))
+
+        this.solarRadData[1] = this.solarRadData[1].concat(avgSolarPAR.init(newDataset).data.map(function (point) {
+          this.point = point
+          return [this.time, this.valRound]
+        }, avgSolarPAR))
       }
     },
     solarRadCursor (newCursor) {

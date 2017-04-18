@@ -3,7 +3,7 @@
  *
  * @author J. Scott Smith
  * @license BSD-2-Clause-FreeBSD
- * @module source/StationSources
+ * @module sources/StationSources
  */
 
 import moment from 'moment'
@@ -12,9 +12,6 @@ import services from '../lib/services'
 
 // Given 5 min data, fetching 4 days at a time will yield 1152 datapoints per fetch
 const SERIES_FETCH_DAYS = 4
-
-// Maximum number of datapoints per fetch
-const SERIES_QUERY_LIMIT = 2000
 
 const UNITS_ORDER = {
   imp: {all: 2, imp: 2, met: 1},
@@ -38,7 +35,7 @@ function fwdCursorDatapointsQuery (vm) {
       $gte: moment(startTime).utc().toISOString(),
       $lt: moment(posTime).utc().toISOString()
     },
-    $limit: SERIES_QUERY_LIMIT,
+    $limit: 2000,
     $sort: {time: 1} // ASC
   }
 }
@@ -253,8 +250,8 @@ export default {
         query: {
           enabled: true,
           station_id: vm.state.station._id,
-          $limit: 100,
-          $select: ['_id', 'attributes', 'name', 'source_type', 'tags']
+          $limit: 200,
+          $select: ['_id', 'attributes', 'datapoints_config', 'name', 'source_type', 'tags']
         }
       })
     },
@@ -289,46 +286,6 @@ export default {
     },
     assign (vm, station) {
       vm.store.setStation(station)
-    }
-  },
-
-  // TODO: Move to AppSources.js?
-  systemTime: {
-    // Loader config
-    clear (vm) {
-      vm.store.clearSystemTime()
-    },
-    guard (vm) {
-      return !vm.state.systemTime
-    },
-    fetch (vm) {
-      return services.systemTime.get('utc')
-    },
-    afterFetch (vm, res) {
-      if (res) return res
-    },
-    assign (vm, systemTime) {
-      vm.store.setSystemTime(systemTime)
-    }
-  },
-
-  // TODO: Move to AppSources.js?
-  unitVocabulary: {
-    // Loader config
-    clear (vm) {
-      vm.store.clearUnitVocabulary()
-    },
-    guard (vm) {
-      return !vm.state.unitAbbrs
-    },
-    fetch (vm) {
-      return services.vocabulary.get('dt-unit')
-    },
-    afterFetch (vm, res) {
-      if (res) return res
-    },
-    assign (vm, vocabulary) {
-      vm.store.setUnitVocabulary(vocabulary)
     }
   },
 

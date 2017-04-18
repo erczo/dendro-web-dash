@@ -1,22 +1,23 @@
 <template>
-  <li class="media mb-4">
+  <li class="component media my-3 pb-3 border-bottom">
     <router-link :to="{name: 'station', params: {slug: station.slug}}" class="hidden-xs-down">
-      <div class="d-flex mr-3 rounded align-items-center justify-content-center img-thumbnail photo-small" v-if="!media || media.length === 0">
-        <i class="fa fa-picture-o fa-lg" aria-hidden="true"></i>
-      </div>
-      <img class="d-flex mr-3 rounded photo-small" :src="isRetina && media[0].sizes.small_2x ? media[0].sizes.small_2x.url : media[0].sizes.small.url" v-if="media && media.length > 0">
+      <div class="d-flex mr-3 photo-thumb" v-if="!media || media.length === 0"></div>
+      <img class="d-flex mr-3 photo-thumb rounded" :src="isRetina && media[0].sizes.thumb_2x ? media[0].sizes.thumb_2x.url : media[0].sizes.thumb.url" v-if="media && media.length > 0">
     </router-link>
 
     <div class="media-body">
       <router-link :to="{name: 'station', params: {slug: station.slug}}">
-        <h3>{{ station.name }}</h3>
+        <h4>{{ station.name }}</h4>
       </router-link>
 
       <!-- TODO: Move to StationElevation.vue? -->
       <p v-if="station.geo && station.geo.coordinates && station.geo.coordinates.length > 1">
-        <span>Coordinates: </span>{{ station.geo.coordinates[1] }}°, {{ station.geo.coordinates[0] }}°
+        <span class="hidden-md-down">Coordinates: </span>{{ station.geo.coordinates[1] }}°, {{ station.geo.coordinates[0] }}°
         <span v-if="station.geo.coordinates.length > 2"><br />Elevation: {{ elevation }}</span>
       </p>
+
+      <router-link class="mr-3" :to="{name: 'station', params: {slug: station.slug}}">Dashboard</router-link>
+      <a class="" href="#">Datastreams</a>
     </div>
   </li>
 </template>
@@ -55,7 +56,7 @@ export default {
 
   computed: {
     // TODO: Move to StationElevation.vue?
-    elevation: function () {
+    elevation () {
       if (this.station.geo && this.station.geo.coordinates && this.station.geo.coordinates.length > 2) {
         const m = this.station.geo.coordinates[2]
         switch (this.units) {
@@ -66,18 +67,12 @@ export default {
         }
       }
     },
-    media: function () {
+    media () {
       if (!this.isMediaError) return this.station.media
     }
   },
 
-  mixins: [abbr],
-
-  methods: {
-    onError: function () {
-      console.log('IMAGEERROR2')
-    }
-  }
+  mixins: [abbr]
 }
 </script>
 

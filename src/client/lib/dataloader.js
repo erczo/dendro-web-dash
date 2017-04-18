@@ -10,9 +10,12 @@ import logger from './logger'
 
 const NEVER_FETCHED = 8640000000000000
 
+let nextId = 1
+
 // TODO: Refactor this to use generators?
 class DataLoader {
   constructor (vm, sources) {
+    this.id = nextId++
     this.maxIterations = 10
     this.sources = sources
     this.vm = vm
@@ -32,7 +35,7 @@ class DataLoader {
     const vm = this.vm
 
     sourceKeys.forEach(sourceKey => {
-      logger.log('DataLoader#clear::sourceKey', sourceKey)
+      logger.log(`DataLoader(${this.id})#clear::sourceKey`, sourceKey)
 
       const fetchedAtKey = `${sourceKey}FetchedAt`
       const errorKey = `${sourceKey}Error`
@@ -55,8 +58,8 @@ class DataLoader {
   set isLoading (newIsLoading) {
     this.vm.dataLoading = newIsLoading
 
-    if (newIsLoading) logger.time('DataLoader.load')
-    else logger.timeEnd('DataLoader.load')
+    if (newIsLoading) logger.time(`DataLoader(${this.id}).load`)
+    else logger.timeEnd(`DataLoader(${this.id}).load`)
   }
 
   /**
@@ -85,7 +88,7 @@ class DataLoader {
     const fetches = []
 
     sourceKeys.forEach(sourceKey => {
-      logger.log('DataLoader#load::sourceKey,iter', sourceKey, iter)
+      logger.log(`DataLoader(${this.id})#load::sourceKey,iter`, sourceKey, iter)
 
       const fetchedAtKey = `${sourceKey}FetchedAt`
       const errorKey = `${sourceKey}Error`

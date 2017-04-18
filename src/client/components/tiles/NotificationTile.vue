@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-1 flex-column h-100 rounded tile">
+  <div class="component d-flex flex-1 flex-column h-100 rounded tile">
 
     <!-- Status -->
     <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom status-cell" :style="{backgroundColor: colors.TILE.NOTIFY_ONLINE}" v-if="isOnline">
@@ -29,7 +29,6 @@
         </tbody>
       </table>
     </div>
-
   </div>
 </template>
 

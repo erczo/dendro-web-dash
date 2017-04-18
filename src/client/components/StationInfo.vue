@@ -1,24 +1,23 @@
 <template>
-  <div>
-    <p class="text-center text-lg-left">{{ localTimeFormat }} {{ station.time_zone }} <em>(UTC {{ utcOffsetHours }} hours)</em></p>
+  <div class="component card border-0 text-center text-md-left">
+    <div class="card-header bg-none">
+      <div class="card-text">
+        {{ localTimeFormat }} {{ station.time_zone }} <em>(UTC {{ utcOffsetHours }} hours)</em>
+      </div>
+    </div>
 
-    <h2 class="text-center text-lg-left">{{ station.name }} <small class="text-muted hidden-md-down">Weather Station</small></h2>
+    <div class="card-block">
+      <h1 class="card-title">{{ station.name }}</h1>
 
-    <p class="text-center text-lg-left" v-if="station.geo && station.geo.coordinates && station.geo.coordinates.length > 1">
-      <span class="hidden-md-down">Coordinates: </span>{{ station.geo.coordinates[1] }}°, {{ station.geo.coordinates[0] }}° <a class="text-primary" role="button" @click.prevent="selectMarker"><i class="fa fa-map-marker fa-lg" aria-hidden="true"></i></a>
-      <span v-if="station.geo.coordinates.length > 2"><br />Elevation: {{ elevation }}</span>
-    </p>
+      <p class="card-text" v-if="station.geo && station.geo.coordinates && station.geo.coordinates.length > 1">
+        <span class="hidden-md-down">Coordinates: </span>{{ station.geo.coordinates[1] }}°, {{ station.geo.coordinates[0] }}° <a href="" @click.prevent="selectMarker"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i></a>
+        <span v-if="station.geo.coordinates.length > 2"><br />Elevation: {{ elevation }}</span>
+      </p>
 
-    <!-- Links -->
-    <ul class="nav justify-content-center justify-content-lg-start">
-      <li class="nav-item text-center text-lg-left" v-for="link in station.external_links">
-        <a class="nav-link" :href="link.url" target="_blank"><i class="fa fa-external-link hidden-md-down" aria-hidden="true"></i> {{ link.title }}</a>
-      </li>
-
-      <li class="nav-item text-center text-lg-left" v-if="contactOrgs && contactPersons && (contactOrgs.length + contactPersons.length > 0)">
-        <a class="nav-link" :href="contactUrl"><i class="fa fa-envelope-o hidden-md-down" aria-hidden="true"></i> Contact station team</a>
-      </li>
-    </ul>
+      <a class="card-link text-nowrap" href="" @click.prevent="selectDownload"><i class="fa fa-fw fa-arrow-circle-down hidden-sm-down" aria-hidden="true"></i> Download data</a>
+      <a class="card-link text-nowrap" target="_blank" v-for="link in station.external_links" :href="link.url"><i class="fa fa-fw fa-external-link hidden-sm-down" aria-hidden="true"></i> {{ link.title }}</a>
+      <a class="card-link text-nowrap" :href="contactUrl" v-if="contactOrgs && contactPersons && contactOrgs.length + contactPersons.length > 0"><i class="fa fa-fw fa-envelope-o hidden-sm-down" aria-hidden="true"></i> Contact station team</a>
+    </div>
   </div>
 </template>
 
@@ -42,7 +41,7 @@ export default {
   },
 
   computed: {
-    contactUrl: function () {
+    contactUrl () {
       /*
         Construct a mailto URI for all contacts. Do our best to adhere to https://tools.ietf.org/html/rfc6068
        */
@@ -62,7 +61,7 @@ export default {
 
       return `mailto:${emails.sort().join(',')}?subject=${subject}`
     },
-    elevation: function () {
+    elevation () {
       const station = this.station
       if (station.geo && station.geo.coordinates && station.geo.coordinates.length > 2) {
         const m = this.station.geo.coordinates[2]
@@ -74,7 +73,7 @@ export default {
         }
       }
     },
-    localTimeFormat: function () {
+    localTimeFormat () {
       if (this.stationTime) {
         switch (this.units) {
           case 'imp':
@@ -84,7 +83,7 @@ export default {
         }
       }
     },
-    utcOffsetHours: function () {
+    utcOffsetHours () {
       const offset = this.station.utc_offset
       if (typeof offset === 'number') return math.round(math.unit(offset, 's').toNumber('h'), 2)
     }
@@ -93,6 +92,9 @@ export default {
   mixins: [abbr],
 
   methods: {
+    selectDownload () {
+      this.$emit('select-download')
+    },
     selectMarker () {
       this.$emit('select-marker', this.station.geo.coordinates)
     }
@@ -102,4 +104,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.card-link + .card-link {
+  margin-left: 0;
+}
+.card-link {
+  margin-right: 1rem;
+}
 </style>

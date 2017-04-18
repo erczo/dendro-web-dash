@@ -1,8 +1,6 @@
 <template>
-  <div class="col-12 col-lg-4 component">
-    <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.WIND}">
-      <div class="d-flex flex-1 flex-column justify-content-center text-center wind-rose-chart"></div>
-    </div>
+  <div class="component d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.WIND}">
+    <div class="d-flex flex-1 flex-column justify-content-center text-center" ref="windRoseChart"></div>
   </div>
 </template>
 
@@ -66,7 +64,7 @@ export default {
   },
 
   mounted () {
-    this.windRoseChart = Highcharts.chart(this.$el.getElementsByClassName('wind-rose-chart')[0], this.windRoseOptions())
+    this.windRoseChart = Highcharts.chart(this.$refs.windRoseChart, this.windRoseOptions())
 
     this.windRoseChart.showLoading()
   },

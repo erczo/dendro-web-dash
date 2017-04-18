@@ -1,6 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.WIND}">
-
+  <div class="component d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.WIND}">
     <div class="d-flex flex-1 flex-column justify-content-center text-center border-bottom">
       <h1 class="display-4">{{ curAvg | placeholder }}
         <i class="wi wi-wind" :class="'wi-from-' + curDir.toLowerCase()" v-if="curDir"></i>
@@ -33,7 +32,6 @@
     <div class="d-flex flex-column justify-content-center py-2 text-center text-muted">
       {{ seasMonth | placeholder }}
     </div>
-
   </div>
 </template>
 

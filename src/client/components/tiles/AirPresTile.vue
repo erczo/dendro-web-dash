@@ -1,6 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.AIR_PRES}">
-
+  <div class="component d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.AIR_PRES}">
     <div class="d-flex flex-1 flex-row justify-content-center text-center border-bottom">
       <div class="d-flex flex-1 flex-column justify-content-center text-center">
         <h1 class="display-4">{{ curAvg | placeholder }} <span class="hidden-sm-down"><i class="wi wi-barometer"></i></span></h1>
@@ -12,8 +11,7 @@
       </div>
     </div>
 
-    <div class="d-flex flex-1 flex-column justify-content-center text-center air-pres-chart"></div>
-
+    <div class="d-flex flex-1 flex-column justify-content-center text-center" ref="airPresChart"></div>
   </div>
 </template>
 
@@ -65,7 +63,7 @@ export default {
   },
 
   mounted () {
-    this.airPresChart = Highcharts.chart(this.$el.getElementsByClassName('air-pres-chart')[0], this.airPresOptions())
+    this.airPresChart = Highcharts.chart(this.$refs.airPresChart, this.airPresOptions())
 
     this.airPresChart.showLoading()
   },

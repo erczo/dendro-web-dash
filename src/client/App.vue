@@ -1,54 +1,79 @@
 <template>
   <div id="app">
-    <header>
-      <nav class="navbar navbar-inverse fixed-top">
-        <div class="container">
+    <header class="fixed-top">
+      <nav class="navbar navbar-toggleable-md navbar-inverse" style="position: relative;">
 
-          <!-- TODO: Remove this -->
-          <!-- Reserve Name -->
-          <!-- <a class="navbar-brand" href="http://www.blueoakranchreserve.org/" target="_blank"><span class="hidden-sm-down">Blue Oak Ranch Reserve </span><i class="fa fa-external-link" aria-hidden="true"></i></a> -->
+        <a class="navbar-brand hidden-md-down" href="#">
+          <!-- <img src="./assets/images/dendro_logo.svg" width="30" height="30" class="d-inline-block align-top"></img> -->
+          Dendro
+        </a>
 
-          <a class="navbar-brand" href="/">
-            <!-- TODO: We need a logo! -->
-            <i class="fa fa-sun-o" aria-hidden="true"></i> <span class="hidden-sm-down">Dendro</span>
-          </a>
+        <!-- Collapsible Nav Items -->
+        <button class="navbar-toggler xnavbar-toggler-left" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggler">
+          <ul class="navbar-nav text-uppercase">
+            <li class="nav-item" :class="$route.name === 'home' ? 'active' : ''">
+              <router-link class="nav-link" :to="{name: 'home'}"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Stations</router-link>
+            </li>
+            <li class="nav-item" :class="$route.name === 'download' ? 'active' : ''" v-if="downloadState.fields && downloadState.fields.length > 0">
+              <router-link class="nav-link" :to="{name: 'download'}"><i class="fa fa-fw fa-arrow-circle-down" aria-hidden="true"></i> Download</router-link>
+            </li>
+          </ul>
+        </div>
 
-          <!-- Nav Toolbar -->
-          <div class="btn-toolbar float-right" role="toolbar" aria-label="Navigation toolbar">
+        <!-- Nav Toolbar Buttons -->
+        <div class="btn-toolbar" role="toolbar" aria-label="Navigation toolbar" style="position: absolute; right: 1rem; top: 0.5rem;">
 
-            <!-- Alert Badge -->
-            <!-- TODO: Finish this - alerts and notifications -->
+          <!-- Alert Badge -->
+          <!-- TODO: Finish this - alerts and notifications -->
 <!--
-            <div class="btn-group mr-1" role="group" aria-hidden="true">
-              <button type="button" class="btn btn-outline-secondary border-0 text-white">
-                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                <span class="badge badge-pill badge-danger" style="vertical-align: top">5</span>
-              </button>
-            </div>
- -->
-            <!-- Units Dropdown -->
-            <div class="btn-group" role="group" aria-label="Units dropdown">
-              <button id="unitsNavButton" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="hidden-sm-down">Units: </span>
-                  <span v-if="units === 'imp'">English</span>
-                  <span v-if="units === 'met'">Metric</span>
-                </span>
-              </button>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" role="button" @click.prevent="setUnits('imp', 'unitsNavButton')"><i class="fa fa-check" v-bind:class="[units === 'imp' ? '' : 'invisible']" aria-hidden="true"></i> English</a>
-                <a class="dropdown-item" role="button" @click.prevent="setUnits('met', 'unitsNavButton')"><i class="fa fa-check" v-bind:class="[units === 'met' ? '' : 'invisible']" aria-hidden="true"></i> Metric</a>
-              </div>
+          <div class="btn-group mr-1" role="group" aria-hidden="true">
+            <button type="button" class="btn btn-outline-secondary border-0 text-white">
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              <span class="badge badge-pill badge-danger" style="vertical-align: top">5</span>
+            </button>
+          </div>
+-->
+          <!-- Units Dropdown -->
+          <div class="btn-group" role="group" aria-label="Units dropdown">
+            <button id="unitsNavButton" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="hidden-sm-down">Units: </span>
+                <span v-if="units === 'imp'">English</span>
+                <span v-if="units === 'met'">Metric</span>
+              </span>
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" role="button" @click.prevent="setUnits('imp', 'unitsNavButton')"><i class="fa fa-check" :class="[units === 'imp' ? '' : 'invisible']" aria-hidden="true"></i> English</a>
+              <a class="dropdown-item" role="button" @click.prevent="setUnits('met', 'unitsNavButton')"><i class="fa fa-check" :class="[units === 'met' ? '' : 'invisible']" aria-hidden="true"></i> Metric</a>
             </div>
           </div>
-
         </div>
       </nav>
+
+      <!--  Scroll Header -->
+      <section id="scrollHeader" v-if="scrollHeader">
+        <div class="container-fluid py-2 border-bottom">
+          <div class="row text-muted">
+            <div class="col-6">{{ scrollHeader.title }}</div>
+            <div class="col-6 text-right">
+              <a role="button" @click.prevent="scrollToTop">
+                <i class="fa fa-chevron-up" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </header>
 
     <!-- Component matched by the route will render here -->
-    <router-view :client-time="clientTime" :is-retina="isRetina" :units="units"></router-view>
+    <router-view
+      :download-store="downloadStore"
+      :client-time="clientTime" :is-retina="isRetina" :units="units"
+      @update-header="updateHeader"></router-view>
 
-    <footer class="bg-faded border-top py-4">
+    <footer class="bg-faded py-4" v-if="$route.name !== 'home'">
       <div class="container-fluid">
         <div class="row">
 
@@ -71,6 +96,8 @@
 import localforage from 'localforage'
 import $ from 'jquery'
 
+import DownloadStore from './stores/DownloadStore'
+
 localforage.config({
   name: 'dendroWebDash'
 })
@@ -78,10 +105,17 @@ localforage.config({
 export default {
   data () {
     return {
+      downloadState: this.downloadStore.reactiveState,
+
       clientTime: (new Date()).getTime(),
       isRetina: false, // Keepin' it simple; it's either retina or not
+      scrollHeader: null,
       units: null
     }
+  },
+
+  beforeCreate () {
+    this.downloadStore = new DownloadStore()
   },
 
   created () {
@@ -141,6 +175,17 @@ export default {
         this.units = 'met' // Default
       }
     })
+
+    /*
+      Fade in/out informative header when scrolling.
+     */
+    $(window).scroll(() => {
+      if ($(document).scrollTop() > 120) {
+        $('#scrollHeader').addClass('scrolled')
+      } else {
+        $('#scrollHeader').removeClass('scrolled')
+      }
+    })
   },
 
   // TODO: Probably don't need this since App will never unload
@@ -149,16 +194,33 @@ export default {
   // },
 
   methods: {
+    scrollToTop () {
+      $(this.$el).velocity('scroll', {
+        duration: 500,
+        easing: 'swing',
+        offset: -58
+      })
+    },
     setUnits (units, toggleId) {
       this.units = units
       if (toggleId) {
         let el = $(`#${toggleId}`)
         if (el.parent().hasClass('show')) el.dropdown('toggle')
       }
+    },
+    updateHeader (update) {
+      if (typeof update === 'object') {
+        this.scrollHeader = Object.assign({}, this.scrollHeader, update)
+      } else {
+        this.scrollHeader = null
+      }
     }
   },
 
   watch: {
+    $route: function () {
+      this.scrollHeader = null
+    },
     units: function (newUnits) {
       localforage.setItem('units', newUnits)
     }
@@ -169,19 +231,31 @@ export default {
 <style>
 body {
   background-color: #fff;
-  padding-top: 55px;
 }
 
 header .navbar {
-  background-color: rgba(92, 161, 220, 0.96);
-  border-bottom: 1px solid rgb(80, 139, 191)
+  /*Using #2788dc which is a slightly darker variant of #5ca1dc*/
+  background-color: rgba(39, 136, 220, 0.96);
+  /*border-bottom: 1px solid rgb(80, 139, 191)*/
+}
+
+#scrollHeader {
+  background-color: rgba(236, 238, 239, 0.96);
+  transition: all 0.4s ease;
+  opacity: 0;
+}
+#scrollHeader.scrolled {
+  opacity: 1;
 }
 
 .bg-darken { background-color: rgba(0, 0, 0, 0.1); }
 .bg-lighten { background-color: rgba(255, 255, 255, 0.1); }
+.bg-none { background: none; }
 
-.border-bottom { border-bottom: 1px solid #f1f1f1; }
-.border-top { border-top: 1px solid #f1f1f1; }
+.border-bottom { border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+.border-left { border-left: 1px solid rgba(0, 0, 0, 0.1); }
+.border-right { border-right: 1px solid rgba(0, 0, 0, 0.1); }
+.border-top { border-top: 1px solid rgba(0, 0, 0, 0.1); }
 
 .flex-1 { flex: 1 0 auto; }
 .flex-2 { flex: 2 0 auto; }
@@ -193,6 +267,12 @@ header .navbar {
   -webkit-filter: brightness(.7);
 }
 
+.noselect {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
 .not-implemented {
   opacity: 0.3;
 }
@@ -219,5 +299,73 @@ header .navbar {
 }
 .tile .text-muted {
   color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/*Extra small devices (portrait phones, less than 576px)*/
+/*No media query since this is the default in Bootstrap*/
+.o-hidden {
+  overflow: hidden;
+}
+.o-scroll {
+  overflow: scroll;
+}
+.p-fixed {
+  padding-top: 56px;
+}
+
+.vh-100 {
+  height: 100vh;
+}
+
+/*Small devices (landscape phones, 576px and up)*/
+@media (min-width: 576px) {
+  .o-sm-scroll {
+    overflow: scroll;
+  }
+  .p-sm-fixed {
+    padding-top: 56px;
+  }
+  .vh-sm-100 {
+    height: 100vh;
+  }
+}
+
+/*Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) {
+  .o-md-scroll {
+    overflow: scroll;
+  }
+  .p-md-fixed {
+    padding-top: 56px;
+  }
+  .vh-md-100 {
+    height: 100vh;
+  }
+}
+
+/*Large devices (desktops, 992px and up)*/
+@media (min-width: 992px) {
+  .o-lg-scroll {
+    overflow: scroll;
+  }
+  .p-lg-fixed {
+    padding-top: 56px;
+  }
+  .vh-lg-100 {
+    height: 100vh;
+  }
+}
+
+/*Extra large devices (large desktops, 1200px and up)*/
+@media (min-width: 1200px) {
+  .o-xl-scroll {
+    overflow: scroll;
+  }
+  .p-xl-fixed {
+    padding-top: 56px;
+  }
+  .vh-xl-100 {
+    height: 100vh;
+  }
 }
 </style>

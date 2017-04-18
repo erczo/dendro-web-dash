@@ -1,6 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.PRECIP}">
-
+  <div class="component d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.PRECIP}">
     <div class="d-flex flex-1 flex-column justify-content-center text-center">
       <h1 class="display-3">{{ curCu | placeholder }} <i class="wi wi-raindrops"></i></h1>
       <span class="text-muted">Current Precipitation ({{ lenAbbr }})</span>
@@ -10,7 +9,6 @@
       <h1 class="display-4">{{ ydaCu | placeholder }}</h1>
       <span class="text-muted">Yesterday’s ({{ lenAbbr }})</span>
     </div>
-
   </div>
 </template>
 

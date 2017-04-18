@@ -135,6 +135,8 @@ class StationStore {
   }
 
   setDataset (datasetKey, docs) {
+    if (!docs) return
+
     /*
       NOTE: We start with an empty object and THEN assign properties. This is important since we intentionally want
       to avoid observing every datapoint. Simply put, we are leveraging the fact that Vue cannot detect property
@@ -143,8 +145,6 @@ class StationStore {
       SEE: https://vuejs.org/v2/guide/reactivity.html
      */
     const obj = this.reactiveState.datasets[datasetKey] = {}
-
-    if (!docs) return
 
     docs.forEach(doc => {
       // Lookup datastream in memory

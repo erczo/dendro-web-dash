@@ -1,8 +1,9 @@
 <template>
-  <div class="d-flex flex-column h-100 rounded tile" style="z-index: 100;"></div>
+  <div class="component d-flex flex-column h-100 rounded tile" style="z-index: 100;"></div>
 </template>
 
 <script>
+import debounce from 'lodash.debounce'
 import loadGoogleMapsAPI from 'load-google-maps-api'
 import logger from '../../lib/logger'
 
@@ -32,14 +33,10 @@ export default {
         title: this.title
       })
 
-      // Recenter the map after a few seconds of inactivity
-      this.centerChangedListener = () => {
-        if (this.recenterTid) clearTimeout(this.recenterTid) // Debounce
-        this.recenterTid = setTimeout(() => {
-          this.recenterTid = 0
-          if (this.map && this.marker) this.map.panTo(this.marker.getPosition())
-        }, 3000)
-      }
+      // Adjust the map after the center position changes
+      this.centerChangedListener = debounce(() => {
+        if (this.map && this.marker) this.map.panTo(this.marker.getPosition())
+      }, 3000)
 
       this.map.addListener('center_changed', this.centerChangedListener)
       this.marker.addListener('click', this.selectMarker)
@@ -49,9 +46,14 @@ export default {
   },
 
   beforeDestroy () {
-    if (this.recenterTid) clearTimeout(this.recenterTid)
+    this.centerChangedListener.cancel()
+
+    if (this.maps) this.maps.event.clearInstanceListeners(window)
+    if (this.maps) this.maps.event.clearInstanceListeners(this.maps)
     if (this.maps && this.map) this.maps.event.clearInstanceListeners(this.map)
     if (this.maps && this.marker) this.maps.event.clearInstanceListeners(this.marker)
+
+    this.latLng = this.maps = this.map = this.marker = null
   },
 
   methods: {

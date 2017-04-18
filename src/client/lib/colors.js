@@ -53,14 +53,14 @@ const SERIES = {
 }
 
 const TILE = {
-  AIR_MOIST: chroma(WHEEL.BLUE).darken(0.5).hex(),
-  AIR_PRES: chroma(WHEEL.BLUE).darken(0.5).hex(),
-  AIR_TEMP: chroma(WHEEL.BLUE).darken(0.5).hex(),
-  NOTIFY_OFFLINE: chroma(WHEEL.RED).darken(0.5).hex(),
-  NOTIFY_ONLINE: chroma(WHEEL.YELLOW_GREEN).darken(0.5).hex(),
-  PRECIP: chroma(WHEEL.BLUE_GREEN).darken(0.5).hex(),
-  SOLAR: chroma(WHEEL.ORANGE).darken(0.5).hex(),
-  WIND: chroma(WHEEL.BLUE_VIOLET).darken(0.5).hex()
+  AIR_MOIST: chroma(WHEEL.BLUE).darken(0.6).hex(),
+  AIR_PRES: chroma(WHEEL.BLUE).darken(0.6).hex(),
+  AIR_TEMP: chroma(WHEEL.BLUE).darken(0.6).hex(),
+  NOTIFY_OFFLINE: chroma(WHEEL.RED).darken(0.6).hex(),
+  NOTIFY_ONLINE: chroma(WHEEL.YELLOW_GREEN).darken(0.6).hex(),
+  PRECIP: chroma(WHEEL.BLUE_GREEN).darken(0.6).hex(),
+  SOLAR: chroma(WHEEL.ORANGE).darken(0.6).hex(),
+  WIND: chroma(WHEEL.BLUE_VIOLET).darken(0.6).hex()
 }
 
 export default {

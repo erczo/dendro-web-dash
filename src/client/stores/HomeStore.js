@@ -19,6 +19,13 @@ class HomeStore {
     }
   }
 
+  appendStations (newValue) {
+    if (!newValue) return
+
+    // SEE: https://vuejs.org/v2/guide/list.html#Caveats
+    this.reactiveState.stations.push.apply(this.reactiveState.stations, newValue)
+  }
+
   clearStations () { this.setStations(null) }
 
   clearUnitVocabulary () { this.setUnitVocabulary(null) }
