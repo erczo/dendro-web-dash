@@ -23,21 +23,18 @@ const presets = {
   recentTwoWeeks: {
     name: 'Recent 2 weeks',
     range (extent) {
-      // TODO: Finish
       return [extent.right.clone().subtract(14, 'd'), extent.right]
     }
   },
   recentMonth: {
     name: 'Recent month',
     range (extent) {
-      // TODO: Finish
       return [extent.right.clone().startOf('M'), extent.right]
     }
   },
   recentYear: {
     name: 'Recent year',
     range (extent) {
-      // TODO: Finish
       return [extent.right.clone().startOf('Y'), extent.right]
     }
   }
@@ -56,7 +53,7 @@ const orderedPresets = [
 function getFieldName (station, datastream) {
   const parts = [
     station.slug.replace(/\W+/g, '_'),
-    datastream.__dsKey.toLowerCase(),
+    datastream.__tagKey.toLowerCase(),
     datastream.__dtUnit.toLowerCase()
   ]
 
@@ -172,12 +169,6 @@ class DownloadStore {
       name: 'local_date_time',
       required: true,
       selected: true
-    }, {
-      name: 'utc_date_time',
-      selected: false
-    }, {
-      name: 'utc_offset',
-      selected: false
     }])
   }
 

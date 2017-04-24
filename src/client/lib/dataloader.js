@@ -12,11 +12,22 @@ const NEVER_FETCHED = 8640000000000000
 
 let nextId = 1
 
-// TODO: Refactor this to use generators?
+/**
+ * Get model property keys for a given sourceKey.
+ */
+function propKeys (sourceKey) {
+  return {
+    error: `${sourceKey}Error`,
+    fetchedAt: `${sourceKey}FetchedAt`,
+    loading: `${sourceKey}Loading`,
+    ready: `${sourceKey}Ready`
+  }
+}
+
 class DataLoader {
   constructor (vm, sources) {
     this.id = nextId++
-    this.maxIterations = 10
+    this.maxFetches = 200 // Approximate upper limit
     this.sources = sources
     this.vm = vm
 
@@ -31,109 +42,154 @@ class DataLoader {
       return (pred === true) || (sourceKey === pred)
     }
     const sources = this.sources
-    const sourceKeys = Object.keys(sources).filter(predFn)
     const vm = this.vm
 
-    sourceKeys.forEach(sourceKey => {
+    Object.keys(sources).filter(predFn).forEach(sourceKey => {
+      const keys = propKeys(sourceKey)
+      const source = sources[sourceKey]
+
       logger.log(`DataLoader(${this.id})#clear::sourceKey`, sourceKey)
 
-      const fetchedAtKey = `${sourceKey}FetchedAt`
-      const errorKey = `${sourceKey}Error`
-      const loadingKey = `${sourceKey}Loading`
-      const readyKey = `${sourceKey}Ready`
-      vm[fetchedAtKey] = NEVER_FETCHED
-      vm[errorKey] = null
-      vm[loadingKey] = false
-      vm[readyKey] = false
+      vm[keys.error] = null
+      vm[keys.loading] = false
+      vm[keys.ready] = false
+      vm[keys.fetchedAt] = NEVER_FETCHED
 
-      // Custom clearing
-      const source = sources[sourceKey]
+      // Invoke clear hook
       if (typeof source.clear === 'function') source.clear(vm)
     })
 
     return this
   }
 
+  /**
+   * Cancel loading immediately and clean up.
+   */
+  destroy () {
+    logger.log(`DataLoader(${this.id})#destroy`)
+
+    this.destroyed = true
+    this.sources = null
+    this.vm = null
+  }
+
   get isLoading () { return this.vm.dataLoading }
   set isLoading (newIsLoading) {
-    this.vm.dataLoading = newIsLoading
+    if (this.vm) this.vm.dataLoading = newIsLoading
 
     if (newIsLoading) logger.time(`DataLoader(${this.id}).load`)
     else logger.timeEnd(`DataLoader(${this.id}).load`)
   }
 
-  /**
-   * Begin loading for all sources. Runs recursively until all guards are false (or maxIterations is reached).
-   */
-  load (options, iter = 0) {
-    if (iter === 0) {
-      if (this.isLoading) return Promise.resolve() // We're already loading
-      this.isLoading = true
-    }
+  *_workerGen (done) {
+    this.isLoading = true
+    this.numFetches = 0
 
-    const vm = this.vm
     const sources = this.sources
-    const sourceKeys = Object.keys(sources).filter(sourceKey => {
-      const loadingKey = `${sourceKey}Loading`
-      if (vm[loadingKey] === true) return false
+    const vm = this.vm
 
-      const source = sources[sourceKey]
-      return typeof source.guard === 'function' ? source.guard(vm) : true
-    })
+    let count = 0
+    let tasks = Promise.resolve()
 
-    if (sourceKeys.length === 0) {
-      return Promise.resolve()
-    }
+    // TODO: Add cancel capability
+    do {
+      const fetches = Object.keys(sources).filter(sourceKey => {
+        const keys = propKeys(sourceKey)
+        const source = sources[sourceKey]
 
-    const fetches = []
+        if (vm[keys.loading] === true) return false // Already loading source?
 
-    sourceKeys.forEach(sourceKey => {
-      logger.log(`DataLoader(${this.id})#load::sourceKey,iter`, sourceKey, iter)
+        // Evaluate guard condition
+        return typeof source.guard === 'function' ? source.guard(vm) : true
+      }).map(sourceKey => {
+        const keys = propKeys(sourceKey)
+        const source = sources[sourceKey]
 
-      const fetchedAtKey = `${sourceKey}FetchedAt`
-      const errorKey = `${sourceKey}Error`
-      const loadingKey = `${sourceKey}Loading`
-      const readyKey = `${sourceKey}Ready`
-      vm[errorKey] = null
-      vm[loadingKey] = true
-      vm[readyKey] = false
+        logger.log(`DataLoader(${this.id})#load:beforeFetch::sourceKey`, sourceKey)
 
-      const source = sources[sourceKey]
-      if (typeof source.beforeFetch === 'function') source.beforeFetch(vm)
+        vm[keys.error] = null
+        vm[keys.loading] = true
+        vm[keys.ready] = false
 
-      const fetchedAt = vm[fetchedAtKey] = (new Date()).getTime()
-      const fetch = Promise.resolve(source.fetch(vm)).then(res => {
-        if (vm[fetchedAtKey] !== fetchedAt) return // Cancelled
+        // Optional beforeFetch hook
+        if (typeof source.beforeFetch === 'function') source.beforeFetch(vm)
 
-        vm[loadingKey] = false
+        const fetchedAt = vm[keys.fetchedAt] = (new Date()).getTime()
 
-        // Process results
-        if (typeof source.afterFetch === 'function') res = source.afterFetch(vm, res)
-        if (!res) throw Error(`Not found: ${sourceKey}`)
+        // Invoke fetch async
+        return Promise.resolve(source.fetch(vm)).then(res => {
+          if (this.destroyed) return // Destroyed?
 
-        // Assign targets
-        if (typeof source.assign === 'function') source.assign(vm, res)
+          vm[keys.loading] = false
 
-        vm[readyKey] = true
-      }).catch(err => {
-        logger.error('DataLoader#load::error', err)
+          if (vm[keys.fetchedAt] !== fetchedAt) return // Preempted?
 
-        if (vm[fetchedAtKey] !== fetchedAt) return // Cancelled
+          logger.log(`DataLoader(${this.id})#load:afterFetch::sourceKey`, sourceKey)
 
-        vm[loadingKey] = false
-        vm[errorKey] = err.message
-      }).then(() => {
-        return vm.$nextTick()
-      }).then(() => {
-        // TODO: Rework so that only the number of failed calls are restricted
-        if (iter < this.maxIterations) return this.load(options, iter + 1)
+          // Process results
+          if (typeof source.afterFetch === 'function') res = source.afterFetch(vm, res)
+          if (!res) throw Error(`Not found: ${sourceKey}`)
+
+          // Assign targets
+          if (typeof source.assign === 'function') source.assign(vm, res)
+
+          vm[keys.ready] = true
+        }).catch(err => {
+          if (this.destroyed) return // Destroyed?
+
+          vm[keys.loading] = false
+
+          if (vm[keys.fetchedAt] !== fetchedAt) return // Preempted?
+
+          logger.error('DataLoader#load:catch::sourceKey,err', sourceKey, err)
+
+          vm[keys.error] = err.message
+        }).then(() => {
+          if (this.destroyed) return // Destroyed?
+
+          return vm.$nextTick()
+        }).then(() => {
+          this._worker.next()
+        })
       })
 
-      fetches.push(fetch)
-    })
+      if (fetches.length > 0) {
+        count++
+        tasks = tasks.then(() => {
+          return Promise.all(fetches)
+        }).then(() => {
+          if (--count === 0) this._worker.next()
+        })
+      }
 
-    return Promise.all(fetches).then(() => {
-      if (iter === 0) this.isLoading = false
+      // Safety net
+      if ((this.numFetches += fetches.length) > this.maxFetches) {
+        logger.warn(`DataLoader(${this.id})#load:break::numFetches,maxFetches`, this.numFetches, this.maxFetches)
+        break
+      }
+
+      if (count > 0) yield null // Chill until a promised fetch resolves
+    } while (count > 0 && !this.destroyed)
+
+    tasks.then(() => {
+      logger.log(`DataLoader(${this.id})#load:done::numFetches`, this.numFetches)
+
+      this.isLoading = false
+      done(true)
+    })
+  }
+
+  /**
+   * Begin loading for all sources. Uses a generator to manage the tasks.
+   */
+  load () {
+    return new Promise((resolve) => {
+      if (this.isLoading || this.destroyed) {
+        resolve(false)
+      } else {
+        this._worker = this._workerGen(resolve)
+        this._worker.next()
+      }
     })
   }
 }

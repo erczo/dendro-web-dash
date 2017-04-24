@@ -57,7 +57,7 @@ const pressure = {
 const seasonal = {
   computed: {
     seasMonth: function () {
-      if (this.stationTime) return moment(this.stationTime).format('MMMM')
+      if (this.stationTime) return moment(this.stationTime).utc().format('MMMM')
     }
   }
 }

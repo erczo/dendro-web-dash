@@ -2,7 +2,7 @@
   <li class="component media my-3 pb-3 border-bottom">
     <router-link :to="{name: 'station', params: {slug: station.slug}}" class="hidden-xs-down">
       <div class="d-flex mr-3 photo-thumb" v-if="!media || media.length === 0"></div>
-      <img class="d-flex mr-3 photo-thumb rounded" :src="isRetina && media[0].sizes.thumb_2x ? media[0].sizes.thumb_2x.url : media[0].sizes.thumb.url" v-if="media && media.length > 0">
+      <img class="d-flex mr-3 photo-thumb rounded" :src="isRetina && media[0].sizes.thumb_2x ? media[0].sizes.thumb_2x.url : media[0].sizes.thumb.url" v-else>
     </router-link>
 
     <div class="media-body">
@@ -17,7 +17,8 @@
       </p>
 
       <router-link class="mr-3" :to="{name: 'station', params: {slug: station.slug}}">Dashboard</router-link>
-      <a class="" href="#">Datastreams</a>
+      <!-- TODO: Implement this -->
+      <!-- <a class="" href="#">Datastreams</a> -->
     </div>
   </li>
 </template>
@@ -57,8 +58,9 @@ export default {
   computed: {
     // TODO: Move to StationElevation.vue?
     elevation () {
-      if (this.station.geo && this.station.geo.coordinates && this.station.geo.coordinates.length > 2) {
-        const m = this.station.geo.coordinates[2]
+      const station = this.station
+      if (station.geo && station.geo.coordinates && station.geo.coordinates.length > 2) {
+        const m = station.geo.coordinates[2]
         switch (this.units) {
           case 'imp':
             return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getAbbr('Foot')}`

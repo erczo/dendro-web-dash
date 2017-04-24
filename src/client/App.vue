@@ -37,7 +37,7 @@
           </div>
 -->
           <!-- Units Dropdown -->
-          <div class="btn-group" role="group" aria-label="Units dropdown">
+          <div class="btn-group" role="group" aria-label="Units dropdown" v-if="showsUnits">
             <button id="unitsNavButton" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="hidden-sm-down">Units: </span>
                 <span v-if="units === 'imp'">English</span>
@@ -73,7 +73,7 @@
       :client-time="clientTime" :is-retina="isRetina" :units="units"
       @update-header="updateHeader"></router-view>
 
-    <footer class="bg-faded py-4" v-if="$route.name !== 'home'">
+    <footer class="bg-faded py-4" v-if="showsFooter">
       <div class="container-fluid">
         <div class="row">
 
@@ -97,6 +97,9 @@ import localforage from 'localforage'
 import $ from 'jquery'
 
 import DownloadStore from './stores/DownloadStore'
+
+const HIDES_FOOTER_REGEX = /(home)|(startDownload)/
+const HIDES_UNITS_REGEX = /(startDownload)/
 
 localforage.config({
   name: 'dendroWebDash'
@@ -192,6 +195,15 @@ export default {
   // beforeDestroy () {
   //   if (this.clientTimeTid) clearInterval(this.clientTimeTid)
   // },
+
+  computed: {
+    showsFooter () {
+      return !HIDES_FOOTER_REGEX.test(this.$route.name)
+    },
+    showsUnits () {
+      return !HIDES_UNITS_REGEX.test(this.$route.name)
+    }
+  },
 
   methods: {
     scrollToTop () {

@@ -83,6 +83,7 @@ export default {
   },
 
   watch: {
+    outputFormat: 'formatValue',
     value (newValue) {
       const m = moment(this.$refs.input.value, this.inputFormats).utc().startOf('d')
       if (!m.isSame(newValue)) this.formatValue()

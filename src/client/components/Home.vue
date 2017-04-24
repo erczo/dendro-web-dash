@@ -14,14 +14,14 @@
           </div>
 
           <div class="col-12 col-sm-5 o-sm-scroll p-sm-fixed vh-sm-100" v-if="!stationsLoading">
-            <div class="row py-2 bg-faded" v-if="stations && totalStationCount > stations.length">
-              <div class="col-12">{{ stations.length }} stations shown</div>
+            <div class="row py-2 border-bottom" v-if="hasMoreStations">
+              <div class="col-12 text-muted">{{ stations.length }} stations shown</div>
             </div>
 
-            <div class="row">
+            <div class="row" v-if="stations">
               <div class="col-12">
-                <h2 class="my-3 pb-3" v-if="stations && stations.length === 0">No stations found</h2>
-                <ul class="list-unstyled" v-if="stations && stations.length > 0">
+                <h2 class="my-3 pb-3" v-if="stations.length === 0">No stations found</h2>
+                <ul class="list-unstyled" v-else>
                   <station-list-item
                     :is-retina="isRetina"
                     :station="station"
@@ -31,7 +31,7 @@
               </div>
             </div>
 
-            <div class="row my-3 pb-3" v-if="!moreStationsLoading && stations && totalStationCount > stations.length">
+            <div class="row my-3 pb-3" v-if="!moreStationsLoading && hasMoreStations">
               <div class="col-12 text-center">
                 <button type="button" class="btn btn-info" @click="seeMore">See More</button>
               </div>
@@ -155,24 +155,32 @@ export default {
   },
 
   beforeDestroy () {
-    // TODO: Implement
-    // dataLoader.cancel()
+    dataLoader.destroy()
     dataLoader = null
 
     this.debouncedSearch.cancel()
     this.resizeListener.cancel()
 
-    if (this.maps) this.maps.event.clearInstanceListeners(window)
-    if (this.maps) this.maps.event.clearInstanceListeners(this.maps)
-    if (this.maps && this.map) this.maps.event.clearInstanceListeners(this.map)
+    const maps = this.maps
+    if (maps) {
+      maps.event.clearInstanceListeners(window)
+      maps.event.clearInstanceListeners(maps)
 
-    Object.keys(this.markers).forEach(key => {
-      this.maps.event.clearInstanceListeners(this.markers[key])
-    })
+      if (this.map) maps.event.clearInstanceListeners(this.map)
+
+      Object.keys(this.markers).forEach(key => {
+        maps.event.clearInstanceListeners(this.markers[key])
+      })
+    }
+
     this.bounds = this.infoWindow = this.maps = this.map = this.markers = null
   },
 
   computed: {
+    hasMoreStations () {
+      const stations = this.stations
+      return stations && this.totalStationCount > stations.length
+    },
     stations () {
       return this.state.stations
     }

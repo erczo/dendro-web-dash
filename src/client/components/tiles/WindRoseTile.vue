@@ -39,9 +39,6 @@ const WIND_FORCE_LEVELS = [{
 
 export default {
   props: {
-    // Chart config
-    seriesConfig: Object,
-
     // Chart datasets
     airSpeed: Object,
 

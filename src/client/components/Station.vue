@@ -79,7 +79,6 @@
         <div class="row row-md">
           <div class="col-12 col-lg-4 pb-3">
             <wind-rose-tile
-              :series-config="seriesConfig"
               :air-speed="datasets.airSpeed" :air-speed-cursor="airSpeedCursor"
               :station-time="stationTime" :system-time="state.systemTime"
               :unit-abbrs="state.unitAbbrs" :units="units"
@@ -122,7 +121,6 @@
             <air-pres-tile
               :coordinates="coordinates"
               :current="datasets.current"
-              :series-config="seriesConfig"
               :air-pres="datasets.airPres" :air-pres-cursor="airPresCursor"
               :station-time="stationTime" :system-time="state.systemTime"
               :unit-abbrs="state.unitAbbrs" :units="units"
@@ -131,7 +129,6 @@
 
           <div class="col-12 col-lg-6 pb-3">
             <water-year-tile
-              :series-config="wySeriesConfig"
               :precip="datasets.wyPrecip" :precip-cursor="wyPrecipCursor"
               :station-time="stationTime" :system-time="state.systemTime"
               :unit-abbrs="state.unitAbbrs" :units="units"
@@ -144,17 +141,11 @@
             <forecast-tile class="not-implemented"></forecast-tile>
           </div>
         </div>
-<!--
-        <div class="row">
-          <download-tile></download-tile>
-        </div>
- -->
       </div>
     </section>
 
     <section class="py-3" v-if="station">
       <time-machine
-        :series-config="seriesConfig"
         :air-speed="datasets.airSpeed" :air-speed-cursor="airSpeedCursor"
         :air-temp="datasets.airTemp" :air-temp-cursor="airTempCursor"
         :soil-temp="datasets.soilTemp" :soil-temp-cursor="soilTempCursor"
@@ -176,7 +167,6 @@ import StationInfo from './StationInfo'
 // TODO: Move these to Tiles.vue?
 import AirPresTile from './tiles/AirPresTile'
 import AirTempTile from './tiles/AirTempTile'
-import DownloadTile from './tiles/DownloadTile'
 import ForecastTile from './tiles/ForecastTile'
 import HumidityTile from './tiles/HumidityTile'
 import MapTile from './tiles/MapTile'
@@ -206,7 +196,6 @@ export default {
     // Dashboard tiles
     AirPresTile,
     AirTempTile,
-    DownloadTile,
     ForecastTile,
     HumidityTile,
     MapTile,
@@ -268,8 +257,7 @@ export default {
   },
 
   beforeDestroy () {
-    // TODO: Implement
-    // dataLoader.cancel()
+    dataLoader.destroy()
     dataLoader = null
   },
 
@@ -285,25 +273,27 @@ export default {
       return this.state.station
     },
     stationTime () {
-      if (this.state.systemTime && this.state.station) {
-        const offset = this.state.station.utc_offset
-        return this.state.systemTime + (typeof offset === 'number' ? offset * 1000 : 0)
+      const station = this.state.station
+      const systemTime = this.state.systemTime
+      if (station && systemTime) {
+        const offset = station.utc_offset
+        return systemTime + (typeof offset === 'number' ? offset * 1000 : 0)
       }
     },
     seriesConfig () {
       const startOfDay = moment(this.stationTime).utc().startOf('d')
       return {
         // NOTE: Hardcoded to 14 days!
-        start: startOfDay.clone().subtract(13, 'd').valueOf(),
-        end: startOfDay.clone().add(1, 'd').valueOf()
+        start: startOfDay.clone().subtract(13, 'd'),
+        end: startOfDay.clone().add(1, 'd')
       }
     },
     wySeriesConfig () {
       const startOfWY = moment(this.stationTime).utc().startOf('M').subtract(9, 'M').startOf('y').add(9, 'M')
       return {
         // NOTE: Hardcoded to 2 years!
-        start: startOfWY.clone().subtract(12, 'M').startOf('M').valueOf(),
-        end: startOfWY.clone().add(12, 'M').startOf('M').valueOf()
+        start: startOfWY.clone().subtract(12, 'M').startOf('M'),
+        end: startOfWY.clone().add(12, 'M').startOf('M')
       }
     }
   },
@@ -329,9 +319,10 @@ export default {
       })
     },
     seriesAdded (datasetKey) {
-      // HACK: Release memory
-      this.store.setDataset(datasetKey)
       logger.log('Station:methods.seriesAdded::datasetKey', datasetKey)
+
+      // HACK: Release memory
+      this.store.fillDataset(datasetKey, [])
     },
     showLightbox (index) {
       this.lightboxOptions = {

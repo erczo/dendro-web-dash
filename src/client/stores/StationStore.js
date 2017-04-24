@@ -54,17 +54,6 @@ function getAttrsInfo (attrs, unitAbbrs) {
 }
 
 /**
- * Create a standardized, shortened key representing 'ds' vocabulary tags.
- */
-function getDsKey (tags) {
-  return tags.filter(tag => {
-    return DS_REGEX.test(tag)
-  }).sort().map(tag => {
-    return tag.split('_').pop()
-  }).join('_')
-}
-
-/**
  * Extract the 'dt-unit' vocabulary term label from datastream tags.
  */
 function getDtUnit (tags) {
@@ -74,13 +63,24 @@ function getDtUnit (tags) {
   if (found) return found.split('_').pop()
 }
 
+/**
+ * Create a standardized, shortened key representing 'ds' vocabulary tags.
+ */
+function getTagKey (tags) {
+  return tags.filter(tag => {
+    return DS_REGEX.test(tag)
+  }).sort().map(tag => {
+    return tag.split('_').pop()
+  }).join('_')
+}
+
 class StationStore {
   constructor () {
     // State that is NOT observed
     this.plainState = {
       datastreams: null,
-      datastreamsByDsKey: null,
       datastreamsById: null,
+      datastreamsByTagKey: null,
 
       // Recent datapoint time for each datastream; includes _max
       timestamps: null
@@ -126,15 +126,10 @@ class StationStore {
 
   clearUnitVocabulary () { this.setUnitVocabulary(null) }
 
-  setContactOrgs (newValue) {
-    this.reactiveState.contactOrgs = newValue
-  }
-
-  setContactPersons (newValue) {
-    this.reactiveState.contactPersons = newValue
-  }
-
-  setDataset (datasetKey, docs) {
+  /*
+    Populates a structured dataset given an array of result docs. Can be read using a DataAccessor instance.
+   */
+  fillDataset (datasetKey, docs) {
     if (!docs) return
 
     /*
@@ -150,8 +145,8 @@ class StationStore {
       // Lookup datastream in memory
       const datastream = this.plainState.datastreamsById[doc._id]
       if (!datastream) return
-      const dsKey = datastream.__dsKey
-      if (!dsKey) return
+      const tagKey = datastream.__tagKey
+      if (!tagKey) return
 
       // Link the result doc to its datastream
       doc.datastream = datastream
@@ -181,43 +176,50 @@ class StationStore {
       delete doc._id
 
       /*
-        Coalese result docs under dsKey within the dataset.
+        Coalese multiple result docs under tagKey within the dataset.
        */
 
-      if (!obj[dsKey]) obj[dsKey] = []
-      obj[dsKey].push(doc)
+      if (!obj[tagKey]) obj[tagKey] = []
+      obj[tagKey].push(doc)
     })
   }
 
+  setContactOrgs (newValue) {
+    this.reactiveState.contactOrgs = newValue
+  }
+
+  setContactPersons (newValue) {
+    this.reactiveState.contactPersons = newValue
+  }
+
   setDatastreams (newValue) {
-    let [byDsKey, byId] = [null, null, null]
+    let [byId, byTagKey] = [null, null]
 
     if (newValue) {
-      byDsKey = {}
-      byId = {}
+      [byId, byTagKey] = [{}, {}]
 
       newValue.forEach(datastream => {
-        const dsKey = getDsKey(datastream.tags)
+        const tagKey = getTagKey(datastream.tags)
 
         datastream.__attrsInfo = getAttrsInfo(datastream.attributes, this.reactiveState.unitAbbrs)
         datastream.__dtUnit = getDtUnit(datastream.tags)
-        datastream.__dsKey = dsKey
+        datastream.__tagKey = tagKey
 
         /*
-          'Index' datastreams by dsKey and _id for faster lookup elsewhere.
+          'Index' datastreams by _id and tagKey for faster lookup elsewhere.
          */
 
-        if (!byDsKey[dsKey]) byDsKey[dsKey] = []
-        byDsKey[dsKey].push(datastream)
-
         byId[datastream._id] = datastream
+
+        if (!byTagKey[tagKey]) byTagKey[tagKey] = []
+        byTagKey[tagKey].push(datastream)
 
         // Thin-out the datastream
         delete datastream.tags
       })
     }
 
-    [this.plainState.datastreams, this.plainState.datastreamsByDsKey, this.plainState.datastreamsById, this.plainState.timestamps] = [newValue, byDsKey, byId, {}]
+    [this.plainState.datastreams, this.plainState.datastreamsById, this.plainState.datastreamsByTagKey, this.plainState.timestamps] = [newValue, byId, byTagKey, {}]
   }
 
   setStation (newValue) {

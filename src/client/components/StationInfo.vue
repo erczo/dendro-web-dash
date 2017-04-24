@@ -64,7 +64,7 @@ export default {
     elevation () {
       const station = this.station
       if (station.geo && station.geo.coordinates && station.geo.coordinates.length > 2) {
-        const m = this.station.geo.coordinates[2]
+        const m = station.geo.coordinates[2]
         switch (this.units) {
           case 'imp':
             return `${math.round(math.unit(m, 'm').toNumber('ft'))} ${this.getAbbr('Foot')}`
@@ -74,12 +74,13 @@ export default {
       }
     },
     localTimeFormat () {
-      if (this.stationTime) {
+      const stationTime = this.stationTime
+      if (stationTime) {
         switch (this.units) {
           case 'imp':
-            return moment(this.stationTime).utc().format('h:mm A')
+            return moment(stationTime).utc().format('h:mm A')
           case 'met':
-            return moment(this.stationTime).utc().format('HH:mm')
+            return moment(stationTime).utc().format('HH:mm')
         }
       }
     },

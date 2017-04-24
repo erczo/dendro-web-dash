@@ -8,7 +8,7 @@
       </div>
     </section>
 
-    <section class="py-3" v-if="!fields || fields.length === 0">
+    <section class="py-3" v-if="!hasFields">
       <div class="container-fluid">
         <div class="row">
           <div class="col-12">
@@ -19,7 +19,7 @@
       </div>
     </section>
 
-    <section class="py-3" v-if="fields && fields.length > 0">
+    <section class="py-3" v-if="hasFields">
       <div class="container">
         <div class="row">
           <div class="col-12">
@@ -28,20 +28,30 @@
         </div>
 
         <!-- Date range -->
-        <div class="row py-2 justify-content-md-center">
+        <div class="row py-1">
           <div class="col-12 col-md-3 py-1">
             <date-input-group
-              class="input-group-md"
               left-addon="["
+              :output-format="outputFormat"
               :min-value="extent && extent.left"
               :max-value="range.end"
               :value="range.start"
               @input="value => { store.setRangeStart(value) }"></date-input-group>
           </div>
 
-          <div class="col-12 col-md-3 py-1 text-center">
-            <div class="btn-group w-100">
-              <button class="btn btn-secondary btn-md dropdown-toggle w-100" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <div class="col-12 col-md-3 py-1">
+            <date-input-group
+              input-class="text-right" right-addon="]"
+              :output-format="outputFormat"
+              :min-value="range.start"
+              :max-value="extent && extent.right"
+              :value="range.end"
+              @input="value => { store.setRangeEnd(value) }"></date-input-group>
+          </div>
+
+          <div class="col-12 col-md-3 py-1">
+            <div class="btn-group xw-100">
+              <button class="btn btn-secondary btn-md dropdown-toggle w-100 border-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {{ state.preset ? state.preset.name : 'Custom' }}
               </button>
               <div class="dropdown-menu">
@@ -51,42 +61,32 @@
               </div>
             </div>
           </div>
-
-          <div class="col-12 col-md-3 py-1">
-            <date-input-group
-              class="input-group-md"
-              input-class="text-right" right-addon="]"
-              :min-value="range.start"
-              :max-value="extent && extent.right"
-              :value="range.end"
-              @input="value => { store.setRangeEnd(value) }"></date-input-group>
-          </div>
         </div>
 
         <!-- Slider -->
         <div class="row pt-2">
-          <div class="col-12 col-md-10 offset-md-1">
+          <div class="col-12">
             <input type="text" class="slider" ref="slider" />
           </div>
         </div>
 
         <div class="row noselect">
-          <div class="col-6 col-md-5 offset-md-1">
+          <div class="col-6">
             <small class="border-left pl-2">{{ leftExtentFormat }}</small>
           </div>
-          <div class="col-6 col-md-5 text-right">
+          <div class="col-6 text-right">
             <small class="border-right pr-2">{{ rightExtentFormat }}</small>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="bg-faded" v-if="fields && fields.length > 0">
+    <section class="bg-faded" v-if="hasFields">
       <div class="container">
         <div class="row">
           <div class="col-md-6 py-3">
             <ul class="list-group">
-              <li class="list-group-item text-white bg-success"><small>SUMMARY</small></li>
+              <li class="list-group-item text-white bg-success small">SUMMARY</li>
               <li class="list-group-item justify-content-between">
                 Fields
                 <span class="badge badge-default badge-pill">{{ selectedFieldCount }}</span>
@@ -103,17 +103,15 @@
           </div>
 
           <div class="col-md-6 py-3 d-flex flex-column justify-content-center align-items-center">
-            <button type="button" class="btn btn-success btn-lg" @click="startDownload">
+            <button type="button" class="btn btn-success btn-lg" :disabled="selectedDatastreamFieldCount === 0" @click="$router.push({name: 'startDownload'})">
               <i class="fa fa-lg fa-arrow-down" aria-hidden="true"></i> Start Download
             </button>
-
-            <!-- <a :href="csvUrl" download="test.csv">File Link</a> -->
           </div>
         </div>
       </div>
     </section>
 
-    <section class="py-3"  v-if="fields && fields.length > 0">
+    <section class="py-3"  v-if="hasFields">
       <div class="container">
 <!--
         <div class="row">
@@ -146,7 +144,7 @@
                 </tr>
               </thead>
 
-              <tbody v-if="filteredFields && filteredFields.length > 0">
+              <tbody v-if="hasFilteredFields">
                 <tr v-for="field in filteredFields">
                   <td>
                     <label class="form-check-label" v-if="!field.required">
@@ -178,16 +176,12 @@
 <script>
 import $ from 'jquery'
 import debounce from 'lodash.debounce'
-// import moment from 'moment'
 import logger from '../lib/logger'
 
 import 'bootstrap-slider'
 import 'bootstrap-slider/dist/css/bootstrap-slider.css'
 
 import DateInputGroup from './inputs/DateInputGroup'
-
-// Make eslint happy, SEE: http://eslint.org/docs/user-guide/configuring#specifying-globals
-// /* global Blob, URL */
 
 import {DataLoader} from '../lib/dataloader'
 import SystemTimeSources from '../sources/SystemTimeSources'
@@ -210,9 +204,7 @@ export default {
   data () {
     return {
       filterText: '',
-      filteredFields: null,
-
-      csvUrl: ''
+      filteredFields: null
     }
   },
 
@@ -238,8 +230,7 @@ export default {
   },
 
   beforeDestroy () {
-    // TODO: Implement
-    // dataLoader.cancel()
+    dataLoader.destroy()
     dataLoader = null
 
     this.debouncedFilter.cancel()
@@ -252,29 +243,57 @@ export default {
     extent () {
       return this.state.extent
     },
+    fieldCount () {
+      const fields = this.fields
+      if (fields) return fields.length
+      return 0
+    },
     fields () {
       return this.state.fields
     },
+    filteredFieldCount () {
+      const fields = this.filteredFields
+      if (fields) return fields.length
+      return 0
+    },
+    hasFields () {
+      return this.fieldCount > 0
+    },
+    hasFilteredFields () {
+      return this.filteredFieldCount > 0
+    },
     leftExtentFormat () {
-      if (this.extent) return this.extent.left.format('MM/DD/YYYY')
+      const extent = this.extent
+      if (extent) return extent.left.format(this.outputFormat)
     },
     rightExtentFormat () {
-      if (this.extent) return this.extent.right.format('MM/DD/YYYY')
+      const extent = this.extent
+      if (extent) return extent.right.format(this.outputFormat)
     },
     range () {
       return this.state.range
     },
+    outputFormat () {
+      switch (this.units) {
+        case 'imp':
+          return 'MM/DD/YYYY'
+        case 'met':
+          return 'DD-MM-YYYY'
+      }
+    },
     selectedDays () {
       const range = this.range
-      if (range.start && range.end) {
-        return Math.max(1, range.end.diff(range.start, 'days'))
-      }
+      if (range.start && range.end) return Math.max(1, range.end.diff(range.start, 'days'))
+      return 0
+    },
+    selectedDatastreamFieldCount () {
+      const fields = this.fields
+      if (fields) return fields.filter(field => { return field.selected && field.datastreamId }).length
       return 0
     },
     selectedFieldCount () {
-      if (this.fields) {
-        return this.fields.filter(field => { return field.selected }).length
-      }
+      const fields = this.fields
+      if (fields) return fields.filter(field => { return field.selected }).length
       return 0
     },
     state () {
@@ -287,9 +306,11 @@ export default {
 
   methods: {
     configureSlider () {
-      if (!this.rangeSlider) {
+      let slider = this.rangeSlider
+
+      if (!slider) {
         // Lazy init
-        this.rangeSlider = $(this.$refs.slider).slider({
+        slider = this.rangeSlider = $(this.$refs.slider).slider({
           enabled: false,
           id: 'downloadRangeSlider',
           max: 4,
@@ -300,66 +321,37 @@ export default {
         }).on('change', this.sliderChange)
       }
 
-      if (!this.rangeSlider) return
+      if (!slider) return
 
-      if (this.extent) {
-        const days = this.extent.right.diff(this.extent.left, 'days')
-        this.rangeSlider.slider('setAttribute', 'max', days).slider('enable')
+      const extent = this.extent
+      if (extent) {
+        const days = extent.right.diff(extent.left, 'days')
+        slider.slider('setAttribute', 'max', days).slider('enable')
       } else {
-        this.rangeSlider.slider('disable')
+        slider.slider('disable')
       }
     },
     sliderChange (e) {
-      const left = this.extent.left
-      const newValue = e.value.newValue
+      const [left, newValue] = [this.extent.left, e.value.newValue]
       this.store.setRange(left.clone().add(newValue[0], 'd'), left.clone().add(newValue[1], 'd'))
     },
-    startDownload () {
-      // TODO: Finish download!
-      // this.fields.forEach(field => {
-      //   field.selected = !field.selected
-      // })
-      // const cols = Array.from(Array(100).keys())
-
-      // let blob = new Blob([''], {type: 'text/csv'})
-
-      // for (let i = 0; i < 1000; i++) {
-      //   const rows = []
-      //   for (let j = 0; j < 10000; j++) {
-      //     rows.push(cols)
-      //   }
-
-      //   let bigStr = ''
-
-      //   rows.forEach(row => {
-      //     bigStr += row.join(',') + '\r\n'
-      //   })
-
-      //   blob = new Blob([blob, bigStr], {type: 'text/csv'})
-      // }
-
-      // this.csvBlob = blob
-      // this.csvUrl = URL.createObjectURL(this.csvBlob)
-
-      // window.alert('Ready!')
-    },
     updateCheckAll () {
-      let optionalCount = this.filteredFields.filter(field => {
-        return !field.required
-      }).length
-      let selectedCount = this.filteredFields.filter(field => {
-        return !field.required && field.selected
-      }).length
+      const fields = this.filteredFields
+
+      let optionalCount = fields.filter(field => { return !field.required }).length
+      let selectedCount = fields.filter(field => { return !field.required && field.selected }).length
 
       this.$refs.checkAllInput.checked = selectedCount > 0
       this.$refs.checkAllInput.indeterminate = selectedCount > 0 && selectedCount < optionalCount
     },
     updateSlider () {
-      if (!this.rangeSlider || !this.extent) return
+      const [extent, range, slider] = [this.extent, this.range, this.rangeSlider]
 
-      this.rangeSlider.slider('setValue', [
-        this.range.start.diff(this.extent.left, 'days'),
-        this.range.end.diff(this.extent.left, 'days')
+      if (!slider || !extent) return
+
+      slider.slider('setValue', [
+        range.start.diff(extent.left, 'days'),
+        range.end.diff(extent.left, 'days')
       ])
     }
   },

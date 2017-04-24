@@ -83,9 +83,6 @@ function syncExtremes (e) {
 
 export default {
   props: {
-    // Chart config
-    seriesConfig: Object,
-
     // Chart datasets
     airSpeed: Object,
     airTemp: Object,

@@ -32,9 +32,6 @@ export default {
     coordinates: Array,
     current: Object,
 
-    // Chart config
-    seriesConfig: Object,
-
     // Chart datasets
     airPres: Object,
 

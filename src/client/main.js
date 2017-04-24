@@ -19,6 +19,7 @@ import App from './App'
 
 import Download from './components/Download'
 import Home from './components/Home'
+import StartDownload from './components/StartDownload'
 import Station from './components/Station'
 
 /*
@@ -28,6 +29,10 @@ import Station from './components/Station'
 Vue.filter('placeholder', (value, text = '-') => {
   // TODO: This should handle a variety of cases
   return (typeof value === 'undefined') || (value === null) ? text : value
+})
+
+Vue.filter('pluralize', (value, ...args) => {
+  return args.length > 1 ? (args[value % 10 - 1] || args[args.length - 1]) : (args[0] + (value === 1 ? '' : 's'))
 })
 
 // TODO: Remove this - deprecated
@@ -49,6 +54,7 @@ const router = new VueRouter({
   // mode: 'history',
   routes: [
     {path: '/download', name: 'download', component: Download},
+    {path: '/download/start', name: 'startDownload', component: StartDownload},
     {path: '/stations/:slug', name: 'station', component: Station},
     {path: '/:slug', redirect: '/stations/:slug'},
     {path: '/', name: 'home', component: Home},

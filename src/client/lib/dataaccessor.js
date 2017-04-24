@@ -7,19 +7,20 @@
  */
 
 /*
-  NOTE: A data accessor is instantiated to read 'like' result docs under a given dsKey.
+  NOTE: A data accessor is instantiated to read 'like' result docs under a given tagKey.
 
   Datasets are organized in the model as shown:
     datasets: {
       DATASET_KEY: {
-        DS_KEY: [DOC, DOC, ...]
+        TAG_KEY: [DOC, DOC, ...]
         ]
       }
     }
 
   Where an individual document (DOC) containing datapoints is strucured as:
     {
-      METADATA_FIELD, ...,
+      METADATA_FIELD,
+      ...,
       datapoints: {
         data: [POINT, POINT, ...]
       }
@@ -27,9 +28,9 @@
  */
 
 class DataAccessor {
-  constructor (vm, dsKey, options) {
+  constructor (vm, tagKey, options) {
     this.dataSortPredicate = this.docsSortPredicate = null
-    this.dsKey = dsKey
+    this.tagKey = tagKey
     this.options = options
     this.vm = vm
 
@@ -44,7 +45,7 @@ class DataAccessor {
   get dataset () { return this._dataset }
   set dataset (newDataset) {
     const d = this._dataset = newDataset
-    this.docs = d && d[this.dsKey] ? d[this.dsKey] : []
+    this.docs = d && d[this.tagKey] ? d[this.tagKey] : []
   }
 
   get docs () { return this._docs }

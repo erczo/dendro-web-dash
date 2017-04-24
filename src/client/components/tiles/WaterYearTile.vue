@@ -26,9 +26,6 @@ let cuDayPrecipHeight
 
 export default {
   props: {
-    // Chart config
-    seriesConfig: Object,
-
     // Chart datasets
     precip: Object,
 
