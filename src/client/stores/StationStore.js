@@ -8,8 +8,8 @@
 
 import {hashString} from '../lib/murmurhash3'
 
-const DS_REGEX = /^ds_\w+$/
 const DT_UNIT_REGEX = /^dt_Unit_\w+$/
+const TAG_KEY_REGEX = /^(ds_|dw_)\w+$/
 
 /**
  * Evaluate attributes for a datastream and generate info suitable for display and sorting.
@@ -68,7 +68,7 @@ function getDtUnit (tags) {
  */
 function getTagKey (tags) {
   return tags.filter(tag => {
-    return DS_REGEX.test(tag)
+    return TAG_KEY_REGEX.test(tag)
   }).sort().map(tag => {
     return tag.split('_').pop()
   }).join('_')
@@ -100,6 +100,7 @@ class StationStore {
         airTemp: null,
         current: null,
         seasonal: null,
+        forecast: null,
         soilTemp: null,
         solarRad: null,
         wyPrecip: null,

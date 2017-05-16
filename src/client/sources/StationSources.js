@@ -66,10 +66,14 @@ function getDatastreamIdsForLookup (datastreamsByTagKey, specs, filter, units) {
     const datastreams = datastreamsByTagKey[spec.tagKey]
     if (datastreams) {
       datastreams.filter(filterFn).forEach(datastream => {
-        let u = spec.dtUnits[datastream.__dtUnit]
-        if (u) {
-          const n = order[u]
-          if (n > 0) hashIdMap[n - 1][datastream.__attrsInfo.hash] = datastream._id
+        if (spec.dtUnits) {
+          let u = spec.dtUnits[datastream.__dtUnit]
+          if (u) {
+            const n = order[u]
+            if (n > 0) hashIdMap[n - 1][datastream.__attrsInfo.hash] = datastream._id
+          }
+        } else {
+          hashIdMap[1][datastream.__attrsInfo.hash] = datastream._id
         }
       })
     }
@@ -245,9 +249,12 @@ export default {
       return services.datastream.find({
         query: {
           enabled: true,
-          station_id: vm.state.station._id,
+          $or: [
+            {source: 'gov.noaa.nws.ndfd.rest.xml', tags: 'dw_Interface_Summarized'},
+            {station_id: {$eq: vm.state.station._id}}
+          ],
           $limit: 200,
-          $select: ['_id', 'attributes', 'datapoints_config', 'name', 'source_type', 'tags']
+          $select: ['_id', 'attributes', 'datapoints_config', 'name', 'source_type', 'station_id', 'tags']
         }
       })
     },
@@ -530,6 +537,46 @@ export default {
     },
     fetch: fetchDatapoints,
     afterFetch: afterFetchSeries,
+    assign: assignDatapoints
+  },
+
+  /*
+    Weather forecast data
+   */
+
+  forecastSeries: {
+    // Extra config
+    datasetKey: 'forecast',
+    datastreamFilter: noAttributesFilter,
+    datastreamSpecs: [
+      {tagKey: 'ForecastNWS_Summarized_ConditionsIcon_7Day_12Hourly'},
+      // TODO: Remove - may not implement this
+      // {tagKey: 'Summarized_ProbabilityOfPrecipitation_7Day_12Hourly', dtUnits: {'Percent': 'all'}},
+      {tagKey: 'Summarized_Temperature_7Day_12Hourly_Maximum', dtUnits: {'DegreeCelsius': 'all'}},
+      {tagKey: 'Summarized_Temperature_7Day_12Hourly_Minimum', dtUnits: {'DegreeCelsius': 'all'}},
+      {tagKey: 'Summarized_Weather_7Day_12Hourly'}
+    ],
+    datapointsQuery (vm) {
+      const startOfToday = moment(vm.stationTime).utc().startOf('d')
+      const startTime = stationMomentToUTCTime(startOfToday, vm.state.station.utc_offset)
+      const coordinates = vm.state.station.geo.coordinates
+      return {
+        lat: coordinates[1],
+        lng: coordinates[0],
+        time: {
+          $gte: moment(startTime).toISOString()
+        },
+        $limit: 20,
+        $sort: {time: 1} // ASC
+      }
+    },
+
+    // Loader config
+    clear: clearDataset,
+    guard (vm) {
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && vm.state.station.geo && vm.state.station.geo.coordinates && (vm.state.station.geo.coordinates.length > 1) && !vm.state.datasets.forecast
+    },
+    fetch: fetchDatapoints,
     assign: assignDatapoints
   }
 }

@@ -55,7 +55,7 @@ export default {
           $gte: cursor.start.toISOString(),
           $lt: cursor.pos.toISOString()
         },
-        time_local: true, // 'time' is universal station time
+        time_local: true, // 'time' is standard station time
         $limit: 2000,
         $sort: {time: 1} // ASC
       }

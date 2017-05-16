@@ -136,9 +136,12 @@
           </div>
         </div>
 
-        <div class="row row-sm">
+        <div class="row xrow-md">
           <div class="col-12">
-            <forecast-tile class="not-implemented"></forecast-tile>
+            <forecast-tile
+              :forecast="datasets.forecast"
+              :station-time="stationTime" :system-time="state.systemTime"
+              :unit-abbrs="state.unitAbbrs" :units="units"></forecast-tile>
           </div>
         </div>
       </div>

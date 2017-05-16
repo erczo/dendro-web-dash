@@ -95,6 +95,9 @@ class DownloadStore {
     let fields = []
 
     datastreams.forEach(datastream => {
+      // Exclude non-station datastreams
+      if (datastream.station_id !== station._id) return
+
       const field = this.plainState.fieldsByDatastreamId && this.plainState.fieldsByDatastreamId[datastream._id]
 
       // Add new fields, or set selected for existing ones
@@ -123,7 +126,7 @@ class DownloadStore {
           selected: true,
           timeAdjust: adjust,
           timeExtent: [
-            // Shift to universal station time
+            // Shift to standard station time
             minBeginsAt + adjust,
             maxEndsBefore + adjust
           ]
