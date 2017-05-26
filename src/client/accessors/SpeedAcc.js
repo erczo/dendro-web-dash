@@ -26,7 +26,6 @@ const RAW_SPD_TO_UNIT = {
 }
 
 class SpeedAcc extends DataAccessor {
-
   set doc (newDoc) {
     super.doc = newDoc
 

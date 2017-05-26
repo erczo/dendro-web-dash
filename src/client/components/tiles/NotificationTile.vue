@@ -37,6 +37,14 @@ import moment from 'moment'
 
 import {color} from '../../mixins/tile'
 
+// Station is offline if 2 hours without data
+// TODO: Make this configurable
+const OFFLINE_INTERVAL = 3 * 60 * 60 * 1000
+
+// Sensor failure if 24 hours without data, from most recent timestamp (_max)
+// TODO: Make this configurable
+const FAILURE_INTERVAL = 24 * 60 * 60 * 1000
+
 export default {
   props: {
     // DataLoader state
@@ -77,7 +85,7 @@ export default {
 
       // Station is offline if 2 hours without data
       // TODO: Make this configurable
-      this.isOnline = (stationTime - maxTime < 7200000)
+      this.isOnline = (stationTime - maxTime < OFFLINE_INTERVAL)
 
       /*
         NOTE: Datastream timestamps are set as follows:
@@ -103,7 +111,7 @@ export default {
         }).filter(datastream => {
           // Sensor failure if 24 hours without data, from most recent timestamp (_max)
           // TODO: Make this configurable
-          if (typeof datastream.interval === 'number') return !(datastream.interval < 86400000)
+          if (typeof datastream.interval === 'number') return !(datastream.interval < FAILURE_INTERVAL)
           return false
         })
         .sort((a, b) => {

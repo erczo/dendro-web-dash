@@ -26,7 +26,6 @@ const RAW_LEN_TO_UNIT = {
 }
 
 class LengthAcc extends DataAccessor {
-
   set doc (newDoc) {
     super.doc = newDoc
 

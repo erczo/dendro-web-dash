@@ -8,15 +8,15 @@
 import math from '../../lib/math'
 import Highcharts from 'highcharts'
 
-// Needed for polar charts
-// SEE: http://www.highcharts.com/docs/export-module/setting-up-the-server
-import HighchartsMore from 'highcharts-more'
-HighchartsMore(Highcharts)
-
 import {abbr, color, speed} from '../../mixins/tile'
 
 import AirDirAcc from '../../accessors/AirDirAcc'
 import AirSpeedAcc from '../../accessors/AirSpeedAcc'
+
+// Needed for polar charts
+// SEE: http://www.highcharts.com/docs/export-module/setting-up-the-server
+import HighchartsMore from 'highcharts-more'
+HighchartsMore(Highcharts)
 
 let avgAirDir
 let avgAirSpeed

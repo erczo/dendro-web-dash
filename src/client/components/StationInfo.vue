@@ -15,7 +15,7 @@
       </p>
 
       <a class="card-link text-nowrap" href="" @click.prevent="selectDownload"><i class="fa fa-fw fa-arrow-circle-down hidden-sm-down" aria-hidden="true"></i> Download data</a>
-      <a class="card-link text-nowrap" target="_blank" v-for="link in station.external_links" :href="link.url"><i class="fa fa-fw fa-external-link hidden-sm-down" aria-hidden="true"></i> {{ link.title }}</a>
+      <a class="card-link text-nowrap" target="_blank" v-for="link in station.external_links" :href="link.url"><i class="fa fa-fw fa-external-link-square hidden-sm-down" aria-hidden="true"></i> {{ link.title }}</a>
       <a class="card-link text-nowrap" :href="contactUrl" v-if="contactOrgs && contactPersons && contactOrgs.length + contactPersons.length > 0"><i class="fa fa-fw fa-envelope-o hidden-sm-down" aria-hidden="true"></i> Contact station team</a>
     </div>
   </div>

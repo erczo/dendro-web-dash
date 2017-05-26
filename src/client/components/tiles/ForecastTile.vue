@@ -1,7 +1,12 @@
 <template>
   <div class="component d-flex flex-column h-100 rounded tile">
     <div class="d-flex flex-column justify-content-center py-2 text-center border-bottom" style="background-color: #999;">
-      <h3 class="my-2">NOAA Forecast</h3>
+      <h3 class="my-2" style="position: relative;">
+        <a class="text-white" :href="externalLink" target="_blank">NOAA Forecast</a>
+        <a class="text-white" :href="externalLink" target="_blank">
+          <i class="fa fa-fw fa-external-link-square hidden-sm-down" aria-hidden="true" style="position: absolute; right: 1rem;"></i>
+        </a>
+      </h3>
     </div>
 
     <div class="d-flex flex-1 flex-column justify-content-center" style="overflow-x: scroll;">
@@ -69,6 +74,7 @@ let weatherSummary
 export default {
   props: {
     // Tile datasets
+    coordinates: Array,
     forecast: Object,
 
     // Misc
@@ -100,6 +106,12 @@ export default {
   },
 
   mixins: [abbr, color],
+
+  computed: {
+    externalLink () {
+      return `http://forecast.weather.gov/MapClick.php?lat=${this.coordinates[1]}&lon=${this.coordinates[0]}`
+    }
+  },
 
   watch: {
     forecast (newDataset) {

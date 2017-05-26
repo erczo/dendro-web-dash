@@ -26,7 +26,6 @@ const RAW_PRES_TO_UNIT = {
 }
 
 class PresAcc extends DataAccessor {
-
   set doc (newDoc) {
     super.doc = newDoc
 

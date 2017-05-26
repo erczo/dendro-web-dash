@@ -35,7 +35,6 @@ const length = {
         case 'met':
           return this.getAbbr('Millimeter')
       }
-      return
     }
   }
 }
@@ -49,7 +48,6 @@ const pressure = {
         case 'met':
           return this.getAbbr('Millibar')
       }
-      return
     }
   }
 }
@@ -83,7 +81,6 @@ const speed = {
         case 'met':
           return this.getAbbr('MeterPerSecond')
       }
-      return
     }
   }
 }
@@ -97,7 +94,6 @@ const temperature = {
         case 'met':
           return this.getAbbr('DegreeCelsius')
       }
-      return
     }
   }
 }

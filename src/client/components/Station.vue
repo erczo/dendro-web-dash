@@ -136,9 +136,10 @@
           </div>
         </div>
 
-        <div class="row xrow-md">
+        <div class="row" v-if="coordinates">
           <div class="col-12">
             <forecast-tile
+              :coordinates="coordinates"
               :forecast="datasets.forecast"
               :station-time="stationTime" :system-time="state.systemTime"
               :unit-abbrs="state.unitAbbrs" :units="units"></forecast-tile>

@@ -5,6 +5,7 @@ const nodeModules = path.resolve(__dirname, '../node_modules')
 const fontAwesome = path.join(nodeModules, 'font-awesome')
 const webModules = path.resolve(__dirname, '../web_modules')
 const weatherIcons = path.join(webModules, 'weather-icons')
+const bootstrap = path.join(webModules, 'dendro-bootstrap', 'dist')
 // const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const config = {
@@ -20,34 +21,35 @@ const config = {
   },
   resolve: {
     alias: {
-      bootstrap: 'dendro-bootstrap/dist',
+      bootstrap: bootstrap,
       jquery: 'jquery/src/jquery',
-      tether: 'tether/dist/js/tether'
+      tether: 'tether/dist/js/tether',
+      'weather-icons': weatherIcons
     },
-    extensions: ['', '.js', '.vue']
+    extensions: ['.js', '.vue']
   },
   module: {
     noParse: /node_modules\/localforage\/dist\/localforage.js/,
-    preLoaders: [
+    rules: [
       {
         test: /\.vue$/,
-        loader: 'eslint',
+        enforce: 'pre',
+        loader: 'eslint-loader',
         include: clientRoot
       },
       {
         test: /\.js$/,
-        loader: 'eslint',
+        enforce: 'pre',
+        loader: 'eslint-loader',
         include: clientRoot
-      }
-    ],
-    loaders: [
+      },
       {
         test: /\.vue$/,
-        loader: 'vue'
+        loader: 'vue-loader'
       },
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         include: clientRoot
         // NOTE: Vue loader doesn't respect the presets here, so we must resort to .babelrc
         // query: {
@@ -64,7 +66,7 @@ const config = {
       },
       {
         test: /\.(gif|jpe?g|png|svg)(\?.*)?$/,
-        loader: 'url',
+        loader: 'url-loader',
         include: [clientRoot, fontAwesome, weatherIcons],
         query: {
           limit: 10000,
@@ -73,7 +75,7 @@ const config = {
       },
       {
         test: /\.(eot|ttf|woff(2)?)(\?.*)?$/,
-        loader: 'url',
+        loader: 'url-loader',
         include: [clientRoot, fontAwesome, weatherIcons],
         query: {
           limit: 10000,
@@ -83,21 +85,27 @@ const config = {
     ]
   },
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        eslint: {
+          formatter: require('eslint-friendly-formatter')
+        }
+      }
+    }),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.ProvidePlugin({
-        $: 'jquery',
-        jQuery: 'jquery',
-        Tether: 'tether',
-        'window.jQuery': 'jquery',
-        'window.Tether': 'tether'
+      $: 'jquery',
+      jQuery: 'jquery',
+      Tether: 'tether',
+      'window.jQuery': 'jquery',
+      'window.Tether': 'tether'
     })
     // new ExtractTextPlugin('assets/styles/[name].[contenthash].css')
-  ],
-  eslint: {
-    formatter: require('eslint-friendly-formatter')
-  }
+  ]
+  // eslint: {
+  //   formatter: require('eslint-friendly-formatter')
+  // }
 }
 
 module.exports = config

@@ -26,6 +26,7 @@
                     :is-retina="isRetina"
                     :station="station"
                     :unit-abbrs="state.unitAbbrs" :units="units"
+                    :key="station._id"
                     v-for="station in stations"></station-list-item>
                 </ul>
               </div>

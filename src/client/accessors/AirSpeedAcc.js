@@ -24,7 +24,6 @@ function meterPerSecToIndex (mps) {
 }
 
 class AirSpeedAcc extends SpeedAcc {
-
   get spdIndex () {
     const u = this.spdUnit
     if (u) return meterPerSecToIndex(u.toNumber('m/s'))

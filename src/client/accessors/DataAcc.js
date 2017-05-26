@@ -9,7 +9,6 @@
 import {DataAccessor} from '../lib/dataaccessor'
 
 class DataAcc extends DataAccessor {
-
   get rawData () {
     if (this.point) return this.point.d
   }

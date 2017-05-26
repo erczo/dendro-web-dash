@@ -27,7 +27,7 @@
               <div class="card-block">
                 <h5 class="card-title">Download Complete</h5>
                 <p class="card-text">Your CSV file is ready.</p>
-                <a class="btn btn-success" target="_blank" download="dendro.csv" :href="this.state.blobURL">Save File</a>
+                <a class="btn btn-success" target="_blank" download="dendra_download.csv" :href="this.state.blobURL">Save File</a>
               </div>
             </div>
           </div>

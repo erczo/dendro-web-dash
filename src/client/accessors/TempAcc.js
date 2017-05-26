@@ -26,7 +26,6 @@ const RAW_DEG_TO_UNIT = {
 }
 
 class TempAcc extends DataAccessor {
-
   set doc (newDoc) {
     super.doc = newDoc
 

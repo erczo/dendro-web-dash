@@ -19,7 +19,6 @@ function degToIndex (deg) {
 }
 
 class AirDirAcc extends DataAccessor {
-
   roundDeg (n) { return math.round(n, 1) }
 
   get dirIndex () {

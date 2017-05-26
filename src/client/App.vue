@@ -5,7 +5,7 @@
 
         <a class="navbar-brand hidden-md-down" href="#">
           <!-- <img src="./assets/images/dendro_logo.svg" width="30" height="30" class="d-inline-block align-top"></img> -->
-          Dendro
+          Dendra
         </a>
 
         <!-- Collapsible Nav Items -->
