@@ -1,0 +1,10 @@
+{
+  "client": {
+    "io": {
+      "options": {
+        "path": "WEB_DASH_API_PATH"
+      },
+      "uri": "WEB_DASH_API_URI"
+    }
+  }
+}

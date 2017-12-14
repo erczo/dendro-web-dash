@@ -3,12 +3,6 @@
     "googleMapsAPI": {
       "key": "AIzaSyC8zfohXmxg5VzAg9G2rCypfKmU-KpOv6k"
     },
-    "io": {
-      "options": {
-        "path": "/api/v1/socket.io"
-      },
-      "uri": "http://128.32.109.75"
-    },
     "loggerEnabled": false
   },
   "port": 8080,
