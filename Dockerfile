@@ -16,7 +16,7 @@ ENV NODE_ENV production
 # Install dependencies
 RUN npm install -g webmodules
 COPY package.json /home/node/app
-COPY npm-shrinkwrap.json /home/node/app
+COPY package-lock.json /home/node/app
 RUN npm install
 RUN wpm install
 
