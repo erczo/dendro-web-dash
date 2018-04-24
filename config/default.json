@@ -10,6 +10,7 @@
       "uri": "http://localhost:3030"
     },
     "loggerEnabled": true,
+    "orgSlug": "ucnrs",
     "socketio": {
       "options": {
         "timeout": 30000

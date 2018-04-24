@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "c947f9eaaf138614e3b3"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a962c3d3d2aa0ef5153a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -38727,6 +38727,7 @@ function stationsQuery(vm) {
   var searchText = vm.searchText.trim();
   var query = {
     enabled: true,
+    organization_id: vm.state.organization._id,
     station_type: 'weather',
     slug: { $exists: 1 },
     $limit: 200,
@@ -38758,6 +38759,29 @@ function afterFetchStations(vm, res) {
 
 exports.default = {
 
+  organization: {
+    clear: function clear(vm) {
+      vm.store.clearOrganization();
+    },
+    guard: function guard(vm) {
+      return !vm.state.organization && !vm.organizationError;
+    },
+    fetch: function fetch(vm) {
+      return _services2.default.organization.find({
+        query: {
+          slug: window.CLIENT_CONFIG.orgSlug,
+          $limit: 1
+        }
+      });
+    },
+    afterFetch: function afterFetch(vm, res) {
+      if (res && res.data && res.data.length > 0) return res.data[0];
+    },
+    assign: function assign(vm, organization) {
+      vm.store.setOrganization(organization);
+    }
+  },
+
   moreStations: {
     guard: function guard(vm) {
       return vm.state.stations && vm.skipStationCount >= vm.stations.length;
@@ -38783,7 +38807,7 @@ exports.default = {
       vm.store.clearStations();
     },
     guard: function guard(vm) {
-      return !vm.state.stations && !vm.stationsError;
+      return vm.state.organization && !vm.state.stations && !vm.stationsError;
     },
     fetch: function fetch(vm) {
       return _services2.default.station.find({
@@ -39769,6 +39793,7 @@ var HomeStore = function () {
     this.plainState = {};
 
     this.reactiveState = {
+      organization: null,
       stations: null,
       unitAbbrs: null
     };
@@ -39782,6 +39807,11 @@ var HomeStore = function () {
       this.reactiveState.stations.push.apply(this.reactiveState.stations, newValue);
     }
   }, {
+    key: "clearOrganization",
+    value: function clearOrganization() {
+      this.setOrganization(null);
+    }
+  }, {
     key: "clearStations",
     value: function clearStations() {
       this.setStations(null);
@@ -39790,6 +39820,11 @@ var HomeStore = function () {
     key: "clearUnitVocabulary",
     value: function clearUnitVocabulary() {
       this.setUnitVocabulary(null);
+    }
+  }, {
+    key: "setOrganization",
+    value: function setOrganization(newValue) {
+      this.reactiveState.organization = newValue;
     }
   }, {
     key: "setStations",

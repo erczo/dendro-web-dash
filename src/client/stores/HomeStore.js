@@ -14,6 +14,7 @@ class HomeStore {
 
     // State that is observed and triggers reactivity in Vue
     this.reactiveState = {
+      organization: null,
       stations: null,
       unitAbbrs: null
     }
@@ -26,9 +27,15 @@ class HomeStore {
     this.reactiveState.stations.push.apply(this.reactiveState.stations, newValue)
   }
 
+  clearOrganization () { this.setOrganization(null) }
+
   clearStations () { this.setStations(null) }
 
   clearUnitVocabulary () { this.setUnitVocabulary(null) }
+
+  setOrganization (newValue) {
+    this.reactiveState.organization = newValue
+  }
 
   setStations (newValue) {
     this.reactiveState.stations = newValue

@@ -1,4 +1,4 @@
-FROM node:6.9
+FROM node:6.11
 
 MAINTAINER J. Scott Smith <scott@newleafsolutionsinc.com>
 
@@ -8,13 +8,16 @@ MAINTAINER J. Scott Smith <scott@newleafsolutionsinc.com>
 # 	https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md
 #
 
+RUN groupmod -g 2000 node \
+  && usermod -u 2000 -g 2000 node
+
 WORKDIR /home/node/app
 
 # Best practice: run with NODE_ENV set to production
 ENV NODE_ENV production
 
 # Install dependencies
-RUN npm install -g webmodules
+RUN npm install -g webmodules@0.1.47
 COPY package.json /home/node/app
 COPY package-lock.json /home/node/app
 RUN npm install

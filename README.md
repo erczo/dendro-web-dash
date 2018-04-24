@@ -5,7 +5,7 @@ TODO: Briefly describe this repo and Project Dendro
 
 ## Instructions
 
-1. Be sure you have Node version 6.5.x. If you’re using nvm, you may need to `nvm use 6.5.0`.
+1. Be sure you have Node version 6.11.x. If you’re using nvm, you may need to `nvm use 6.11`.
 
 2. Clone this repo.
 

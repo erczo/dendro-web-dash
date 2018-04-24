@@ -15,6 +15,7 @@ function stationsQuery (vm) {
   const searchText = vm.searchText.trim()
   const query = {
     enabled: true,
+    organization_id: vm.state.organization._id,
     station_type: 'weather',
     slug: {$exists: 1},
     $limit: 200,
@@ -51,6 +52,30 @@ export default {
     Top-level datasets: stations, etc.
    */
 
+  organization: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearOrganization()
+    },
+    guard (vm) {
+      return !vm.state.organization && !vm.organizationError
+    },
+    fetch (vm) {
+      return services.organization.find({
+        query: {
+          slug: window.CLIENT_CONFIG.orgSlug,
+          $limit: 1
+        }
+      })
+    },
+    afterFetch (vm, res) {
+      if (res && res.data && res.data.length > 0) return res.data[0]
+    },
+    assign (vm, organization) {
+      vm.store.setOrganization(organization)
+    }
+  },
+
   moreStations: {
     // Loader config
     guard (vm) {
@@ -77,7 +102,7 @@ export default {
       vm.store.clearStations()
     },
     guard (vm) {
-      return !vm.state.stations && !vm.stationsError
+      return vm.state.organization && !vm.state.stations && !vm.stationsError
     },
     fetch (vm) {
       return services.station.find({
