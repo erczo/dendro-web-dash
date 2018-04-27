@@ -6,6 +6,7 @@
       },
       "uri": "WEB_DASH_API_URI"
     },
+    "noaaNWSIcons": "NOAA_NWS_ICONS_URL",
     "orgSlug": "WEB_DASH_ORG_SLUG"
   }
 }

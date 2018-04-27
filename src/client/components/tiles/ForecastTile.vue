@@ -64,6 +64,8 @@ import TempAcc from '../../accessors/TempAcc'
 //   round: 1
 // }
 
+const config = window.CLIENT_CONFIG
+
 let condIcon
 let maxTemp
 let minTemp
@@ -136,7 +138,15 @@ export default {
           this.point = point
           const bin = getBin(this.time)
           const d = this.rawData
-          if (d && d.url) bin.condIcon = d.url
+
+          if (d && d.url) {
+            bin.condIcon = d.url
+
+            if (config.noaaNWSIcons) {
+              const parts = d.url.split('/')
+              if (parts.length > 0) bin.condIcon = `${config.noaaNWSIcons}/${parts[parts.length - 1]}`
+            }
+          }
         }, condIcon)
 
         maxTemp.init(newDataset).data.forEach(function (point) {

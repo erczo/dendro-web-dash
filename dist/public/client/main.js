@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "e7cf722a632a276c0708"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "0df579461dcf9a690d8f"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -42490,6 +42490,8 @@ var _TempAcc2 = _interopRequireDefault(_TempAcc);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var config = window.CLIENT_CONFIG;
+
 var condIcon = void 0;
 var maxTemp = void 0;
 var minTemp = void 0;
@@ -42553,7 +42555,15 @@ exports.default = {
           this.point = point;
           var bin = getBin(this.time);
           var d = this.rawData;
-          if (d && d.url) bin.condIcon = d.url;
+
+          if (d && d.url) {
+            bin.condIcon = d.url;
+
+            if (config.noaaNWSIcons) {
+              var parts = d.url.split('/');
+              if (parts.length > 0) bin.condIcon = config.noaaNWSIcons + '/' + parts[parts.length - 1];
+            }
+          }
         }, condIcon);
 
         maxTemp.init(newDataset).data.forEach(function (point) {
