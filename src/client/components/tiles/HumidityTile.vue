@@ -58,9 +58,9 @@ export default {
   },
 
   created () {
-    avgAirMoist = new ValueAcc(this, 'Average_Air_Moisture', VALUE_ACC_OPTIONS)
-    maxSeasAirMoist = new ValueAcc(this, 'Maximum_Seasonal_Air_Moisture', VALUE_ACC_OPTIONS)
-    minSeasAirMoist = new ValueAcc(this, 'Minimum_Seasonal_Air_Moisture', VALUE_ACC_OPTIONS)
+    avgAirMoist = new ValueAcc(this, 'Average_Air_RelativeHumidity', VALUE_ACC_OPTIONS)
+    maxSeasAirMoist = new ValueAcc(this, 'Maximum_Seasonal_Air_RelativeHumidity', VALUE_ACC_OPTIONS)
+    minSeasAirMoist = new ValueAcc(this, 'Minimum_Seasonal_Air_RelativeHumidity', VALUE_ACC_OPTIONS)
   },
 
   beforeDestroy () {

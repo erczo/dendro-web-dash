@@ -303,11 +303,10 @@ export default {
     datastreamSpecs: [
       {tagKey: 'Average_Air_BarometricPressure', dtUnits: {'PoundForcePerSquareInch': 'imp', 'Millibar': 'met'}},
       {tagKey: 'Average_Air_Direction', dtUnits: {'DegreeAngle': 'all'}},
-      {tagKey: 'Average_Air_Moisture', dtUnits: {'Percent': 'all'}},
+      {tagKey: 'Average_Air_RelativeHumidity', dtUnits: {'Percent': 'all'}},
       {tagKey: 'Average_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
       {tagKey: 'Average_Air_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}},
-      // TODO: Should be Average_Solar_PhotosyntheticallyActiveRadiation, MicromolePerSquareMeter
-      {tagKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: {'Micromole': 'all'}},
+      {tagKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: {'MicromolePerSquareMeter': 'all'}},
       {tagKey: 'Average_Solar_Radiation', dtUnits: {'WattPerSquareMeter': 'all'}},
       // TODO: Should be Cumulative_Day_Precipitation_Height, InchPerDay/MillimeterPerDay
       {tagKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
@@ -345,10 +344,10 @@ export default {
     datastreamFilter: noAttributesFilter,
     datastreamSpecs: [
       {tagKey: 'Average_Seasonal_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
-      {tagKey: 'Maximum_Seasonal_Air_Moisture', dtUnits: {'Percent': 'all'}},
+      {tagKey: 'Maximum_Seasonal_Air_RelativeHumidity', dtUnits: {'Percent': 'all'}},
       {tagKey: 'Maximum_Seasonal_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
       {tagKey: 'Maximum_Seasonal_Air_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}},
-      {tagKey: 'Minimum_Seasonal_Air_Moisture', dtUnits: {'Percent': 'all'}},
+      {tagKey: 'Minimum_Seasonal_Air_RelativeHumidity', dtUnits: {'Percent': 'all'}},
       {tagKey: 'Minimum_Seasonal_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
       {tagKey: 'Minimum_Seasonal_Air_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}}
     ],
@@ -494,8 +493,7 @@ export default {
     datasetKey: 'solarRad',
     datastreamFilter: noAttributesFilter,
     datastreamSpecs: [
-      // TODO: Should be Average_Solar_PhotosyntheticallyActiveRadiation, MicromolePerSquareMeter
-      {tagKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: {'Micromole': 'all'}},
+      {tagKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: {'MicromolePerSquareMeter': 'all'}},
       {tagKey: 'Average_Solar_Radiation', dtUnits: {'WattPerSquareMeter': 'all'}}
     ],
     datapointsQuery: fwdCursorDatapointsQuery,

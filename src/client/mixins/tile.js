@@ -63,8 +63,7 @@ const seasonal = {
 const solar = {
   computed: {
     parAbbr: function () {
-      // TODO: Should be MicromolePerSquareMeter
-      return this.getAbbr('Micromole')
+      return this.getAbbr('MicromolePerSquareMeter')
     },
     radAbbr: function () {
       return this.getAbbr('WattPerSquareMeter')

@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a962c3d3d2aa0ef5153a"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e7cf722a632a276c0708"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -6305,7 +6305,7 @@ var seasonal = {
 var solar = {
   computed: {
     parAbbr: function parAbbr() {
-      return this.getAbbr('Micromole');
+      return this.getAbbr('MicromolePerSquareMeter');
     },
     radAbbr: function radAbbr() {
       return this.getAbbr('WattPerSquareMeter');
@@ -39209,7 +39209,7 @@ exports.default = {
   currentStats: {
     datasetKey: 'current',
     datastreamFilter: noAttributesFilter,
-    datastreamSpecs: [{ tagKey: 'Average_Air_BarometricPressure', dtUnits: { 'PoundForcePerSquareInch': 'imp', 'Millibar': 'met' } }, { tagKey: 'Average_Air_Direction', dtUnits: { 'DegreeAngle': 'all' } }, { tagKey: 'Average_Air_Moisture', dtUnits: { 'Percent': 'all' } }, { tagKey: 'Average_Air_Speed', dtUnits: { 'MilePerHour': 'imp', 'MeterPerSecond': 'met' } }, { tagKey: 'Average_Air_Temperature', dtUnits: { 'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met' } }, { tagKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: { 'Micromole': 'all' } }, { tagKey: 'Average_Solar_Radiation', dtUnits: { 'WattPerSquareMeter': 'all' } }, { tagKey: 'Cumulative_Day_Precipitation_Height', dtUnits: { 'Inch': 'imp', 'Millimeter': 'met' } }],
+    datastreamSpecs: [{ tagKey: 'Average_Air_BarometricPressure', dtUnits: { 'PoundForcePerSquareInch': 'imp', 'Millibar': 'met' } }, { tagKey: 'Average_Air_Direction', dtUnits: { 'DegreeAngle': 'all' } }, { tagKey: 'Average_Air_RelativeHumidity', dtUnits: { 'Percent': 'all' } }, { tagKey: 'Average_Air_Speed', dtUnits: { 'MilePerHour': 'imp', 'MeterPerSecond': 'met' } }, { tagKey: 'Average_Air_Temperature', dtUnits: { 'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met' } }, { tagKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: { 'MicromolePerSquareMeter': 'all' } }, { tagKey: 'Average_Solar_Radiation', dtUnits: { 'WattPerSquareMeter': 'all' } }, { tagKey: 'Cumulative_Day_Precipitation_Height', dtUnits: { 'Inch': 'imp', 'Millimeter': 'met' } }],
     datapointsQuery: function datapointsQuery(vm) {
       var twentyFourHoursAgo = (0, _moment2.default)(vm.stationTime).utc().subtract(24, 'h');
       var time = stationMomentToUTCTime(twentyFourHoursAgo, vm.state.station.utc_offset);
@@ -39234,7 +39234,7 @@ exports.default = {
   seasonalStats: {
     datasetKey: 'seasonal',
     datastreamFilter: noAttributesFilter,
-    datastreamSpecs: [{ tagKey: 'Average_Seasonal_Air_Speed', dtUnits: { 'MilePerHour': 'imp', 'MeterPerSecond': 'met' } }, { tagKey: 'Maximum_Seasonal_Air_Moisture', dtUnits: { 'Percent': 'all' } }, { tagKey: 'Maximum_Seasonal_Air_Speed', dtUnits: { 'MilePerHour': 'imp', 'MeterPerSecond': 'met' } }, { tagKey: 'Maximum_Seasonal_Air_Temperature', dtUnits: { 'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met' } }, { tagKey: 'Minimum_Seasonal_Air_Moisture', dtUnits: { 'Percent': 'all' } }, { tagKey: 'Minimum_Seasonal_Air_Speed', dtUnits: { 'MilePerHour': 'imp', 'MeterPerSecond': 'met' } }, { tagKey: 'Minimum_Seasonal_Air_Temperature', dtUnits: { 'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met' } }],
+    datastreamSpecs: [{ tagKey: 'Average_Seasonal_Air_Speed', dtUnits: { 'MilePerHour': 'imp', 'MeterPerSecond': 'met' } }, { tagKey: 'Maximum_Seasonal_Air_RelativeHumidity', dtUnits: { 'Percent': 'all' } }, { tagKey: 'Maximum_Seasonal_Air_Speed', dtUnits: { 'MilePerHour': 'imp', 'MeterPerSecond': 'met' } }, { tagKey: 'Maximum_Seasonal_Air_Temperature', dtUnits: { 'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met' } }, { tagKey: 'Minimum_Seasonal_Air_RelativeHumidity', dtUnits: { 'Percent': 'all' } }, { tagKey: 'Minimum_Seasonal_Air_Speed', dtUnits: { 'MilePerHour': 'imp', 'MeterPerSecond': 'met' } }, { tagKey: 'Minimum_Seasonal_Air_Temperature', dtUnits: { 'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met' } }],
     datapointsQuery: function datapointsQuery(vm) {
       var startOfMonthPriorYear = (0, _moment2.default)(vm.stationTime).utc().startOf('M').subtract(1, 'y');
       var time = stationMomentToUTCTime(startOfMonthPriorYear, vm.state.station.utc_offset);
@@ -39346,7 +39346,7 @@ exports.default = {
     cursorName: 'solarRadCursor',
     datasetKey: 'solarRad',
     datastreamFilter: noAttributesFilter,
-    datastreamSpecs: [{ tagKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: { 'Micromole': 'all' } }, { tagKey: 'Average_Solar_Radiation', dtUnits: { 'WattPerSquareMeter': 'all' } }],
+    datastreamSpecs: [{ tagKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: { 'MicromolePerSquareMeter': 'all' } }, { tagKey: 'Average_Solar_Radiation', dtUnits: { 'WattPerSquareMeter': 'all' } }],
     datapointsQuery: fwdCursorDatapointsQuery,
 
     clear: clearDataset,
@@ -42637,9 +42637,9 @@ exports.default = {
     };
   },
   created: function created() {
-    avgAirMoist = new _ValueAcc2.default(this, 'Average_Air_Moisture', VALUE_ACC_OPTIONS);
-    maxSeasAirMoist = new _ValueAcc2.default(this, 'Maximum_Seasonal_Air_Moisture', VALUE_ACC_OPTIONS);
-    minSeasAirMoist = new _ValueAcc2.default(this, 'Minimum_Seasonal_Air_Moisture', VALUE_ACC_OPTIONS);
+    avgAirMoist = new _ValueAcc2.default(this, 'Average_Air_RelativeHumidity', VALUE_ACC_OPTIONS);
+    maxSeasAirMoist = new _ValueAcc2.default(this, 'Maximum_Seasonal_Air_RelativeHumidity', VALUE_ACC_OPTIONS);
+    minSeasAirMoist = new _ValueAcc2.default(this, 'Minimum_Seasonal_Air_RelativeHumidity', VALUE_ACC_OPTIONS);
   },
   beforeDestroy: function beforeDestroy() {
     avgAirMoist = maxSeasAirMoist = minSeasAirMoist = null;
