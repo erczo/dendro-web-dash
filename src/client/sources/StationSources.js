@@ -507,36 +507,37 @@ export default {
     assign: assignDatapoints
   },
 
-  wyPrecipSeries: {
-    // Extra config
-    cursorName: 'wyPrecipCursor',
-    datasetKey: 'wyPrecip',
-    datastreamFilter: noAttributesFilter,
-    datastreamSpecs: [
-      // TODO: Should be Cumulative_Day_Precipitation_Height, InchPerDay/MillimeterPerDay
-      {tagKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
-    ],
-    datapointsQuery: fwdCursorDatapointsQuery,
+  // TODO: Re-enable after data is ready
+  // wyPrecipSeries: {
+  //   // Extra config
+  //   cursorName: 'wyPrecipCursor',
+  //   datasetKey: 'wyPrecip',
+  //   datastreamFilter: noAttributesFilter,
+  //   datastreamSpecs: [
+  //     // TODO: Should be Cumulative_Day_Precipitation_Height, InchPerDay/MillimeterPerDay
+  //     {tagKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
+  //   ],
+  //   datapointsQuery: fwdCursorDatapointsQuery,
 
-    // Loader config
-    clear: clearDataset,
-    guard: fwdCursorDatapointsGuard,
-    beforeFetch (vm) {
-      if (vm[this.cursorName]) return
+  //   // Loader config
+  //   clear: clearDataset,
+  //   guard: fwdCursorDatapointsGuard,
+  //   beforeFetch (vm) {
+  //     if (vm[this.cursorName]) return
 
-      /*
-        NOTE: Two years of daily precip. data will be fetched all at once.
-       */
-      const config = vm.wySeriesConfig
-      const newCursor = vm[this.cursorName] = {}
-      newCursor.start = config.start
-      newCursor.pos = config.end
-      newCursor.end = config.end
-    },
-    fetch: fetchDatapoints,
-    afterFetch: afterFetchSeries,
-    assign: assignDatapoints
-  },
+  //     /*
+  //       NOTE: Two years of daily precip. data will be fetched all at once.
+  //      */
+  //     const config = vm.wySeriesConfig
+  //     const newCursor = vm[this.cursorName] = {}
+  //     newCursor.start = config.start
+  //     newCursor.pos = config.end
+  //     newCursor.end = config.end
+  //   },
+  //   fetch: fetchDatapoints,
+  //   afterFetch: afterFetchSeries,
+  //   assign: assignDatapoints
+  // },
 
   /*
     Weather forecast data

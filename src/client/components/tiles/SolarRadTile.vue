@@ -1,6 +1,6 @@
 <template>
   <div class="component d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.SOLAR}">
-    <div class="d-flex flex-1 flex-row justify-content-center text-center border-bottom">
+    <div class="d-flex flex-1 flex-row justify-content-center text-center">
       <div class="d-flex flex-1 flex-column justify-content-center text-center">
         <h1 class="display-3">{{ curPAR | placeholder }}</h1>
         <span class="text-muted">PAR ({{ parAbbr }})</span>
@@ -9,13 +9,6 @@
         <h1 class="display-3">{{ curRad | placeholder }}</h1>
         <span class="text-muted">Total Solar ({{ radAbbr }})</span>
       </div>
-    </div>
-
-    <div class="d-flex flex-1 flex-column justify-content-center text-center">
-      <h2>-
-        <!-- TODO: Add today's forecast from NOAA -->
-        <!-- <i class="wi wi-day-cloudy"></i> Partially Cloudy -->
-      </h2>
     </div>
   </div>
 </template>

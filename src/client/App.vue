@@ -3,10 +3,10 @@
     <header class="fixed-top">
       <nav class="navbar navbar-toggleable-md navbar-inverse" style="position: relative;">
 
-        <a class="navbar-brand hidden-md-down" href="#">
+        <router-link class="navbar-brand hidden-md-down" :to="{name: 'home'}">
           <!-- <img src="./assets/images/dendro_logo.svg" width="30" height="30" class="d-inline-block align-top"></img> -->
-          Dendra
-        </a>
+          {{ orgTitle }}
+        </router-link>
 
         <!-- Collapsible Nav Items -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,6 +100,8 @@ import DownloadStore from './stores/DownloadStore'
 
 const HIDES_FOOTER_REGEX = /(home)|(startDownload)/
 const HIDES_UNITS_REGEX = /(startDownload)/
+
+const config = window.CLIENT_CONFIG
 
 localforage.config({
   name: 'dendroWebDash'
@@ -202,6 +204,9 @@ export default {
     },
     showsUnits () {
       return !HIDES_UNITS_REGEX.test(this.$route.name)
+    },
+    orgTitle () {
+      return config.orgSlug ? config.orgSlug.toUpperCase() : 'Dendra'
     }
   },
 

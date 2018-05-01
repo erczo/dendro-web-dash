@@ -11,11 +11,11 @@
     <div class="d-flex flex-1 flex-row">
       <div class="d-flex flex-1 flex-column justify-content-center text-center bg-darken">
         <h2>{{ seasMin | placeholder }}°</h2>
-        <span class="text-muted">Seasonal Low</span>
+        <span class="text-muted">Monthly Low</span>
       </div>
       <div class="d-flex flex-1 flex-column justify-content-center text-center bg-lighten">
         <h2>{{ seasMax | placeholder }}°</h2>
-        <span class="text-muted">Seasonal High</span>
+        <span class="text-muted">Monthly High</span>
       </div>
     </div>
 

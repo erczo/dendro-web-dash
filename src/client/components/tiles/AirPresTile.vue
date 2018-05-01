@@ -47,8 +47,7 @@ export default {
 
   data () {
     return {
-      curAvg: null,
-      elevOffset: null
+      curAvg: null
     }
   },
 
@@ -74,6 +73,15 @@ export default {
   },
 
   mixins: [abbr, color, pressure],
+
+  computed: {
+    elevOffset () {
+      const elevPres = avgAirPres.unitToPresNum(math.unit(baroPressure(this.coordinates[2]), 'Pa'))
+      const sealPres = avgAirPres.unitToPresNum(math.unit(baroPressure(0), 'Pa'))
+
+      return avgAirPres.roundPres(sealPres - elevPres)
+    }
+  },
 
   methods: {
     airPresOptions () {
@@ -134,17 +142,6 @@ export default {
   },
 
   watch: {
-    current (newDataset) {
-      this.curAvg = avgAirPres.init(newDataset).presRound
-
-      const avgPres = avgAirPres.presNum
-      if (this.coordinates && typeof avgPres === 'number') {
-        const elevPres = avgAirPres.unitToPresNum(math.unit(baroPressure(this.coordinates[2]), 'Pa'))
-        this.elevOffset = avgAirPres.roundPres(elevPres - avgPres)
-      } else {
-        this.elevOffset = null
-      }
-    },
     airPres (newDataset) {
       if (!newDataset) {
         this.removeAllSeries(this.airPresChart)

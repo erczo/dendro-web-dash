@@ -127,7 +127,8 @@
               @series-added="seriesAdded"></air-pres-tile>
           </div>
 
-          <div class="col-12 col-lg-6 pb-3">
+          <!-- TODO: Re-enable after data is ready -->
+          <div class="col-12 col-lg-6 pb-3" style="filter: brightness(60%);">
             <water-year-tile
               :precip="datasets.wyPrecip" :precip-cursor="wyPrecipCursor"
               :station-time="stationTime" :system-time="state.systemTime"
