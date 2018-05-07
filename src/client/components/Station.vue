@@ -128,7 +128,7 @@
           </div>
 
           <!-- TODO: Re-enable after data is ready -->
-          <div class="col-12 col-lg-6 pb-3" style="filter: brightness(60%);">
+          <div class="col-12 col-lg-6 pb-3">
             <water-year-tile
               :precip="datasets.wyPrecip" :precip-cursor="wyPrecipCursor"
               :station-time="stationTime" :system-time="state.systemTime"

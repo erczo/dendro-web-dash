@@ -1,5 +1,6 @@
 {
   "client": {
+    "downloadEnabled": true,
     "googleMapsAPI": {
       "key": "AIzaSyC8zfohXmxg5VzAg9G2rCypfKmU-KpOv6k"
     },
@@ -11,6 +12,7 @@
     },
     "loggerEnabled": true,
     "noaaNWSIcons": "http://local.dendra.science:8080/_static/images/noaa-nws-icons",
+    "orgNavbarHref": "http://dendra.science",
     "orgSlug": "ucnrs",
     "socketio": {
       "options": {

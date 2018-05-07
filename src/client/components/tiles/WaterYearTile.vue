@@ -1,5 +1,9 @@
 <template>
-  <div class="component d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.PRECIP}">
+  <div class="component d-flex flex-column justify-content-center h-100 rounded tile" style="position: relative;" :style="{backgroundColor}">
+    <div class="align-self-center" style="position: absolute;">
+      <span class="badge badge-pill badge-default px-4 py-4" style="opacity: 0.9;">Coming Soon</span>
+    </div>
+
     <!-- TODO: Re-enable after data is ready: x-border-bottom -->
     <div class="d-flex flex-1 flex-row justify-content-center text-center x-border-bottom">
       <div class="d-flex flex-1 flex-column justify-content-center text-center">
@@ -18,6 +22,7 @@
 </template>
 
 <script>
+import chroma from 'chroma-js'
 // TODO: Re-enable after data is ready
 // import Highcharts from 'highcharts'
 
@@ -72,7 +77,13 @@ export default {
   //   cuDayPrecipHeight = null
   // },
 
-  mixins: [abbr, color, length]
+  mixins: [abbr, color, length],
+
+  computed: {
+    backgroundColor () {
+      return chroma(this.colors.TILE.PRECIP).alpha(0.5).css()
+    }
+  }
 
   // TODO: Re-enable after data is ready
   // methods: {

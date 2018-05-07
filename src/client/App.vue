@@ -3,10 +3,9 @@
     <header class="fixed-top">
       <nav class="navbar navbar-toggleable-md navbar-inverse" style="position: relative;">
 
-        <router-link class="navbar-brand hidden-md-down" :to="{name: 'home'}">
-          <!-- <img src="./assets/images/dendro_logo.svg" width="30" height="30" class="d-inline-block align-top"></img> -->
+        <a class="navbar-brand hidden-md-down" :href="orgNavbarHref">
           {{ orgTitle }}
-        </router-link>
+        </a>
 
         <!-- Collapsible Nav Items -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
@@ -199,14 +198,17 @@ export default {
   // },
 
   computed: {
+    orgNavbarHref () {
+      return config.orgNavbarHref || '/'
+    },
+    orgTitle () {
+      return config.orgSlug ? config.orgSlug.toUpperCase() : 'Dendra'
+    },
     showsFooter () {
       return !HIDES_FOOTER_REGEX.test(this.$route.name)
     },
     showsUnits () {
       return !HIDES_UNITS_REGEX.test(this.$route.name)
-    },
-    orgTitle () {
-      return config.orgSlug ? config.orgSlug.toUpperCase() : 'Dendra'
     }
   },
 

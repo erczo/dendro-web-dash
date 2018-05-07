@@ -1,5 +1,6 @@
 {
   "client": {
+    "downloadEnabled": "WEB_DASH_DOWNLOAD_ENABLED",
     "io": {
       "options": {
         "path": "WEB_DASH_API_PATH"

@@ -142,6 +142,9 @@ export default {
   },
 
   watch: {
+    current (newDataset) {
+      this.curAvg = avgAirPres.init(newDataset).presRound
+    },
     airPres (newDataset) {
       if (!newDataset) {
         this.removeAllSeries(this.airPresChart)

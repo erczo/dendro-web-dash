@@ -14,7 +14,7 @@
         <span v-if="station.geo.coordinates.length > 2"><br />Elevation: {{ elevation }}</span>
       </p>
 
-      <a class="card-link text-nowrap" href="" @click.prevent="selectDownload"><i class="fa fa-fw fa-arrow-circle-down hidden-sm-down" aria-hidden="true"></i> Download data</a>
+      <a class="card-link text-nowrap" href="" @click.prevent="selectDownload" v-if="downloadEnabled"><i class="fa fa-fw fa-arrow-circle-down hidden-sm-down" aria-hidden="true"></i> Download data</a>
       <a class="card-link text-nowrap" target="_blank" v-for="link in station.external_links" :href="link.url"><i class="fa fa-fw fa-external-link-square hidden-sm-down" aria-hidden="true"></i> {{ link.title }}</a>
       <a class="card-link text-nowrap" :href="contactUrl" v-if="contactOrgs && contactPersons && contactOrgs.length + contactPersons.length > 0"><i class="fa fa-fw fa-envelope-o hidden-sm-down" aria-hidden="true"></i> Contact station team</a>
     </div>
@@ -26,6 +26,8 @@ import math from '../lib/math'
 import moment from 'moment'
 
 import {abbr} from '../mixins/tile'
+
+const config = window.CLIENT_CONFIG
 
 export default {
   props: {
@@ -60,6 +62,9 @@ export default {
       })
 
       return `mailto:${emails.sort().join(',')}?subject=${subject}`
+    },
+    downloadEnabled () {
+      return [true, 1, 'true', 'yes'].includes(config.downloadEnabled)
     },
     elevation () {
       const station = this.station

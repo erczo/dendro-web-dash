@@ -1,5 +1,9 @@
 <template>
-  <div class="component d-flex flex-column h-100 rounded tile" :style="{backgroundColor: colors.TILE.PRECIP}">
+  <div class="component d-flex flex-column justify-content-center h-100 rounded tile" style="position: relative;" :style="{backgroundColor}">
+    <div class="align-self-center" style="position: absolute;" v-if="isComingSoon">
+      <span class="badge badge-pill badge-default px-4 py-4" style="opacity: 0.9;">Coming Soon</span>
+    </div>
+
     <div class="d-flex flex-1 flex-column justify-content-center text-center">
       <h1 class="display-3">{{ curCu | placeholder }} <i class="wi wi-raindrops"></i></h1>
       <span class="text-muted">Current Precipitation ({{ lenAbbr }})</span>
@@ -13,6 +17,8 @@
 </template>
 
 <script>
+import chroma from 'chroma-js'
+
 import {abbr, color, length} from '../../mixins/tile'
 
 import LengthAcc from '../../accessors/LengthAcc'
@@ -48,6 +54,15 @@ export default {
   },
 
   mixins: [abbr, color, length],
+
+  computed: {
+    backgroundColor () {
+      return this.isComingSoon ? chroma(this.colors.TILE.PRECIP).alpha(0.5).css() : this.colors.TILE.PRECIP
+    },
+    isComingSoon () {
+      return (typeof this.curCu === 'undefined') && (typeof this.ydaCu === 'undefined')
+    }
+  },
 
   watch: {
     current (newDataset) {
