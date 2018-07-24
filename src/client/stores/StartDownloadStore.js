@@ -89,6 +89,7 @@ class StartDownloadStore {
           const time = (new Date(point.t)).getTime() + (typeof point.o === 'number' ? point.o * 1000 : 0)
           if (!obj[time]) obj[time] = new Array(numFields).fill(null)
           obj[time][index] = point.v
+          console.log('>>>', point.v)
         })
       }
     })
@@ -100,12 +101,12 @@ class StartDownloadStore {
     if (fields) {
       [ids, idsToFieldIndex, names] = [[], {}, []]
 
-      fields.forEach((field, i) => {
-        if (i >= startIndex && field.selected && field.datastreamId) {
-          idsToFieldIndex[field.datastreamId] = i - startIndex
-          ids.push(field.datastreamId)
-          names.push(field.name)
-        }
+      fields.filter((field, i) => {
+        return i >= startIndex && field.selected && field.datastreamId
+      }).forEach((field, i) => {
+        idsToFieldIndex[field.datastreamId] = i
+        ids.push(field.datastreamId)
+        names.push(field.name)
       })
 
       blob = new Blob(['local_date_time' + this.colSep + names.join(this.colSep) + this.rowSep], this.blobOptions)
