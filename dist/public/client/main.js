@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "3d8165d72f12a72b967a"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "16085585c3c06c6a8f2b"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -40102,7 +40102,7 @@ exports.default = {
       vm.store.clearAgg('currentYTDPrecip');
     },
     guard: function guard(vm) {
-      return false;
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.currentYTDPrecip;
     },
     fetch: function fetch(vm) {
       var datastreamSpecs = [{ tagKey: 'Precipitation_Height', dtUnits: { 'Millimeter': 'met' } }];
@@ -40154,7 +40154,7 @@ exports.default = {
       vm.store.clearAgg('priorYTDPrecip');
     },
     guard: function guard(vm) {
-      return false;
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.priorYTDPrecip;
     },
     fetch: function fetch(vm) {
       var datastreamSpecs = [{ tagKey: 'Precipitation_Height', dtUnits: { 'Millimeter': 'met' } }];
@@ -40206,7 +40206,7 @@ exports.default = {
       vm.store.clearAgg('twoDayPrecip');
     },
     guard: function guard(vm) {
-      return false;
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.twoDayPrecip;
     },
     fetch: function fetch(vm) {
       var datastreamSpecs = [{ tagKey: 'Precipitation_Height', dtUnits: { 'Millimeter': 'met' } }];

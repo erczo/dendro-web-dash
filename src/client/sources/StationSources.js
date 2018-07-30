@@ -384,8 +384,7 @@ export default {
       vm.store.clearAgg('currentYTDPrecip')
     },
     guard (vm) {
-      return false
-      // return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.currentYTDPrecip
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.currentYTDPrecip
     },
     fetch (vm) {
       const datastreamSpecs = [
@@ -444,8 +443,7 @@ export default {
       vm.store.clearAgg('priorYTDPrecip')
     },
     guard (vm) {
-      return false
-      // return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.priorYTDPrecip
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.priorYTDPrecip
     },
     fetch (vm) {
       const datastreamSpecs = [
@@ -504,8 +502,7 @@ export default {
       vm.store.clearAgg('twoDayPrecip')
     },
     guard (vm) {
-      return false
-      // return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.twoDayPrecip
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.twoDayPrecip
     },
     fetch (vm) {
       const datastreamSpecs = [
