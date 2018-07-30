@@ -110,7 +110,7 @@
 
           <div class="col-12 col-lg-6 pb-3">
             <precip-tile
-              :current="datasets.current" :yesterday="datasets.yesterday"
+              :twoDay="aggs.twoDayPrecip"
               :station-time="stationTime" :system-time="state.systemTime"
               :unit-abbrs="state.unitAbbrs" :units="units"></precip-tile>
           </div>
@@ -130,10 +130,9 @@
           <!-- TODO: Re-enable after data is ready -->
           <div class="col-12 col-lg-6 pb-3">
             <water-year-tile
-              :precip="datasets.wyPrecip" :precip-cursor="wyPrecipCursor"
+              :currentYTD="aggs.currentYTDPrecip" :priorYTD="aggs.priorYTDPrecip"
               :station-time="stationTime" :system-time="state.systemTime"
-              :unit-abbrs="state.unitAbbrs" :units="units"
-              @series-added="seriesAdded"></water-year-tile>
+              :unit-abbrs="state.unitAbbrs" :units="units"></water-year-tile>
           </div>
         </div>
 
@@ -267,6 +266,9 @@ export default {
   },
 
   computed: {
+    aggs () {
+      return this.state.aggs
+    },
     coordinates () {
       const station = this.state.station
       if (station && station.geo && station.geo.coordinates && station.geo.coordinates.length > 2) return station.geo.coordinates
@@ -348,7 +350,7 @@ export default {
       // TODO: Make this configurable
       if (newTime - this.currentStatsFetchedAt > 324000) {
         dataLoader.clear(source => {
-          return /^\w*(Series|Stats|systemTime)$/.test(source)
+          return /^\w*(Aggs|Series|Stats|systemTime)$/.test(source)
         }).load().then(() => {
           logger.log('Station:watch.clientTime::vm', this)
         })

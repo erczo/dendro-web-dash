@@ -93,6 +93,12 @@ class StationStore {
       contactPersonIds: null,
       contactPersons: null,
 
+      aggs: {
+        currentYTDPrecip: null,
+        priorYTDPrecip: null,
+        twoDayPrecip: null
+      },
+
       // Datapoints are organized into datasets; populated by data loading
       datasets: {
         airPres: null,
@@ -112,6 +118,8 @@ class StationStore {
       unitAbbrs: null
     }
   }
+
+  clearAgg (aggKey, doc) { this.reactiveState.aggs[aggKey] = null }
 
   clearContactOrgs () { this.setContactOrgs(null) }
 
@@ -183,6 +191,10 @@ class StationStore {
       if (!obj[tagKey]) obj[tagKey] = []
       obj[tagKey].push(doc)
     })
+  }
+
+  setAgg (aggKey, doc) {
+    this.reactiveState.aggs[aggKey] = doc
   }
 
   setContactOrgs (newValue) {

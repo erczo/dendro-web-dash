@@ -307,9 +307,7 @@ export default {
       {tagKey: 'Average_Air_Speed', dtUnits: {'MilePerHour': 'imp', 'MeterPerSecond': 'met'}},
       {tagKey: 'Average_Air_Temperature', dtUnits: {'DegreeFahrenheit': 'imp', 'DegreeCelsius': 'met'}},
       {tagKey: 'Average_Solar_PhotosyntheticallyActiveRadiation', dtUnits: {'MicromolePerSquareMeter': 'all'}},
-      {tagKey: 'Average_Solar_Radiation', dtUnits: {'WattPerSquareMeter': 'all'}},
-      // TODO: Should be Cumulative_Day_Precipitation_Height, InchPerDay/MillimeterPerDay
-      {tagKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
+      {tagKey: 'Average_Solar_Radiation', dtUnits: {'WattPerSquareMeter': 'all'}}
     ],
     // TODO: Remove - deprecated
     // datapointsQuery () {
@@ -376,35 +374,184 @@ export default {
     assign: assignDatapoints
   },
 
-  yesterdayStats: {
-    // Extra config
-    datasetKey: 'yesterday',
-    datastreamFilter: noAttributesFilter,
-    datastreamSpecs: [
-      // TODO: Should be Cumulative_Day_Precipitation_Height, InchPerDay/MillimeterPerDay
-      {tagKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
-    ],
-    datapointsQuery (vm) {
-      const startOfToday = moment(vm.stationTime).utc().startOf('d')
-      const startOfYesterday = startOfToday.clone().subtract(1, 'd')
-      const startTime = stationMomentToUTCTime(startOfYesterday, vm.state.station.utc_offset)
-      const endTime = stationMomentToUTCTime(startOfToday, vm.state.station.utc_offset)
-      return {
-        time: {
-          $gte: moment(startTime).toISOString(),
-          $lt: moment(endTime).toISOString()
-        },
-        $limit: 1
-      }
-    },
+  /*
+    Aggregates
+   */
 
+  currentYTDPrecipAggs: {
     // Loader config
-    clear: clearDataset,
-    guard (vm) {
-      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.datasets.yesterday
+    clear (vm) {
+      vm.store.clearAgg('currentYTDPrecip')
     },
-    fetch: fetchDatapoints,
-    assign: assignDatapoints
+    guard (vm) {
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.currentYTDPrecip
+    },
+    fetch (vm) {
+      const datastreamSpecs = [
+        {tagKey: 'Precipitation_Height', dtUnits: {'Millimeter': 'met'}}
+      ]
+      const ids = getDatastreamIdsForLookup(vm.store.plainState.datastreamsByTagKey, datastreamSpecs, noAttributesFilter, vm.units)
+
+      if (ids.length === 0) {
+        logger.warn('StationSources:fetch.toDatePrecipAggs::noDatastreamsForSource')
+        return Promise.resolve({})
+      }
+
+      const offset = vm.state.station.utc_offset
+      const offsetEdit = offset < 0 ? `su_${-offset}_s` : `ad_${offset}_s` // HACK: Or by design?
+      const request = {
+        method: 'rollupDatapoints',
+        build_every: '1_d',
+        // Stop rebuilding after 7 days
+        expires_at: moment().add(7, 'd').toISOString(),
+        spec: {
+          big_math: true,
+          query: {
+            datastream_id: ids[0],
+            time_local: true
+          },
+          rollups: [
+            {
+              aggregations: [
+                {
+                  alias: 'v_sum',
+                  field: 'v',
+                  func: 'sum'
+                }
+              ],
+              window: '1_d'
+            }
+          ],
+          shift: 'so_M,su_9_M,so_y,ad_9_M',
+          // NOTE: Assumes 10 minute data
+          time_cursor: '12_d',
+          time_gte: `${offsetEdit},so_M,su_9_M,so_y,ad_9_M`,
+          time_lt: `${offsetEdit},so_d,ad_1_d`
+        }
+      }
+
+      return services.aggregateRequest.create(request)
+    },
+    assign (vm, doc) {
+      vm.store.setAgg('currentYTDPrecip', doc)
+    }
+  },
+
+  priorYTDPrecipAggs: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearAgg('priorYTDPrecip')
+    },
+    guard (vm) {
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.priorYTDPrecip
+    },
+    fetch (vm) {
+      const datastreamSpecs = [
+        {tagKey: 'Precipitation_Height', dtUnits: {'Millimeter': 'met'}}
+      ]
+      const ids = getDatastreamIdsForLookup(vm.store.plainState.datastreamsByTagKey, datastreamSpecs, noAttributesFilter, vm.units)
+
+      if (ids.length === 0) {
+        logger.warn('StationSources:fetch.toDatePrecipAggs::noDatastreamsForSource')
+        return Promise.resolve({})
+      }
+
+      const offset = vm.state.station.utc_offset
+      const offsetEdit = offset < 0 ? `su_${-offset}_s` : `ad_${offset}_s` // HACK: Or by design?
+      const request = {
+        method: 'rollupDatapoints',
+        build_every: '1_d',
+        // Stop rebuilding after 7 days
+        expires_at: moment().add(7, 'd').toISOString(),
+        spec: {
+          big_math: true,
+          query: {
+            datastream_id: ids[0],
+            time_local: true
+          },
+          rollups: [
+            {
+              aggregations: [
+                {
+                  alias: 'v_sum',
+                  field: 'v',
+                  func: 'sum'
+                }
+              ],
+              window: '1_d'
+            }
+          ],
+          shift: 'so_M,su_9_M,so_y,ad_9_M',
+          // NOTE: Assumes 10 minute data
+          time_cursor: '12_d',
+          time_gte: `${offsetEdit},su_1_y,so_M,su_9_M,so_y,ad_9_M`,
+          time_lt: `${offsetEdit},su_1_y,so_d,ad_1_d`
+        }
+      }
+
+      return services.aggregateRequest.create(request)
+    },
+    assign (vm, doc) {
+      vm.store.setAgg('priorYTDPrecip', doc)
+    }
+  },
+
+  twoDayPrecipAggs: {
+    // Loader config
+    clear (vm) {
+      vm.store.clearAgg('twoDayPrecip')
+    },
+    guard (vm) {
+      return vm.store.plainState.datastreams && vm.units && vm.stationTime && !vm.state.aggs.twoDayPrecip
+    },
+    fetch (vm) {
+      const datastreamSpecs = [
+        {tagKey: 'Precipitation_Height', dtUnits: {'Millimeter': 'met'}}
+      ]
+      const ids = getDatastreamIdsForLookup(vm.store.plainState.datastreamsByTagKey, datastreamSpecs, noAttributesFilter, vm.units)
+
+      if (ids.length === 0) {
+        logger.warn('StationSources:fetch.twoDayPrecipAggs::noDatastreamsForSource')
+        return Promise.resolve({})
+      }
+
+      const offset = vm.state.station.utc_offset
+      const offsetEdit = offset < 0 ? `su_${-offset}_s` : `ad_${offset}_s` // HACK: Or by design?
+      const request = {
+        method: 'rollupDatapoints',
+        build_every: '1_h',
+        // Stop rebuilding after 7 days
+        expires_at: moment().add(7, 'd').toISOString(),
+        spec: {
+          big_math: true,
+          query: {
+            datastream_id: ids[0],
+            time_local: true
+          },
+          rollups: [
+            {
+              aggregations: [
+                {
+                  alias: 'v_sum',
+                  field: 'v',
+                  func: 'sum'
+                }
+              ],
+              window: '1_d'
+            }
+          ],
+          // NOTE: Assumes 10 minute data
+          time_cursor: '12_d',
+          time_gte: `${offsetEdit},so_d,su_1_d`,
+          time_lt: `${offsetEdit},so_d,ad_1_d`
+        }
+      }
+
+      return services.aggregateRequest.create(request)
+    },
+    assign (vm, doc) {
+      vm.store.setAgg('twoDayPrecip', doc)
+    }
   },
 
   /*
@@ -506,38 +653,6 @@ export default {
     afterFetch: afterFetchSeries,
     assign: assignDatapoints
   },
-
-  // TODO: Re-enable after data is ready
-  // wyPrecipSeries: {
-  //   // Extra config
-  //   cursorName: 'wyPrecipCursor',
-  //   datasetKey: 'wyPrecip',
-  //   datastreamFilter: noAttributesFilter,
-  //   datastreamSpecs: [
-  //     // TODO: Should be Cumulative_Day_Precipitation_Height, InchPerDay/MillimeterPerDay
-  //     {tagKey: 'Cumulative_Day_Precipitation_Height', dtUnits: {'Inch': 'imp', 'Millimeter': 'met'}}
-  //   ],
-  //   datapointsQuery: fwdCursorDatapointsQuery,
-
-  //   // Loader config
-  //   clear: clearDataset,
-  //   guard: fwdCursorDatapointsGuard,
-  //   beforeFetch (vm) {
-  //     if (vm[this.cursorName]) return
-
-  //     /*
-  //       NOTE: Two years of daily precip. data will be fetched all at once.
-  //      */
-  //     const config = vm.wySeriesConfig
-  //     const newCursor = vm[this.cursorName] = {}
-  //     newCursor.start = config.start
-  //     newCursor.pos = config.end
-  //     newCursor.end = config.end
-  //   },
-  //   fetch: fetchDatapoints,
-  //   afterFetch: afterFetchSeries,
-  //   assign: assignDatapoints
-  // },
 
   /*
     Weather forecast data

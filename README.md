@@ -16,7 +16,7 @@ TODO: Briefly describe this repo and Project Dendro
 5. Install webmodules:
 
 	```bash
-	$ npm install -g webmodules
+	$ npm install -g webmodules@0.1.47
 	$ wpm install
 	```
 

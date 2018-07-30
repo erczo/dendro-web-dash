@@ -1,7 +1,7 @@
 <template>
   <div class="component d-flex flex-column justify-content-center h-100 rounded tile" style="position: relative;" :style="{backgroundColor}">
-    <div class="align-self-center" style="position: absolute;">
-      <span class="badge badge-pill badge-default px-4 py-4" style="opacity: 0.9;">Coming Soon</span>
+    <div class="align-self-center" style="position: absolute;" v-if="isPending">
+      <span class="badge badge-pill badge-default px-4 py-4" style="opacity: 0.9;">Calculating...</span>
     </div>
 
     <!-- TODO: Re-enable after data is ready: x-border-bottom -->
@@ -23,23 +23,21 @@
 
 <script>
 import chroma from 'chroma-js'
+import math from '../../lib/math'
 // TODO: Re-enable after data is ready
 // import Highcharts from 'highcharts'
 
 import {abbr, color, length} from '../../mixins/tile'
 
-// TODO: Re-enable after data is ready
-// import LengthAcc from '../../accessors/LengthAcc'
+import LengthAcc from '../../accessors/LengthAcc'
 
-// let cuDayPrecipHeight
+let lengthAcc
 
 export default {
   props: {
-    // Chart datasets
-    precip: Object,
-
-    // Cursor-based fetching
-    precipCursor: null,
+    // Tile aggs
+    currentYTD: Object,
+    priorYTD: Object,
 
     // Misc
     stationTime: Number,
@@ -48,11 +46,12 @@ export default {
     units: String
   },
 
-  data () {
-    return {
-      cytdCu: null,
-      pytdCu: null
-    }
+  created () {
+    lengthAcc = new LengthAcc(this)
+  },
+
+  beforeDestroy () {
+    lengthAcc = null
   },
 
   // TODO: Re-enable after data is ready
@@ -80,8 +79,26 @@ export default {
   mixins: [abbr, color, length],
 
   computed: {
+    cytdCu () {
+      const agg = this.currentYTD
+      if (agg && agg.result && agg.result.data && agg.result.data[0]) {
+        const n = lengthAcc.unitToLenNum(math.unit(agg.result.data[0].v_sum.value, 'mm'))
+        return lengthAcc.roundLen(n)
+      }
+    },
+    pytdCu () {
+      const agg = this.priorYTD
+      if (agg && agg.result && agg.result.data && agg.result.data[0]) {
+        const n = lengthAcc.unitToLenNum(math.unit(agg.result.data[0].v_sum.value, 'mm'))
+        return lengthAcc.roundLen(n)
+      }
+    },
     backgroundColor () {
-      return chroma(this.colors.TILE.PRECIP).alpha(0.5).css()
+      return this.isPending ? chroma(this.colors.TILE.PRECIP).alpha(0.5).css() : this.colors.TILE.PRECIP
+    },
+    isPending () {
+      return (this.currentYTD && this.currentYTD.status) ||
+        (this.priorYTD && this.priorYTD.status)
     }
   }
 

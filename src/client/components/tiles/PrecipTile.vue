@@ -1,7 +1,7 @@
 <template>
   <div class="component d-flex flex-column justify-content-center h-100 rounded tile" style="position: relative;" :style="{backgroundColor}">
-    <div class="align-self-center" style="position: absolute;" v-if="isComingSoon">
-      <span class="badge badge-pill badge-default px-4 py-4" style="opacity: 0.9;">Coming Soon</span>
+    <div class="align-self-center" style="position: absolute;" v-if="isPending">
+      <span class="badge badge-pill badge-default px-4 py-4" style="opacity: 0.9;">Calculating...</span>
     </div>
 
     <div class="d-flex flex-1 flex-column justify-content-center text-center">
@@ -18,18 +18,18 @@
 
 <script>
 import chroma from 'chroma-js'
+import math from '../../lib/math'
 
 import {abbr, color, length} from '../../mixins/tile'
 
 import LengthAcc from '../../accessors/LengthAcc'
 
-let cuDayPrecipHeight
+let lengthAcc
 
 export default {
   props: {
-    // Tile datasets
-    current: Object,
-    yesterday: Object,
+    // Tile aggs
+    twoDay: Object,
 
     // Misc
     stationTime: Number,
@@ -38,38 +38,36 @@ export default {
     units: String
   },
 
-  data () {
-    return {
-      curCu: null,
-      ydaCu: null
-    }
-  },
-
   created () {
-    cuDayPrecipHeight = new LengthAcc(this, 'Cumulative_Day_Precipitation_Height')
+    lengthAcc = new LengthAcc(this)
   },
 
   beforeDestroy () {
-    cuDayPrecipHeight = null
+    lengthAcc = null
   },
 
   mixins: [abbr, color, length],
 
   computed: {
+    curCu () {
+      const agg = this.twoDay
+      if (agg && agg.result && agg.result.data && agg.result.data[1]) {
+        const n = lengthAcc.unitToLenNum(math.unit(agg.result.data[1].v_sum.value, 'mm'))
+        return lengthAcc.roundLen(n)
+      }
+    },
+    ydaCu () {
+      const agg = this.twoDay
+      if (agg && agg.result && agg.result.data && agg.result.data[0]) {
+        const n = lengthAcc.unitToLenNum(math.unit(agg.result.data[0].v_sum.value, 'mm'))
+        return lengthAcc.roundLen(n)
+      }
+    },
     backgroundColor () {
-      return this.isComingSoon ? chroma(this.colors.TILE.PRECIP).alpha(0.5).css() : this.colors.TILE.PRECIP
+      return this.isPending ? chroma(this.colors.TILE.PRECIP).alpha(0.5).css() : this.colors.TILE.PRECIP
     },
-    isComingSoon () {
-      return (typeof this.curCu === 'undefined') && (typeof this.ydaCu === 'undefined')
-    }
-  },
-
-  watch: {
-    current (newDataset) {
-      this.curCu = cuDayPrecipHeight.init(newDataset).lenRound
-    },
-    yesterday (newDataset) {
-      this.ydaCu = cuDayPrecipHeight.init(newDataset).lenRound
+    isPending () {
+      return (this.twoDay && this.twoDay.status)
     }
   }
 }

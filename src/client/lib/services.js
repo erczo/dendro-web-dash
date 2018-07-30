@@ -18,6 +18,7 @@ const app = feathers()
   .configure(socketio(socket, config.socketio.options))
 
 export default {
+  aggregateRequest: app.service('/aggregates/request'),
   datapointLookup: app.service('/datapoints/lookup'),
   datastream: app.service('/datastreams'),
   organization: app.service('/organizations'),
