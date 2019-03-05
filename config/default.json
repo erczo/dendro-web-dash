@@ -18,7 +18,8 @@
       "options": {
         "timeout": 30000
       }
-    }
+    },
+    "stationLinkEnabled": true
   },
   "port": 3000,
   "webpack": true

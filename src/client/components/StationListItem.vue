@@ -1,14 +1,17 @@
 <template>
   <li class="component media my-3 pb-3 border-bottom">
-    <router-link :to="{name: 'station', params: {slug: station.slug}}" class="hidden-xs-down">
-      <div class="d-flex mr-3 photo-thumb" v-if="!media || media.length === 0"></div>
-      <img class="d-flex mr-3 photo-thumb rounded" :src="isRetina && media[0].sizes.thumb_2x ? media[0].sizes.thumb_2x.url : media[0].sizes.thumb.url" v-else>
+    <router-link :to="{name: 'station', params: {slug: station.slug}}" class="hidden-xs-down" v-if="linkEnabled">
+      <img class="d-flex mr-3 photo-thumb rounded" :src="mediaUrl" v-if="mediaUrl">
+      <div class="d-flex mr-3 photo-thumb" v-else></div>
     </router-link>
+    <img class="d-flex mr-3 photo-thumb rounded" :src="mediaUrl" v-else-if="mediaUrl">
+    <div class="d-flex mr-3 photo-thumb" v-else></div>
 
     <div class="media-body">
-      <router-link :to="{name: 'station', params: {slug: station.slug}}">
+      <router-link :to="{name: 'station', params: {slug: station.slug}}" v-if="linkEnabled">
         <h4>{{ station.name }}</h4>
       </router-link>
+      <h4 v-else>{{ station.name }}</h4>
 
       <!-- TODO: Move to StationElevation.vue? -->
       <p v-if="station.geo && station.geo.coordinates && station.geo.coordinates.length > 1">
@@ -16,7 +19,7 @@
         <span v-if="station.geo.coordinates.length > 2"><br />Elevation: {{ elevation }}</span>
       </p>
 
-      <router-link class="mr-3" :to="{name: 'station', params: {slug: station.slug}}">Dashboard</router-link>
+      <router-link class="mr-3" :to="{name: 'station', params: {slug: station.slug}}" v-if="linkEnabled">Dashboard</router-link>
       <!-- TODO: Implement this -->
       <!-- <a class="" href="#">Datastreams</a> -->
     </div>
@@ -32,6 +35,7 @@ import {abbr} from '../mixins/tile'
 export default {
   props: {
     isRetina: Boolean,
+    linkEnabled: Boolean,
     station: Object,
 
     // Misc
@@ -71,6 +75,12 @@ export default {
     },
     media () {
       if (!this.isMediaError) return this.station.media
+    },
+    mediaUrl () {
+      const media = this.media
+      if (this.media && this.media.length > 0) {
+        return this.isRetina && media[0].sizes.thumb_2x ? media[0].sizes.thumb_2x.url : media[0].sizes.thumb.url
+      }
     }
   },
 

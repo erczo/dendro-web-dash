@@ -8,6 +8,7 @@
       "uri": "WEB_DASH_API_URI"
     },
     "noaaNWSIcons": "NOAA_NWS_ICONS_URL",
-    "orgSlug": "WEB_DASH_ORG_SLUG"
+    "orgSlug": "WEB_DASH_ORG_SLUG",
+    "stationLinkEnabled": "WEB_DASH_STATION_LINK_ENABLED"
   }
 }

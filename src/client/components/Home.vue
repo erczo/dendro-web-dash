@@ -24,6 +24,7 @@
                 <ul class="list-unstyled" v-else>
                   <station-list-item
                     :is-retina="isRetina"
+                    :link-enabled="stationLinkEnabled"
                     :station="station"
                     :unit-abbrs="state.unitAbbrs" :units="units"
                     :key="station._id"
@@ -182,6 +183,9 @@ export default {
       const stations = this.stations
       return stations && this.totalStationCount > stations.length
     },
+    stationLinkEnabled () {
+      return [true, 1, 'true', 'yes'].includes(config.stationLinkEnabled)
+    },
     stations () {
       return this.state.stations
     }
@@ -205,7 +209,7 @@ export default {
         // TODO: Make this configurable
         this.infoWindow.setContent(
           `<h6>${station.name}</h6>` +
-          `<a href="${link.href}">Dashboard</a> | ` +
+          (this.stationLinkEnabled ? `<a href="${link.href}">Dashboard</a> | ` : '') +
           `<a href="https://www.google.com/maps?q=${coords[1]},${coords[0]}" target="_blank">Maps</a>`
         )
         this.infoWindow.open(this.map, marker)
